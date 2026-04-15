@@ -194,6 +194,13 @@
     @keyframes slideIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
     .hidden { display: none !important; }
+    /* ── Demo mode ── */
+    .demo-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 7px; padding: 9px 11px; margin-bottom: 9px; }
+    .demo-banner p { font-size: 11px; color: #1d4ed8; line-height: 1.5; }
+    .demo-banner strong { font-weight: 700; }
+    .demo-clear { font-size: 10px; color: #1d4ed8; cursor: pointer; text-decoration: underline; margin-top: 4px; display: inline-block; }
+    .demo-clear:hover { color: #1e40af; }
+    .api-hidden { display: none !important; }
     hr.divider { border: none; border-top: 1px solid var(--border); margin: 9px 0; }
     .optional-label { font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-light); }
   </style>
@@ -206,8 +213,15 @@
     <div class="sidebar-top">
       <div class="sidebar-title">📋 AE Notes Summarizer</div>
 
+      <!-- Demo banner (shown when sample data is loaded) -->
+      <div class="demo-banner hidden" id="demoBanner">
+        <p><strong>✦ Demo mode</strong> — Sample data loaded. Summaries and portfolio analysis are pre-generated.</p>
+        <span class="demo-clear" onclick="clearDemo()">← Clear and use your own data</span>
+      </div>
+
+
       <!-- API Key -->
-      <div class="field">
+      <div id="apiKeyField" class="field">
         <label>Claude API Key</label>
         <div class="api-row">
           <input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off" oninput="saveApiKey()" />
@@ -336,6 +350,7 @@ let riskResults = {};      // { acct: { level, reason } } — from portfolio ana
 let selectedAccount = null;
 let totalAccounts = 0, doneCount = 0;
 let currentTab = 'account';
+let demoMode = false;
 
 // ── API Key ────────────────────────────────────────────────────────────────────
 (function loadKey() {
@@ -378,7 +393,383 @@ function processFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
+// ── Sample pre-baked data ─────────────────────────────────────────────────────
+const SAMPLE_SUMMARIES = {
+  "Apex Semiconductor Corp": {
+    update: "Technical risk resolved via Python notebook workaround delivered 3/19, currently being tested by Priya Patel's team. JP confirmed renewal price and routed procurement to ProcureNet portal; admin swap and ALARA ticket to finalize custom rate language are the only remaining process steps.",
+    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
+    nextSteps: "1. Swap portal admins in ProcureNet, Dana Chen, AR\n2. Submit ALARA ticket to finalize custom rate language, Rachel, Deal Desk"
+  },
+  "Meridian Analytics LLC": {
+    update: "Customer is actively evaluating Snowflake as an alternative, citing real-time prediction latency as a critical gap we cannot currently match. Meeting with Mike (CTO) and Nathan has been rescheduled with no confirmation — zero positive momentum this week.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
+    nextSteps: "1. Deliver ML package demo addressing latency concerns, Mike, CTO\n2. Escalate Snowflake competitive risk to leadership"
+  },
+  "Summit Partners Group LLC": {
+    update: "Order form resent to partner on 4/8 with a 4/17 expiration date. Kevin (partner) confirmed customer commitment to sign by 4/17; only outstanding items are sell-through evidence and PO processing.",
+    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
+    nextSteps: "1. Follow up with Kevin on PO status and sell-through evidence, Kevin, Partner\n2. Confirm 4/17 signature window remains valid with customer"
+  },
+  "Copal Foods S.A.": {
+    update: "Special pricing sent to partner on 4/8 to pass discounted renewal offer including GenAI SKU to Davido (EB). New DS leader Catalina is being cultivated, but no confirmed budget commitment and the outgoing team's preference for Google remains a structural risk.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
+    nextSteps: "1. Partner to present discounted pricing to Davido, EB\n2. Schedule tool exploration session with Catalina, DS Leader"
+  },
+  "Clearfield Finance LLC": {
+    update: "Pre-PTO bridge email sent to Marcus (champion) securing meeting holds for renewal discussions. Deal Desk approval in progress for 3-year Success Bundle at $74k ARR; CEO Derek's 2026 roadmap spend approval remains the critical gate before renewal can advance.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Secure CEO roadmap approval, Derek, CEO\n2. Complete Deal Desk approval for 3-year Success Bundle, Rachel, Deal Desk\n3. Schedule renewal meeting upon return from PTO, Marcus, Champion"
+  },
+  "Palatine Auto Finance NA LLC": {
+    update: "Customer confirmed intent to downscope MLOps to AWS; executive alignment call scheduled for 4/14 to present a 'better together' story with AWS and the agentic roadmap. Technical win on MLBuild and Citizen Data Science is confirmed but at risk if the exec narrative isn't compelling.",
+    checks: "3 incomplete / 5 — Legal Complete, EB Signoff, Timeline Understood",
+    nextSteps: "1. Deliver AWS 'better together' story and agentic roadmap, 4/14 exec call\n2. Confirm revised commercial terms after scope reduction\n3. Secure EB formal commitment on remaining MLBuild ARR"
+  },
+  "Whitmore Insurance Group Inc.": {
+    update: "Production launch of Private Flood Pricing models strengthens the technical value story. Parent-level MSA request filed (LR0089234) to address consolidation risk from Nationwide Group acquisition; new procurement lead Kelly Turner and business lead Sarah Lawson are now directly engaged.",
+    checks: "2 incomplete / 5 — Legal Complete, EB Signoff",
+    nextSteps: "1. Advance parent-level MSA review, Kelly Turner, Procurement Lead\n2. Confirm renewal intent with Sarah Lawson, Business Lead"
+  },
+  "Dalton Equipment Co": {
+    update: "Claire Henderson (EB) verbally confirmed renewal intent last week. Contract evaluation on April 28th will determine flat renewal vs. renewal plus Training Services; legal review confirmed not required for the predictive renewal component.",
+    checks: "2 incomplete / 5 — Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Confirm approval timeline and signature window, Claire Henderson, EB\n2. Prepare Training Services expansion proposal for April 28th review"
+  },
+  "Verdant Health Inc.": {
+    update: "No engagement since Outreach Framework sent to Jordan Miller (CTO) on March 12th. Zero response to all outreach attempts; opportunity has moved to Omitted due to total communication blackout with no path forward currently visible.",
+    checks: "0/5 complete — customer churning",
+    nextSteps: "1. Final escalation attempt above Jordan Miller, CTO\n2. Document churn for forecasting and close the opportunity"
+  },
+  "Crestline Industrial Systems Inc.": {
+    update: "Customer pivoted from definitive non-renewal to reviewing a right-sized $15k ARR proposal following 8 months of zero engagement. SOC 2 provided as requested; Mark (EB) is now reviewing the proposal but has not committed — this is a fragile re-open.",
+    checks: "4 incomplete / 5 — Tech Win, EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Follow up on SOC 2 review and $15k proposal decision, Mark, EB\n2. Schedule enablement session to demonstrate ROI and reverse the value gap narrative"
+  },
+  "Northgate Capital Management LLC": {
+    update: "Renewal proposal sent to David on March 26th for the Q2 renewal with no feedback received. Zero modeling hours logged in the last 6 months following the champion's retirement; agentic demo tentatively scheduled for week of April 13th or 22nd to reignite engagement.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Follow up with David on proposal feedback, David, Portfolio Manager\n2. Coordinate agentic demo for week of April 13th or 22nd\n3. Engage CRO and other team members to multi-thread"
+  },
+  "Summit Community Bank": {
+    update: "Customer explicitly confirmed non-renewal for 5/31; moving to an internally built tool developed by Danny that eliminates last-mile feature engineering friction. No path to reversal has been identified.",
+    checks: "0/5 complete — customer churning",
+    nextSteps: "1. Document confirmed churn in system, 5/31 non-renewal date\n2. Explore any residual services opportunity before off-boarding"
+  },
+  "Meridian Online University Inc.": {
+    update: "Official transition to Ana Rodriguez complete; MSA and Order Form are now with MOU Purchasing. Holding the line on the 5-user minimum and $3k standard YoY increase despite customer's request to reduce to 3 seats.",
+    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
+    nextSteps: "1. Push Lisa Chen to finalize MSA in April, Lisa Chen, Purchasing\n2. Confirm seat minimum stance with customer before final paperwork"
+  },
+  "Northern Territory Safety Authority": {
+    update: "Mark confirmed they are 'likely not to renew' the $84k on-prem instance on the alignment call with partner Paul Martinez. IT's Microsoft-only policy is blocking the Kubernetes upgrade required for v11, preventing the Jupyter Notebooks and GenAI/NLP capabilities FIU needs to justify renewal.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
+    nextSteps: "1. Explore Microsoft-compatible migration path with IT and architect, Mark, EB\n2. Engage FIU business leads to create internal pressure for upgrade\n3. Align with partner Paul Martinez on joint response strategy"
+  },
+  "Prestige Live Events": {
+    update: "EB has been radio silent for three consecutive weeks following an initial email about scheduling. Account came in already Omitted; multiple outreach attempts have yielded zero response and no meaningful progress has been made toward a renewal conversation.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Timeline Understood",
+    nextSteps: "1. Final outreach attempt to EB before escalation decision\n2. Explore alternate contacts within the organization to break the silence"
+  },
+  "DriveNow Marketplace": {
+    update: "Customer sentiment shifted to 'slash-and-burn' — explicitly targeting a $20k renewal vs. the current $65k. The primary Highest Bid project failed in production and the key success contact is now refusing meetings; the commercial and technical case for full renewal value has effectively collapsed.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
+    nextSteps: "1. Accept downscoped renewal at $20k to preserve the relationship\n2. Audit Highest Bid project to determine if any salvage is possible\n3. Engage Tony to identify alternative stakeholder with platform success"
+  },
+  "Curi Holdings, Inc.": {
+    update: "Met with Joseph (Data Scientist) and Tommy (System Administrator) on 4/8; renewal proposal sent to Stephanie (VP, Data & Strategic Operations) immediately after. Account is actively developing insurance claims use cases and planning new ones — engagement is positive.",
+    checks: "3 incomplete / 5 — Legal Complete, EB Signoff, Timeline Understood",
+    nextSteps: "1. Follow up on proposal and secure meeting with Stephanie, VP Data & Strategic Operations\n2. Continue aligning on 2026 goals with Joseph and Tommy\n3. Invite Stephanie to a joint renewal and roadmap discussion"
+  },
+  "Hometap Equity Partners, LLC": {
+    update: "Customer agreed to evaluate agentic expansion and pricing scenarios following the demo scheduled for April 10th. Predictive solution is in production; CIO Eric Chacon verbally committed to renewal in March — agentic upsell is now the primary near-term opportunity.",
+    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
+    nextSteps: "1. Deliver agentic demo and close expansion pricing conversation, 4/10, Eric Chacon, CIO\n2. Finalize renewal and agentic expansion pricing post-demo"
+  },
+  "American First Finance": {
+    update: "CRO verbally committed to April close on 4/3; order form sent to sign on 4/9. Deal is a downscope removing the GenAI SKU per customer request; multiyear push is in progress to offset ARR reduction but customer is pushing back on multiyear terms.",
+    checks: "1 incomplete / 5 — Pricing Agreed",
+    nextSteps: "1. Follow up on order form signature, Ana, First Cash\n2. Negotiate multiyear terms with Tyler Brooks and Wallace\n3. Debrief product team on GenAI adoption feedback"
+  },
+  "Veem": {
+    update: "Order form sent on 4/8. Serverless migration blocker is in final testing with Varinder's team — resolution expected next week, which removes the primary technical risk. Legal is confirmed and prior parallel model running issues were already resolved.",
+    checks: "2 incomplete / 5 — Tech Win, Timeline Understood",
+    nextSteps: "1. Confirm serverless migration test results, Varinder\n2. Secure order form signature upon technical confirmation"
+  },
+  "Curative": {
+    update: "First engagement cycle as new AM on this account; followed up with JB on proposal feedback on 4/9 with no response received. Platform usage is low and the renewal situation is unclear — initial discovery with CTO Isaac on 3/26 is the most recent substantive engagement.",
+    checks: "4 incomplete / 5 — Tech Win, EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Secure feedback from JB on renewal proposal, JB\n2. Schedule agentic AI demo to demonstrate forward-looking value\n3. Re-engage Isaac on 2026 platform priorities, Isaac, CTO"
+  },
+  "Prima Assicurazioni S.p.A.": {
+    update: "Champion Emiliano's departure has put the account into a black box state. New stakeholder Gianluca — who doesn't use the platform in his current domain — is auditing whether internal teams want to continue. Primary tech team is leaning into Databricks and DIY Python, treating the platform as a sandbox only.",
+    checks: "4 incomplete / 5 — Tech Win, EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Establish relationship with Gianluca and position platform against Databricks, Gianluca, New Stakeholder\n2. Identify any active production use cases to anchor value story\n3. Multi-thread to find retained technical champions still using platform"
+  },
+  "American AgCredit": {
+    update: "Enablement call with champion Nathan confirmed positive user sentiment, but major org restructure is underway — Julia is leaving, Richard joining in late April, and teams are splitting into two groups. Emailed EB Minet to schedule an intro strategy/renewal meeting; unresolved IT architecture question adds technical risk.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Schedule intro meeting with EB Minet before restructure disrupts momentum, Minet, EB\n2. Resolve IT architecture question with internal architect\n3. Coordinate handoff plan for Richard's onboarding in late April"
+  },
+  "NESTLÉ México, S.A. de C.V.": {
+    update: "End user turnover and EB transition to someone unfamiliar with the platform are the primary risks. Updated SoftwareOne (partner) on 4/8 to restart the proposal process; reached out to Lucio (data analyst) to check on forecasting use case progress and validate model development status.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Arrange intro for Anana to connect with new Analytics leader Alicia, Anana\n2. Complete forecasting use case with Lucio to build a concrete value case, Lucio, Data Analyst\n3. Confirm SoftwareOne proposal timeline with partner"
+  },
+  "Sohar International Bank SAOG": {
+    update: "Champion is departing; Anas (CFDS) is working to arrange an intro call with the replacement — no meeting has occurred yet. Context confirmed: the opportunity is to add services on top of an existing 3-year deal (year 1 of 3); timing is next week's intro call.",
+    checks: "3 incomplete / 5 — Tech Win, EB Signoff, Timeline Understood",
+    nextSteps: "1. Complete intro call with new champion via Anas, Anas, CFDS\n2. Confirm services scope and expand proposal accordingly for year 2"
+  },
+  "SAG, LCC": {
+    update: "VRI audit confirms zero internal SAG users have logged in during all of 2026, including champion Jillian. All 8 live deployments are maintained solely by Evolutio contractors; high risk that external Python contractors will take over the Azure environment to eliminate platform costs.",
+    checks: "4 incomplete / 5 — Tech Win, EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Emergency re-engagement with Jillian to rebuild internal usage case, Jillian, Champion\n2. Quantify financial risk of Python contractor displacement for EB presentation\n3. Present cost-of-replacement ROI to EB before contractor decision is made"
+  },
+  "New York Rangers, LLC": {
+    update: "TTMD deployment is extremely successful and the team wants to continue expanding it. Internal discussions are underway about upgrading to 11.0 pricing and creating a joint marketing story — these have not yet been pitched to the customer. Verbal renewal intent confirmed from EB's team.",
+    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
+    nextSteps: "1. Formalize EB sign-off on renewal and pricing upgrade\n2. Prepare 11.0 pricing scenario and draft marketing story pitch\n3. Confirm approval and signature timeline"
+  },
+  "Public Holdings, Inc.": {
+    update: "New Director of Data Dimitriy met for the first time on 4/8; renewal pricing sent immediately after. Champion turnover is the primary risk — demo of predictive capabilities scheduled for April 14th or 15th to establish credibility with the new technical leader before commercial discussions advance.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Deliver predictive capabilities demo, 4/14 or 4/15, Dimitriy, Director of Data\n2. Schedule QBR to align on 2026 renewal roadmap\n3. Follow up on pricing proposal feedback after demo"
+  },
+  "ISMIE Mutual Insurance Company": {
+    update: "Risk escalated: EB Jim explicitly challenged the ROI of $15k ARR on 3/19, citing low platform utilization. Use case brainstorming session scheduled for 4/15 to identify quick wins and defend current spend against a price cut demand.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Deliver use case brainstorm to justify $15k ARR, 4/15, Jim, EB\n2. Develop 3 pre-built ROI examples for the brainstorm\n3. Prepare discounting floor scenario if EB pushes for rate reduction"
+  },
+  "Long Term Stock Exchange": {
+    update: "Account is in Restart mode following production model failure. Priority is scheduling a meeting with Juan (EB/Champion) to pivot from static reporting to a revenue-driving predictive use case — no recent engagement and no new signal this week.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
+    nextSteps: "1. Schedule meeting with Juan to reframe value and pivot use case, Juan, EB/Champion\n2. Develop concrete predictive use case proposal tied to their revenue context"
+  },
+  "REV Federal Credit Union": {
+    update: "Strong momentum: confirmed meeting this Friday with both Champion and EB to finalize renewal intent. Five models are in production and the champion reports high organizational satisfaction — only legal initiation and formal EB sign-off remain.",
+    checks: "2 incomplete / 5 — Legal Complete, EB Signoff",
+    nextSteps: "1. Secure EB renewal confirmation, this Friday\n2. Initiate legal review immediately after EB confirms intent"
+  },
+  "CAS (Chemical Abstracts Service)": {
+    update: "Core $125k predictive platform is stable, but the $50k GenAI add-on (Talk to My Data) is at risk for the 7/30 renewal — only 3 of 20 enablement hours utilized and chatbot use cases have stalled. Last year's contract was framed as a 12-month test; without active engagement the $50k portion is a clear churn threat.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Schedule a working session to consume enablement hours and rebuild GenAI momentum\n2. Schedule renewal strategy meeting well before 7/30 deadline\n3. Prepare differentiated renewal structure separating core and GenAI components"
+  },
+  "Firebird Music Holdings, LLC": {
+    update: "Order form delivered on April 2nd; customer has gone unresponsive since. Ticket forecasting model is in production and generating ROI — the silence appears to be a procurement process delay rather than a deal risk, but confirmation is needed immediately.",
+    checks: "2 incomplete / 5 — Legal Complete, EB Signoff",
+    nextSteps: "1. Call procurement contact directly to confirm order form status and timeline\n2. Determine if new legal review is required for renewal terms"
+  },
+  "Retail Capital LLC dba Credibly": {
+    update: "Champion Dan Yelle confirmed flat renewal is certain; new Account Manager intro to the Credibly team completed on 4/9. Key remaining topic is serverless migration cost controls — CTO Nathan needs comfort on cost predictability before formal commitment.",
+    checks: "2 incomplete / 5 — Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Send renewal proposal with serverless cost model, Dan Yelle, Champion\n2. Address Nathan's cost concerns with cost analysis, Nathan, CTO\n3. Discuss 2026 goals and JSP expansion opportunities"
+  },
+  "Mercury Financial LLC": {
+    update: "Formal non-renewal notice received March 9th following Atlanticus acquisition mandate to consolidate onto AWS SageMaker. CDO Santiago Hernandez requested an Agentic Proof of Value on March 23rd — the risk team is moving to SageMaker regardless, but this POC is the only remaining path to retention.",
+    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
+    nextSteps: "1. Deliver Agentic POC per Santiago's request, Santiago Hernandez, CDO\n2. Quantify time-to-value vs. SageMaker rebuild to influence Atlanticus decision\n3. Escalate if POC timeline is too long to be a viable retention lever"
+  },
+  "Personify Health (dba Virgin Pulse)": {
+    update: "Handoff from Colby Miller to Ana G-H completed; Justin Mason is now official lead PoC. Despite 1,700+ models created, MLOps is underutilized (only 4/20 deployments active in-platform) and 59/70 enablement hours remain unused — single-threaded risk through Justin is the primary renewal concern.",
+    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
+    nextSteps: "1. Schedule renewal discussion with Justin and surface EB relationship, Justin Mason, Lead PoC\n2. Build plan to activate remaining enablement hours and MLOps deployments before renewal\n3. Multi-thread to additional stakeholders to reduce single-point-of-failure risk"
+  },
+  "CAA North & East Ontario": {
+    update: "VP of Enterprise Solutions confirmed non-renewal intent following data migration to Microsoft Fabric. No active ML workloads exist in the new environment; team is focused exclusively on on-premises dashboards with no ML currently planned.",
+    checks: "0/5 complete — customer churning",
+    nextSteps: "1. Document confirmed non-renewal in forecast system\n2. Explore Microsoft Fabric integration story before formal off-boarding — last retention angle"
+  }
+};
+
+const SAMPLE_RISK = {
+  "Verdant Health Inc.": { level: "HIGH RISK", reason: "CTO unresponsive since March 12th; zero engagement, moved to Omitted" },
+  "Summit Community Bank": { level: "HIGH RISK", reason: "Confirmed non-renewal for 5/31; customer building internal tool" },
+  "CAA North & East Ontario": { level: "HIGH RISK", reason: "VP confirmed non-renewal; data fully migrated to Microsoft Fabric" },
+  "Mercury Financial LLC": { level: "HIGH RISK", reason: "Formal non-renewal notice received post-acquisition; consolidating onto AWS SageMaker" },
+  "Meridian Analytics LLC": { level: "HIGH RISK", reason: "Actively evaluating Snowflake for real-time predictions; CTO unreachable for rescheduled meeting" },
+  "Prima Assicurazioni S.p.A.": { level: "HIGH RISK", reason: "Champion departed; new stakeholder auditing with Databricks as primary alternative" },
+  "DriveNow Marketplace": { level: "HIGH RISK", reason: "Primary project failed in production; customer targeting $20k vs. $65k renewal" },
+  "SAG, LCC": { level: "HIGH RISK", reason: "Zero internal users in 2026; Evolutio contractors at risk of replacing platform entirely" },
+  "Prestige Live Events": { level: "STUCK", reason: "EB radio silent for 3+ consecutive weeks; zero progress despite multiple outreach attempts" },
+  "Northgate Capital Management LLC": { level: "STUCK", reason: "Proposal sent 3/26 with zero feedback; zero modeling hours in past 6 months" },
+  "Curative": { level: "STUCK", reason: "Proposal sent with no response; low usage and limited institutional knowledge as new AM" },
+  "Copal Foods S.A.": { level: "WATCH", reason: "Previous team preferred Google; new DS leader being cultivated with discounted offer" },
+  "Clearfield Finance LLC": { level: "WATCH", reason: "CEO approval is the gate; champion engaged but no formal commitment to 3-year deal" },
+  "Palatine Auto Finance NA LLC": { level: "WATCH", reason: "Customer downscoping MLOps to AWS; exec call 4/14 to defend remaining ARR" },
+  "Northern Territory Safety Authority": { level: "WATCH", reason: "IT blocking Kubernetes upgrade; business unit cannot access v11 capabilities needed for value" },
+  "Sohar International Bank SAOG": { level: "WATCH", reason: "Champion departing; intro call with replacement not yet held" },
+  "ISMIE Mutual Insurance Company": { level: "WATCH", reason: "EB challenging ROI of $15k ARR; brainstorm session on 4/15 is the make-or-break moment" },
+  "Long Term Stock Exchange": { level: "WATCH", reason: "Previous production model failed; restart phase with no recent engagement or new signal" },
+  "CAS (Chemical Abstracts Service)": { level: "WATCH", reason: "$50k GenAI add-on at risk; 17/20 enablement hours unused and chatbot use cases stalled" },
+  "NESTLÉ México, S.A. de C.V.": { level: "WATCH", reason: "New EB unfamiliar with platform; end user turnover and partner coordination underway" },
+  "American AgCredit": { level: "WATCH", reason: "Org restructuring with EB not yet met; IT architecture risk unresolved" },
+  "Firebird Music Holdings, LLC": { level: "WATCH", reason: "Order form sent 4/2 with no response; procurement delay suspected but unconfirmed" },
+  "Public Holdings, Inc.": { level: "WATCH", reason: "New director Dimitriy onboarded 4/8; pricing sent and demo on 4/14 — technical credibility not yet established" },
+  "Crestline Industrial Systems Inc.": { level: "WATCH", reason: "Fragile re-open after 8 months of zero engagement; $15k proposal under review with no commitment" },
+  "Apex Semiconductor Corp": { level: "ON TRACK", reason: "Technical risk resolved; champion aligned; only procurement admin steps remain" },
+  "Summit Partners Group LLC": { level: "ON TRACK", reason: "Partner-led; order form with 4/17 expiry; customer PO confirmed by partner" },
+  "Whitmore Insurance Group Inc.": { level: "ON TRACK", reason: "Production models launched; new stakeholders engaged; legal in progress" },
+  "Dalton Equipment Co": { level: "ON TRACK", reason: "EB verbally confirmed; 4/28 contract evaluation; only timeline and pricing to finalize" },
+  "Meridian Online University Inc.": { level: "ON TRACK", reason: "Paperwork with purchasing; holding on seat minimum and standard YoY increase" },
+  "Curi Holdings, Inc.": { level: "ON TRACK", reason: "Active use case development; proposal sent; team engagement positive" },
+  "Hometap Equity Partners, LLC": { level: "ON TRACK", reason: "CIO verbal commit; agentic demo on 4/10; expansion opportunity framed" },
+  "American First Finance": { level: "ON TRACK", reason: "CRO verbal commit; order form out; only pricing negotiation on multiyear remains" },
+  "Veem": { level: "ON TRACK", reason: "Order form sent; serverless migration in final testing; legal confirmed" },
+  "New York Rangers, LLC": { level: "ON TRACK", reason: "TTMD extremely successful; EB verbal confirmed; only legal and timeline to close" },
+  "REV Federal Credit Union": { level: "ON TRACK", reason: "Champion highly satisfied; EB meeting confirmed for this Friday" },
+  "Retail Capital LLC dba Credibly": { level: "ON TRACK", reason: "Flat renewal certain per champion; only cost model and signature needed" },
+  "Personify Health (dba Virgin Pulse)": { level: "ON TRACK", reason: "High model creation volume; handoff complete; single-threaded risk manageable near-term" }
+};
+
+const SAMPLE_PORTFOLIO_TEXT = `THEMES
+1. **Champion & Stakeholder Turnover** — Six accounts (Prima Assicurazioni, Northgate Capital, Public Holdings, Sohar International, American AgCredit, NESTLÉ México) lost key champions or are onboarding new economic buyers this quarter, creating relationship gaps that slow deal velocity across a significant portion of the portfolio.
+2. **Technical Gaps Driving Competitive Displacement** — Three accounts (Meridian Analytics, DriveNow Marketplace, Mercury Financial) face active displacement from Snowflake, AWS SageMaker, or internally built tools, while several others are blocked by product limitations — signaling a pattern of unresolved technical fitness issues that is generating churn.
+3. **Low Platform Adoption Suppressing Renewal Confidence** — Northgate Capital, SAG, CAS, Personify Health, and ISMIE all show strong commercial relationships alongside chronically low platform utilization, suggesting that value delivery has not kept pace with contract scope — a compounding risk for future renewals.
+
+RISK TABLE
+Verdant Health Inc. | HIGH RISK | CTO unresponsive since March 12th; zero engagement, moved to Omitted | Make one final leadership escalation above Jordan Miller or formally close the opportunity — do not keep it open as false pipeline
+Summit Community Bank | HIGH RISK | Confirmed non-renewal for 5/31; customer building internal tool that eliminates last-mile friction | Focus on documenting the churn driver for product feedback; protect any services relationship before off-boarding
+CAA North & East Ontario | HIGH RISK | VP confirmed non-renewal; data fully migrated to Microsoft Fabric with no ML planned | Explore a Fabric integration angle in the next 2 weeks or formally accept churn and expedite off-boarding
+Mercury Financial LLC | HIGH RISK | Formal non-renewal notice received post-acquisition; consolidating onto AWS SageMaker | Deliver the Agentic POC Santiago requested and frame it explicitly against SageMaker build cost and timeline — this is the only remaining retention lever
+Meridian Analytics LLC | HIGH RISK | Actively evaluating Snowflake for real-time predictions; CTO unreachable for rescheduled meeting | Require a live latency benchmark meeting before Snowflake evaluation closes — if you cannot get Mike on a call this week, escalate to your leadership
+Prima Assicurazioni S.p.A. | HIGH RISK | Champion departed; new stakeholder Gianluca auditing with Databricks as primary alternative | Meet Gianluca this week with production ROI data from comparable accounts — don't let the audit conclude without a platform advocate in the room
+DriveNow Marketplace | HIGH RISK | Primary production project failed; customer targeting $20k vs. $65k renewal; success contact refusing meetings | Accept the $20k downscoped renewal to preserve the relationship and stop the bleeding; treat this as a rebuild quarter not a retention fight
+SAG, LCC | HIGH RISK | Zero internal users in 2026; Evolutio contractors at risk of replacing platform entirely | Escalate directly to EB with a cost-of-replacement analysis — frame Python migration as a 12–18 month project risk, not a cost saving
+Prestige Live Events | STUCK | EB radio silent for 3+ consecutive weeks; zero progress despite multiple outreach attempts | Pause direct outreach, pivot to a different stakeholder or executive sponsor — continued cold emails are not breaking the silence
+Northgate Capital Management LLC | STUCK | Proposal sent March 26th with zero feedback; zero modeling hours in past 6 months | Make the agentic demo contingent on a decision call — do not deliver value without getting a commitment conversation in return
+Curative | STUCK | Proposal sent with no response; low usage and limited institutional knowledge as new AM | Set a hard 5-day decision deadline with JB and escalate to Isaac (CTO) if no response — the account cannot stay in limbo
+Copal Foods S.A. | WATCH | Previous team preferred Google; new DS leader being cultivated with discounted offer | Hold Davido (EB) to a decision within the week on the discounted offer — do not let the pricing conversation drag past the partner handoff
+Clearfield Finance LLC | WATCH | CEO approval is the gate; champion engaged but no formal commitment to 3-year deal | Get in the room with Derek directly — do not let this close exclusively through Marcus, as it adds a layer of risk to a deal that should already be committed
+Palatine Auto Finance NA LLC | WATCH | Customer downscoping MLOps to AWS; exec call 4/14 to defend remaining ARR | Walk into the 4/14 call with a specific dollar case for the agentic differentiation vs. AWS — a generic platform pitch will not survive an exec scrutiny call
+Northern Territory Safety Authority | WATCH | IT blocking Kubernetes upgrade; business unit cannot access capabilities needed for value | Build a Microsoft-compatible migration path before the next meeting or formally model what a right-sized on-prem contract looks like at reduced ARR
+Sohar International Bank SAOG | WATCH | Champion departing; intro call with replacement not yet held | Treat the first meeting with the new champion as a sales call — arrive with a specific services value story, not an account update
+ISMIE Mutual Insurance Company | WATCH | EB challenging ROI of $15k ARR; use case brainstorm on 4/15 is critical | Walk into the brainstorm with 3 pre-built use cases and quantified ROI — the burden of proof is on you, not the customer
+Long Term Stock Exchange | WATCH | Previous production model failed; restart phase with no engagement or new signal | Bring a specific, revenue-attributable predictive use case to the Juan meeting — a generic platform pitch is how the last model failed
+CAS (Chemical Abstracts Service) | WATCH | $50k GenAI add-on at risk; 17/20 enablement hours unused and chatbot stalled | Book a 2-hour working session in the next 2 weeks to consume enablement hours — a 12-month test with unused hours is an automatic churn signal
+NESTLÉ México, S.A. de C.V. | WATCH | New EB unfamiliar with platform; end user turnover and partner coordination underway | Arrange the intro to Alicia (new Analytics leader) before the partner delays cost more momentum — don't let the EB situation drift past April
+American AgCredit | WATCH | Org restructuring with EB not yet met; IT architecture risk unresolved | Meet Minet (EB) in the next 2 weeks before Richard's onboarding fragments deal ownership further
+Firebird Music Holdings, LLC | WATCH | Order form sent 4/2 with no response; procurement delay suspected | Call the procurement contact directly — a production customer who signed before going silent typically has a process bottleneck, not a deal risk
+Public Holdings, Inc. | WATCH | New director Dimitriy onboarded 4/8; pricing sent but technical credibility not yet established | Win Dimitriy's technical confidence at the 4/14 demo before leading with pricing — a new leader who hasn't seen value yet won't sign a renewal
+Crestline Industrial Systems Inc. | WATCH | Fragile re-open after 8 months of zero engagement; $15k proposal under review | Follow up on the SOC 2 review within 48 hours — Mark reviewing the proposal is the only positive signal in months; don't let it cool
+Apex Semiconductor Corp | ON TRACK | Technical risk resolved; champion aligned; only procurement admin steps remain | Hold Dana and Rachel to admin swap and ALARA ticket closure by end of week — don't let a process step delay a committed deal
+Summit Partners Group LLC | ON TRACK | Partner-led; order form with 4/17 expiry; customer PO confirmed by partner | Push Kevin for an early commitment before 4/17 — a hard expiry with no buffer is a last-minute risk you can remove now
+Whitmore Insurance Group Inc. | ON TRACK | Production models launched; new stakeholders engaged; legal in progress | Accelerate legal review — M&A consolidation risk can overtake a deal that is technically committed but legally unresolved
+Dalton Equipment Co | ON TRACK | EB verbally confirmed; 4/28 contract evaluation; timeline and pricing to finalize | Bring a Training Services expansion scenario to the 4/28 meeting — a committed customer evaluating contract scope is the ideal upsell moment
+Meridian Online University Inc. | ON TRACK | Paperwork with purchasing; holding on seat minimum and standard YoY increase | Hold the 5-user minimum without exceptions — any reduction now signals flexibility that will be exploited in every future renewal
+Curi Holdings, Inc. | ON TRACK | Active use case development; proposal sent; team engagement positive | Bring Stephanie into the next meeting with Joseph and Tommy — EB-level inclusion now reduces the risk of a last-minute stakeholder surprise at signature
+Hometap Equity Partners, LLC | ON TRACK | CIO verbal commit; agentic demo on 4/10; expansion conversation framed | Come to the 4/10 demo with pricing ready — convert the expansion conversation into a commitment during the meeting, not after
+American First Finance | ON TRACK | CRO verbal commit; order form out; only pricing negotiation on multiyear remains | Resolve the multiyear objection before the order form goes cold — offer a concrete bridge that ties the multiyear discount to a specific milestone
+Veem | ON TRACK | Order form sent; serverless migration in final testing; legal confirmed | Use Varinder's test confirmation as the explicit signature trigger — set that expectation with the customer now so there is no post-test delay
+New York Rangers, LLC | ON TRACK | TTMD extremely successful; EB verbal confirmed; only legal and timeline to close | Pitch the marketing story to Rangers leadership this week — a referenceable enterprise logo at renewal time is worth protecting with a strong commercial
+REV Federal Credit Union | ON TRACK | Champion highly satisfied; EB meeting confirmed for this Friday | Walk into Friday's meeting with a specific renewal package — reduce friction by having terms ready so the EB conversation ends with a verbal, not a follow-up
+Retail Capital LLC dba Credibly | ON TRACK | Flat renewal certain per champion; only serverless cost model and signature needed | Have the serverless cost analysis ready for Nathan before the next meeting — don't let a solvable technical concern create a commercial delay
+Personify Health (dba Virgin Pulse) | ON TRACK | High model creation volume; handoff complete; enablement hours and MLOps underutilized | Make enablement hour consumption a condition of the renewal conversation — frame unused hours as risk to the customer, not to us
+
+WoW DELTA
+1. **DriveNow Marketplace** — worsened: Customer sentiment moved to slash-and-burn this week and the primary production project is now considered dead in the water, collapsing a $65k renewal to a $20k target with the key success contact refusing meetings.
+2. **Prima Assicurazioni S.p.A.** — worsened: Champion Emiliano's departure triggered a full account audit by a new stakeholder with no platform allegiance, putting the deal into a black box state with Databricks as the leading alternative.
+3. **Hometap Equity Partners, LLC** — improved: Customer agreed to evaluate agentic expansion this week, moving a flat predictive renewal into a genuine upsell conversation ahead of the April 10th demo.`;
+
 async function loadSampleData() {
+  try {
+    const res = await fetch('sample-data.csv');
+    if (!res.ok) throw new Error('Could not load sample file.');
+    const buffer = await res.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buffer), { type: 'array' });
+    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+    if (!json.length) { showToast('Sample file appears empty.', 'error'); return; }
+    parsedData = json; columns = Object.keys(json[0]);
+    dropzone.classList.add('hidden');
+    document.getElementById('fileLoaded').classList.remove('hidden');
+    document.getElementById('fileLoadedText').textContent = `Sample data (${json.length} accounts)`;
+
+    // Enter demo mode — pre-populate all outputs
+    enterDemoMode(json);
+  } catch (err) { showToast('Error loading sample: ' + err.message, 'error'); }
+}
+
+function enterDemoMode(json) {
+  demoMode = true;
+  const notesCol = 'AE Forecast Notes';
+  const accountCol = 'Account Name';
+
+  // Group data
+  accountGroups = {};
+  json.forEach(row => {
+    const acct = String(row[accountCol] || '').trim();
+    if (!acct) return;
+    if (!accountGroups[acct]) accountGroups[acct] = [];
+    accountGroups[acct].push(row);
+  });
+  const accounts = Object.keys(accountGroups);
+
+  // Pre-populate summaryResults
+  summaryResults = {};
+  accounts.forEach(acct => {
+    const s = SAMPLE_SUMMARIES[acct] || { update: '—', checks: '—', nextSteps: '—' };
+    summaryResults[acct] = { ...s, raw: accountGroups[acct], notesCol, arr: '', date: '', ae: '', prevRD: '', lastPrevRD: '' };
+  });
+
+  // Pre-populate riskResults
+  riskResults = {};
+  accounts.forEach(acct => {
+    if (SAMPLE_RISK[acct]) riskResults[acct] = SAMPLE_RISK[acct];
+  });
+
+  totalAccounts = accounts.length; doneCount = accounts.length; selectedAccount = null;
+
+  // Show demo banner, hide API key
+  document.getElementById('demoBanner').classList.remove('hidden');
+  document.getElementById('apiKeyField').classList.add('api-hidden');
+  document.getElementById('mappingSection').classList.add('hidden');
+  document.getElementById('progressSection').classList.add('hidden');
+
+  // Build account list
+  const listEl = document.getElementById('accountList');
+  listEl.innerHTML = '';
+  accounts.forEach(acct => {
+    const risk = riskResults[acct];
+    const item = document.createElement('div');
+    item.className = 'account-item';
+    item.id = 'item_' + safeId(acct);
+    item.onclick = () => selectAccount(acct);
+    let flagHtml = '';
+    if (risk) {
+      if (risk.level.includes('HIGH')) flagHtml = '<span class="risk-flag risk-high">⚠ High</span>';
+      else if (risk.level === 'STUCK') flagHtml = '<span class="risk-flag risk-stuck">⏸ Stuck</span>';
+    }
+    item.innerHTML = `
+      <span class="status-dot dot-done" id="dot_${safeId(acct)}"></span>
+      <div class="account-item-info"><div class="account-item-name">${escHtml(acct)}</div></div>
+      ${flagHtml}`;
+    listEl.appendChild(item);
+  });
+
+  // Show main panel
+  document.getElementById('placeholder').classList.add('hidden');
+  const tabSec = document.getElementById('tabSection');
+  tabSec.classList.remove('hidden');
+  tabSec.style.display = 'flex';
+  document.getElementById('sidebarFooter').classList.remove('hidden');
+
+  // Render pre-baked portfolio analysis
+  renderPortfolioAnalysis(SAMPLE_PORTFOLIO_TEXT, accounts);
+
+  // Select first account
+  if (accounts.length) selectAccount(accounts[0]);
+
+  showToast('Sample loaded — demo mode active.', 'success');
+}
+
+function clearDemo() {
+  demoMode = false;
+  document.getElementById('demoBanner').classList.add('hidden');
+  document.getElementById('apiKeyField').classList.remove('api-hidden');
+  clearFile();
+}
+
+async function UNUSED_loadSampleData_REPLACED() {
   try {
     const res = await fetch('sample-data.csv');
     if (!res.ok) throw new Error('Could not load sample file.');
@@ -397,13 +788,13 @@ async function loadSampleData() {
 }
 
 function clearFile() {
+  demoMode = false; summaryResults = {}; riskResults = {}; accountGroups = {}; selectedAccount = null;
   parsedData = []; columns = [];
   document.getElementById('fileInput').value = '';
   dropzone.classList.remove('hidden');
   ['fileLoaded','mappingSection','progressSection','sidebarFooter','tabSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
   document.getElementById('accountList').innerHTML = '';
   document.getElementById('placeholder').classList.remove('hidden');
-  summaryResults = {}; accountGroups = {}; selectedAccount = null;
 }
 
 const COL_IDS = ['colAccount','colNotes','colARR','colDate','colPrevRD','colAE'];
@@ -629,6 +1020,7 @@ function setDot(acct, state) {
 // ── Portfolio Analysis ─────────────────────────────────────────────────────────
 async function runPortfolioAnalysis(apiKey) {
   if (!apiKey) apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey && demoMode) { showToast('Add your API key to re-run portfolio analysis live.', 'error'); return; }
   if (!apiKey) { showToast('No API key for analysis.', 'error'); return; }
 
   document.getElementById('portfolioContent').innerHTML = `
@@ -874,6 +1266,7 @@ async function sendChat() {
   const question = input.value.trim();
   if (!question) return;
   const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey && demoMode) { showToast('Add your API key to enable live chat queries.', 'error'); return; }
   if (!apiKey) { showToast('No API key set.', 'error'); return; }
   if (!Object.keys(summaryResults).length) { showToast('No accounts loaded yet.', 'error'); return; }
 
@@ -1011,6 +1404,7 @@ function toggleRaw() { document.getElementById('rawNotesPanel')?.classList.toggl
 async function regenSelected() {
   if (!selectedAccount) return;
   const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey && demoMode) { showToast('Add your API key to re-generate live summaries.', 'error'); return; }
   if (!apiKey) { showToast('No API key.', 'error'); return; }
   const acct = selectedAccount;
   const s = summaryResults[acct];
