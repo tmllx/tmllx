@@ -98,9 +98,10 @@ section { margin-bottom: 48px; }
 /* ── Contact ── */
 .contact-grid { display: flex; flex-direction: column; gap: 10px; }
 .contact-row { display: flex; align-items: center; gap: 10px; font-size: 0.925rem; }
-.contact-row .label { font-weight: 500; color: var(--muted); width: 72px; flex-shrink: 0; }
 .contact-row a { color: var(--accent); text-decoration: none; }
 .contact-row a:hover { text-decoration: underline; }
+.contact-icon { width: 18px; height: 18px; flex-shrink: 0; filter: grayscale(100%) opacity(0.45); transition: filter 0.2s; display: block; }
+.contact-row:hover .contact-icon { filter: grayscale(100%) opacity(0.75); }
 
 /* ── About: bio ── */
 .bio { font-size: 1rem; color: var(--text); max-width: 600px; }
