@@ -161,6 +161,11 @@ section { margin-bottom: 48px; }
   color: var(--accent);
 }
 
+/* ── Case study logos ── */
+.cs-logos { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin: 14px 0 4px; }
+.cs-logos img { height: 18px; width: auto; filter: grayscale(100%) opacity(0.45); transition: filter 0.2s; object-fit: contain; }
+.case-study:hover .cs-logos img { filter: grayscale(100%) opacity(0.65); }
+
 /* ── Footer ── */
 footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
 
