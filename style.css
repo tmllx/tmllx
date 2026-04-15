@@ -95,14 +95,12 @@ section { margin-bottom: 48px; }
   margin-top: 9px;
 }
 
-/* ── CTA ── */
-.cta-text { font-size: 0.975rem; color: var(--muted); margin-bottom: 24px; max-width: 480px; }
-.cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.cta-btn { display: inline-block; padding: 10px 22px; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
-.cta-btn--primary { background: var(--accent); color: #fff; }
-.cta-btn--primary:hover { opacity: 0.88; }
-.cta-btn--secondary { border: 1px solid var(--border); color: var(--accent); background: transparent; }
-.cta-btn--secondary:hover { border-color: var(--accent); }
+/* ── Contact ── */
+.contact-grid { display: flex; flex-direction: column; gap: 10px; }
+.contact-row { display: flex; align-items: center; gap: 10px; font-size: 0.925rem; }
+.contact-row .label { font-weight: 500; color: var(--muted); width: 72px; flex-shrink: 0; }
+.contact-row a { color: var(--accent); text-decoration: none; }
+.contact-row a:hover { text-decoration: underline; }
 
 /* ── About: bio ── */
 .bio { font-size: 1rem; color: var(--text); max-width: 600px; }
