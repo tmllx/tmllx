@@ -119,6 +119,24 @@ section { margin-bottom: 48px; }
 .timeline-body .company { font-size: 0.875rem; color: var(--muted); margin-bottom: 6px; }
 .timeline-body p { font-size: 0.875rem; color: var(--muted); }
 
+/* ── Timeline: promotion indicator ── */
+.role-stack { margin-bottom: 2px; }
+.role-current { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+.role-current h4 { margin-bottom: 0; }
+.promoted-badge {
+  display: inline-block;
+  font-size: 0.67rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 1px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.role-prior { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+
 /* ── Home: marquee logos ── */
 .marquee-logos {
   display: flex;
@@ -171,6 +189,18 @@ section { margin-bottom: 48px; }
 }
 .card h3 { font-size: 0.975rem; font-weight: 600; margin-bottom: 6px; }
 .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+/* ── Nav: back link ── */
+.nav-back { font-size: 0.875rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+.nav-back:hover { color: var(--text); }
+
+/* ── Case study card (in grid) ── */
+.card .cs-meta { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; flex: none; }
+.card .cs-outcome { font-size: 0.75rem; font-weight: 600; color: var(--accent); margin-left: auto; white-space: nowrap; }
+
+/* ── Case study child page ── */
+.cs-page-meta { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+.cs-page-outcome { font-size: 0.95rem; font-weight: 600; color: var(--accent); margin-top: 10px; }
 
 /* ── Projects: case studies ── */
 .case-studies { display: flex; flex-direction: column; gap: 28px; }
