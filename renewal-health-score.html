@@ -337,6 +337,17 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .btn-reset:hover { color: #555; border-color: #aaa; }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      body { padding: 16px 14px 48px; }
+      .layout { grid-template-columns: 1fr; }
+      .factors { grid-template-columns: 1fr; }
+      .how-it-works { flex-direction: column; }
+      .hiw-divider { width: auto; height: 1px; margin: 0; }
+      .hiw-section { min-width: 0; }
+      .page-header h1 { font-size: 18px; }
+    }
   </style>
 </head>
 <body>

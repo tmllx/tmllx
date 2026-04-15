@@ -203,6 +203,25 @@
     .api-hidden { display: none !important; }
     hr.divider { border: none; border-top: 1px solid var(--border); margin: 9px 0; }
     .optional-label { font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-light); }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .app-layout { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+      .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
+      .sidebar-top { max-height: none; overflow: visible; }
+      .account-list { max-height: 220px; overflow-y: auto; }
+      .sidebar-footer { flex-wrap: wrap; }
+      .main-panel { padding: 16px; overflow: visible; height: auto; }
+      .chat-wrap { height: 480px; }
+      .account-card, .analysis-card { max-width: 100%; }
+      .account-header { flex-direction: column; gap: 8px; }
+      .account-actions { flex-wrap: wrap; }
+      .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .tab { white-space: nowrap; padding: 8px 12px; font-size: 12px; }
+      .risk-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .analysis-body { padding: 12px; }
+      .chat-input-row { padding: 8px 10px; }
+    }
   </style>
 </head>
 <body>
@@ -1037,10 +1056,10 @@ function renderPortfolioAnalysis(text, accounts) {
 
         ${riskRows.length ? `<div class="analysis-section">
           <div class="analysis-section-title">🚦 Account Risk Assessment</div>
-          <table class="risk-table">
+          <div class="risk-table-wrap"><table class="risk-table">
             <thead><tr><th>Account</th><th>Status</th><th>Renewal</th><th>Reason</th><th>Recommended Action</th></tr></thead>
             <tbody>${tableRows}</tbody>
-          </table>
+          </table></div>
         </div>` : ''}
 
         ${delta ? `<div class="analysis-section">
