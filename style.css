@@ -136,7 +136,7 @@ section { margin-bottom: 48px; }
 .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; flex: 1; }
 .card-footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
 .card-logos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.card-logos img { height: 20px; width: auto; object-fit: contain; filter: grayscale(100%) opacity(0.4); transition: filter 0.2s; }
+.card-logos img { height: 27px; width: auto; object-fit: contain; filter: grayscale(100%) opacity(0.4); transition: filter 0.2s; }
 .card:hover .card-logos img { filter: grayscale(100%) opacity(0.65); }
 .card-tag {
   display: inline-block;
@@ -170,7 +170,7 @@ section { margin-bottom: 48px; }
 
 /* ── Case study logos ── */
 .cs-logos { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin: 14px 0 4px; }
-.cs-logos img { height: 22px; width: auto; filter: grayscale(100%) opacity(0.45); transition: filter 0.2s; object-fit: contain; }
+.cs-logos img { height: 29px; width: auto; filter: grayscale(100%) opacity(0.45); transition: filter 0.2s; object-fit: contain; }
 .case-study:hover .cs-logos img { filter: grayscale(100%) opacity(0.65); }
 
 /* ── Footer ── */
