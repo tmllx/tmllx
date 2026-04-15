@@ -155,7 +155,7 @@ section { margin-bottom: 48px; }
 .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; flex: 1; }
 .card-footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
 .card-logos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.card-logos img { height: 40px; width: auto; object-fit: contain; filter: grayscale(100%) opacity(0.4); transition: filter 0.2s; }
+.card-logos img { height: 24px; width: auto; object-fit: contain; filter: grayscale(100%) opacity(0.4); transition: filter 0.2s; }
 .card:hover .card-logos img { filter: grayscale(100%) opacity(0.65); }
 .card-tag {
   display: inline-block;
