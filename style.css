@@ -95,12 +95,14 @@ section { margin-bottom: 48px; }
   margin-top: 9px;
 }
 
-/* ── Contact ── */
-.contact-grid { display: flex; flex-direction: column; gap: 10px; }
-.contact-row { display: flex; align-items: center; gap: 10px; font-size: 0.925rem; }
-.contact-row .label { font-weight: 500; color: var(--muted); width: 72px; flex-shrink: 0; }
-.contact-row a { color: var(--accent); text-decoration: none; }
-.contact-row a:hover { text-decoration: underline; }
+/* ── CTA ── */
+.cta-text { font-size: 0.975rem; color: var(--muted); margin-bottom: 24px; max-width: 480px; }
+.cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.cta-btn { display: inline-block; padding: 10px 22px; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
+.cta-btn--primary { background: var(--accent); color: #fff; }
+.cta-btn--primary:hover { opacity: 0.88; }
+.cta-btn--secondary { border: 1px solid var(--border); color: var(--accent); background: transparent; }
+.cta-btn--secondary:hover { border-color: var(--accent); }
 
 /* ── About: bio ── */
 .bio { font-size: 1rem; color: var(--text); max-width: 600px; }
@@ -118,6 +120,25 @@ section { margin-bottom: 48px; }
 .timeline-body h4 { font-size: 0.975rem; font-weight: 600; margin-bottom: 2px; }
 .timeline-body .company { font-size: 0.875rem; color: var(--muted); margin-bottom: 6px; }
 .timeline-body p { font-size: 0.875rem; color: var(--muted); }
+
+/* ── Home: marquee logos ── */
+.marquee-logos {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: nowrap;
+  margin: 40px 0;
+}
+.marquee-logos img {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
+  object-position: center;
+  flex-shrink: 0;
+  filter: grayscale(100%) opacity(0.35);
+  transition: filter 0.2s;
+}
+.marquee-logos img:hover { filter: grayscale(100%) opacity(0.65); }
 
 /* ── Projects: app cards ── */
 .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
