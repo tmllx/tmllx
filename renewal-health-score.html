@@ -19,14 +19,88 @@
     .page-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
     .ltr-tag { font-size: 14px; font-weight: 400; color: #aaa; font-family: 'Helvetica Neue', sans-serif; }
     .page-header p { font-size: 12px; color: #aaa; margin-top: 2px; font-family: 'Helvetica Neue', sans-serif; }
-    .score-explainer {
-      margin-top: 8px; font-size: 11px; color: #888;
-      font-family: 'Helvetica Neue', sans-serif;
-      line-height: 1.55; max-width: 680px;
+    /* How it works panel */
+    .how-it-works {
+      margin-top: 12px;
       background: #fff; border: 1.5px solid #e8e4df;
-      border-radius: 8px; padding: 10px 14px;
+      border-radius: 10px; overflow: hidden;
+      display: flex; flex-wrap: wrap;
+      font-family: 'Helvetica Neue', sans-serif;
     }
-    .score-explainer strong { color: #555; }
+
+    .hiw-section { padding: 14px 16px; flex: 1; min-width: 200px; }
+    .hiw-divider { width: 1px; background: #f0ede8; margin: 10px 0; }
+
+    .hiw-label {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #bbb; margin-bottom: 8px;
+    }
+
+    .hiw-formula {
+      font-size: 11px; color: #666; line-height: 1.55;
+    }
+    .pill {
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      padding: 1px 7px; border-radius: 20px;
+      margin: 0 1px;
+    }
+    .pill-r { background: #fee2e2; color: #dc2626; }
+    .pill-a { background: #fef3c7; color: #d97706; }
+    .pill-g { background: #dcfce7; color: #16a34a; }
+
+    .hiw-thresholds { display: flex; flex-direction: column; gap: 7px; }
+    .hiw-threshold {
+      display: grid;
+      grid-template-columns: 10px 1fr auto;
+      grid-template-rows: auto auto;
+      column-gap: 8px; row-gap: 1px;
+      align-items: start;
+    }
+    .th-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      margin-top: 2px; flex-shrink: 0;
+      grid-row: 1;
+    }
+    .th-green { background: #22c55e; }
+    .th-amber { background: #f59e0b; }
+    .th-red   { background: #ef4444; }
+
+    .th-name {
+      font-size: 11px; font-weight: 600; color: #333;
+      grid-column: 2; grid-row: 1;
+    }
+    .th-val {
+      font-size: 10px; font-weight: 700; color: #aaa;
+      grid-column: 3; grid-row: 1;
+      white-space: nowrap;
+    }
+    .th-desc {
+      font-size: 10px; color: #999; line-height: 1.4;
+      grid-column: 2 / 4; grid-row: 2;
+    }
+
+    .hiw-overrides { display: flex; flex-direction: column; gap: 8px; }
+    .hiw-override {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 10px; border-radius: 6px;
+      border-left: 3px solid transparent;
+    }
+    .hiw-override-critical { background: #fff5f5; border-left-color: #fca5a5; }
+    .hiw-override-amber    { background: #fffbeb; border-left-color: #fcd34d; }
+
+    .override-icon {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .hiw-override-critical .override-icon { background: #dc2626; color: #fff; }
+    .hiw-override-amber    .override-icon { background: #d97706; color: #fff; }
+
+    .override-title { font-size: 11px; font-weight: 600; color: #333; margin-bottom: 2px; }
+    .override-body  { font-size: 10px; color: #888; line-height: 1.45; }
 
 
     /* Outer layout: factors left, score right */
@@ -104,17 +178,19 @@
     }
     .option-row:hover { background: #fafaf8; }
 
-    .option-num {
+    .rag-pill {
       flex-shrink: 0;
-      width: 19px; height: 19px; border-radius: 50%;
-      border: 1.5px solid #ddd;
-      display: flex; align-items: center; justify-content: center;
+      min-width: 46px; padding: 2px 8px;
+      border-radius: 20px; text-align: center;
       font-family: 'Helvetica Neue', sans-serif;
-      font-size: 11px; font-weight: 700; color: #bbb;
+      font-size: 10px; font-weight: 700;
       margin-top: 1px;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      transition: background 0.15s, color 0.15s;
     }
-    .option-row:hover:not([class*="sel-"]) .option-num { border-color: #aaa; color: #666; }
+    /* Unselected: soft tint */
+    .rag-pill-1 { background: #fee2e2; color: #dc2626; }
+    .rag-pill-2 { background: #fef3c7; color: #b45309; }
+    .rag-pill-3 { background: #dcfce7; color: #16a34a; }
 
     .option-text {
       font-family: 'Helvetica Neue', sans-serif;
@@ -123,15 +199,15 @@
 
     /* RAG selected states */
     .option-row.sel-1 { background: #fef2f2; }
-    .option-row.sel-1 .option-num { background: #dc2626; border-color: #dc2626; color: #fff; }
+    .option-row.sel-1 .rag-pill-1 { background: #dc2626; color: #fff; }
     .option-row.sel-1 .option-text { color: #7f1d1d; font-weight: 500; }
 
     .option-row.sel-2 { background: #fffbeb; }
-    .option-row.sel-2 .option-num { background: #d97706; border-color: #d97706; color: #fff; }
+    .option-row.sel-2 .rag-pill-2 { background: #d97706; color: #fff; }
     .option-row.sel-2 .option-text { color: #78350f; font-weight: 500; }
 
     .option-row.sel-3 { background: #f0fdf4; }
-    .option-row.sel-3 .option-num { background: #16a34a; border-color: #16a34a; color: #fff; }
+    .option-row.sel-3 .rag-pill-3 { background: #16a34a; color: #fff; }
     .option-row.sel-3 .option-text { color: #14532d; font-weight: 500; }
 
     /* Adoption metrics drawer */
@@ -189,14 +265,22 @@
       color: rgba(255,255,255,0.35); margin-bottom: 12px;
     }
     .score-display { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
-    .score-circle {
-      width: 68px; height: 68px; border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.15);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; flex-shrink: 0;
+
+    .rag-badge {
+      flex-shrink: 0;
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      transition: background 0.3s;
     }
-    .score-number { font-size: 26px; font-weight: 800; line-height: 1; }
-    .score-denom { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 1px; font-family: 'Helvetica Neue', sans-serif; }
+    .rag-badge.rag-green    { background: #16a34a; }
+    .rag-badge.rag-amber    { background: #d97706; }
+    .rag-badge.rag-red      { background: #dc2626; }
+    .rag-badge.rag-critical { background: #7f1d1d; border: 2px solid #fca5a5; }
 
     .score-tier { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
     .score-tier.healthy  { color: #4ade80; }
@@ -260,7 +344,64 @@
 <div class="page-header">
   <h1>Likelihood to Renew <span class="ltr-tag">(LTR)</span></h1>
   <p>Early Warning System</p>
-  <p class="score-explainer">Scored Red / Amber / Green across 5 weighted factors. EB Engagement and Champion Health carry the most weight (25% each) as the strongest predictors of renewal outcome. A Red EB score triggers a <strong>Critical</strong> override regardless of all other scores. A Red Champion score caps the result at <strong>Moderate Risk</strong> at minimum. Final score is a weighted average normalized to 100.</p>
+  <div class="how-it-works">
+
+    <div class="hiw-section">
+      <div class="hiw-label">How it's calculated</div>
+      <div class="hiw-formula">
+        Each factor is rated <span class="pill pill-r">Red = 1</span> <span class="pill pill-a">Amber = 2</span> <span class="pill pill-g">Green = 3</span> and multiplied by its weight. The weighted values are summed and normalized to a 0–100 scale, where 100 = all Green and 33 = all Red.
+      </div>
+    </div>
+
+    <div class="hiw-divider"></div>
+
+    <div class="hiw-section">
+      <div class="hiw-label">Thresholds</div>
+      <div class="hiw-thresholds">
+        <div class="hiw-threshold">
+          <span class="th-dot th-green"></span>
+          <span class="th-name">Green — Likely to Renew</span>
+          <span class="th-val">Score ≥ 78</span>
+          <span class="th-desc">Broadly strong across all factors. At least mostly Green with no more than one Red.</span>
+        </div>
+        <div class="hiw-threshold">
+          <span class="th-dot th-amber"></span>
+          <span class="th-name">Amber — Moderate Risk</span>
+          <span class="th-val">Score 60–77</span>
+          <span class="th-desc">Mix of Green and Amber. Some gaps but not broadly at risk. Requires at least one Green to offset.</span>
+        </div>
+        <div class="hiw-threshold">
+          <span class="th-dot th-red"></span>
+          <span class="th-name">Red — At Risk</span>
+          <span class="th-val">Score &lt; 60</span>
+          <span class="th-desc">Multiple Red scores, including in weighted factors. Middling EB/Champion scores cannot offset Red scores elsewhere.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hiw-divider"></div>
+
+    <div class="hiw-section">
+      <div class="hiw-label">Overrides</div>
+      <div class="hiw-overrides">
+        <div class="hiw-override hiw-override-critical">
+          <div class="override-icon">!</div>
+          <div>
+            <div class="override-title">EB Engagement = Red → Critical (regardless of all other scores)</div>
+            <div class="override-body">No executive sponsor means no deal. If budget authority is disengaged, the renewal cannot be defended internally and must be escalated immediately.</div>
+          </div>
+        </div>
+        <div class="hiw-override hiw-override-amber">
+          <div class="override-icon">⚠</div>
+          <div>
+            <div class="override-title">Champion Health = Red → capped at Amber minimum</div>
+            <div class="override-body">Without an internal seller, no other factor can compensate. The account cannot be rated Green until a champion is identified and confirmed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <div class="layout">
@@ -270,10 +411,7 @@
     <div class="score-panel" id="scorePanel">
       <div class="score-panel-label">Likelihood to Renew</div>
       <div class="score-display">
-        <div class="score-circle">
-          <span class="score-number" id="scoreNumber">—</span>
-          <span class="score-denom" id="scoreDenom"></span>
-        </div>
+        <div class="rag-badge" id="ragBadge">—</div>
         <div>
           <div class="score-tier neutral" id="scoreTier">Score all 5 factors</div>
           <div class="score-desc" id="scoreDesc">Select Red, Amber, or Green for each factor.</div>
@@ -303,7 +441,7 @@ const ADOPTION_METRICS = [
   'Time-to-First-Value (TTFV) — # of days from contract sign to first AI solution deployed in production',
   'Avg Developer MAU — users with development activity in last 30 days',
   'Avg Feature Breadth — unique features used in last 30 days',
-  'GPU Inference Growth — GPU compute hours or inference volume consumed by customers hosting and inferencing LLMs on the platform',
+  'GPU Inference Growth — GPU compute hours or inference volume consumed by customers hosting and inferencing LLMs on DataRobot',
   'Cloud consumption (LLM USAGE + GPU USAGE)',
   'OnPrem (# of Tokens)',
   'Weekly Average Users VRI',
@@ -374,11 +512,11 @@ function buildFactors() {
     card.className = 'factor-card';
     card.id = `card-${f.id}`;
 
+    const ragLabels = ['Red', 'Amber', 'Green'];
     const optionRows = f.options.map((text, i) => {
       const v = i + 1;
-      const ragClass = ['rag-r','rag-a','rag-g'][i];
       return `<button class="option-row" id="btn-${f.id}-${v}" onclick="setScore('${f.id}', ${v})">
-        <span class="option-num ${ragClass}-num">${v}</span>
+        <span class="rag-pill rag-pill-${v}">${ragLabels[i]}</span>
         <span class="option-text">${text}</span>
       </button>`;
     }).join('');
@@ -462,7 +600,7 @@ function updateScore() {
     tier = '✓ Likely to Renew';
     tierClass = 'healthy';
     desc = 'Strong renewal signal. Maintain momentum and confirm timeline with your champion.';
-  } else if (scaledScore >= 50 || championWarn) {
+  } else if (scaledScore >= 60 || championWarn) {
     tier = '⚠ Moderate Risk';
     tierClass = 'moderate';
     desc = championWarn
@@ -474,8 +612,20 @@ function updateScore() {
     desc = 'Significant risk. Escalate now — address EB and champion gaps immediately.';
   }
 
-  document.getElementById('scoreNumber').textContent = scaledScore;
-  document.getElementById('scoreDenom').textContent = '/ 100';
+  // Set RAG badge
+  const badge = document.getElementById('ragBadge');
+  if (ebCritical) {
+    badge.className = 'rag-badge rag-critical'; badge.textContent = '!';
+  } else if (!allScored) {
+    badge.className = 'rag-badge'; badge.textContent = '—';
+  } else if (scaledScore >= 78 && !championWarn) {
+    badge.className = 'rag-badge rag-green'; badge.textContent = 'Green';
+  } else if (scaledScore >= 60 || championWarn) {
+    badge.className = 'rag-badge rag-amber'; badge.textContent = 'Amber';
+  } else {
+    badge.className = 'rag-badge rag-red'; badge.textContent = 'Red';
+  }
+
   const tierEl = document.getElementById('scoreTier');
   tierEl.textContent = tier;
   tierEl.className = `score-tier ${tierClass}`;
@@ -526,8 +676,7 @@ function resetAll() {
   }
   document.getElementById('card-eb').classList.remove('eb-critical');
   document.getElementById('card-champion').classList.remove('champion-warn');
-  document.getElementById('scoreNumber').textContent = '—';
-  document.getElementById('scoreDenom').textContent = '';
+  const b = document.getElementById('ragBadge'); b.className = 'rag-badge'; b.textContent = '—';
   document.getElementById('scoreTier').textContent = 'Score all 5 factors';
   document.getElementById('scoreTier').className = 'score-tier neutral';
   document.getElementById('scoreDesc').textContent = 'Select Red, Amber, or Green for each factor.';
