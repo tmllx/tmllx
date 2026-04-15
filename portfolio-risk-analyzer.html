@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AE Notes Summarizer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #f8f9fb;
+      --border: #e2e6ea;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --radius: 10px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+    }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--text); background: var(--bg); }
+
+    /* ── Layout ── */
+    .app-layout { display: flex; height: 100vh; overflow: hidden; }
+    .sidebar { width: 268px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .sidebar-top { padding: 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-y: auto; }
+    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .main-panel { flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg); display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Forms ── */
+    .field { margin-bottom: 9px; }
+    label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 3px; }
+    .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+    .label-row label { margin-bottom: 0; }
+    .detected { font-size: 10px; color: var(--success); font-weight: 600; }
+    input[type="text"], input[type="password"], select {
+      width: 100%; padding: 6px 9px; border: 1px solid var(--border);
+      border-radius: 6px; font-size: 12px; color: var(--text);
+      background: var(--surface2); outline: none; transition: border-color 0.15s;
+    }
+    input:focus, select:focus { border-color: var(--primary); background: white; }
+    .api-row { display: flex; gap: 5px; }
+    .key-saved { font-size: 10px; color: var(--success); margin-top: 2px; display: none; }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s, opacity 0.15s; white-space: nowrap; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover:not(:disabled) { background: var(--border); }
+    .btn-ghost { background: none; color: var(--text-muted); border: none; padding: 4px 6px; font-size: 11px; }
+    .btn-ghost:hover { color: var(--primary); }
+    .btn-full { width: 100%; justify-content: center; }
+    .btn-sm { padding: 4px 9px; font-size: 11px; }
+
+    /* ── Dropzone ── */
+    .dropzone { border: 2px dashed var(--border); border-radius: 7px; padding: 14px 10px; text-align: center; cursor: pointer; background: var(--surface2); transition: border-color 0.2s, background 0.2s; margin-bottom: 9px; }
+    .dropzone:hover, .dropzone.dragover { border-color: var(--primary); background: var(--primary-light); }
+    .dropzone p { font-size: 11px; color: var(--text-muted); }
+    .dropzone strong { color: var(--primary); }
+    #fileInput { display: none; }
+    .file-loaded { display: flex; align-items: center; gap: 5px; padding: 6px 9px; background: var(--success-light); border: 1px solid #bbf7d0; border-radius: 6px; font-size: 11px; color: var(--success); margin-bottom: 9px; }
+
+    /* ── Progress ── */
+    .progress-wrap { background: var(--border); border-radius: 99px; height: 4px; overflow: hidden; margin: 6px 0 3px; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 99px; transition: width 0.3s ease; }
+    .progress-label { font-size: 10px; color: var(--text-muted); }
+
+    /* ── Account list ── */
+    .account-list { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .account-item { display: flex; align-items: center; gap: 8px; padding: 7px 14px; cursor: pointer; transition: background 0.12s; border-left: 3px solid transparent; }
+    .account-item:hover { background: var(--surface2); }
+    .account-item.selected { background: var(--primary-light); border-left-color: var(--primary); }
+    .account-item-info { flex: 1; min-width: 0; }
+    .account-item-name { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .account-item.selected .account-item-name { color: var(--primary); font-weight: 600; }
+    .account-item-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .risk-flag { font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; flex-shrink: 0; }
+    .risk-stuck { background: var(--warning-light); color: var(--warning); }
+    .risk-high { background: var(--danger-light); color: var(--danger); }
+
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .dot-pending { background: var(--text-light); }
+    .dot-processing { background: var(--warning); animation: pulse 1s infinite; }
+    .dot-done { background: var(--success); }
+    .dot-error { background: var(--danger); }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* ── Sidebar footer ── */
+    .sidebar-footer { border-top: 1px solid var(--border); padding: 8px 12px; display: flex; gap: 5px; flex-shrink: 0; }
+
+    /* ── Main panel tabs ── */
+    .tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--border); flex-shrink: 0; }
+    .tab { padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s; }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* ── Chat / Queries ── */
+    .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 860px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .chat-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-muted); padding: 32px; }
+    .chat-msg { display: flex; flex-direction: column; gap: 4px; }
+    .chat-msg.user { align-items: flex-end; }
+    .chat-msg.assistant { align-items: flex-start; }
+    .chat-bubble { max-width: 78%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
+    .chat-msg.user .chat-bubble { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+    .chat-msg.assistant .chat-bubble { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; white-space: pre-wrap; }
+    .chat-msg.assistant .chat-bubble strong { font-weight: 700; }
+    .chat-bubble.thinking { color: var(--text-muted); font-style: italic; }
+    .chat-input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); align-items: flex-end; }
+    .chat-input { flex: 1; resize: none; padding: 8px 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface2); outline: none; line-height: 1.5; max-height: 120px; overflow-y: auto; transition: border-color 0.15s; }
+    .chat-input:focus { border-color: var(--primary); background: white; }
+
+    /* ── Placeholder ── */
+    .placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); text-align: center; gap: 8px; min-height: 300px; }
+    .placeholder svg { width: 44px; height: 44px; opacity: 0.25; }
+    .placeholder p { font-size: 14px; }
+    .placeholder small { font-size: 12px; }
+
+    /* ── Account card ── */
+    .account-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; max-width: 760px; }
+    .account-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 18px; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; gap: 12px; }
+    .account-header-left { flex: 1; min-width: 0; }
+    .account-name { font-size: 16px; font-weight: 700; }
+    .account-chips { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; background: rgba(255,255,255,0.18); border-radius: 99px; font-size: 11px; font-weight: 600; }
+    .account-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-card { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.35); border-radius: 5px; background: rgba(255,255,255,0.12); color: white; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+    .btn-card:hover { background: rgba(255,255,255,0.25); }
+
+    .account-body { padding: 16px 18px 18px; }
+    .ref-bar { margin-bottom: 10px; padding: 10px 12px; border-radius: 7px; border: 1px solid var(--border); }
+    .ref-bar.ae-bar  { background: #f0fdf4; border-color: #bbf7d0; }
+    .ref-bar.rd-bar  { background: var(--surface2); border-color: var(--border); }
+    .ref-bar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .ae-bar  .ref-bar-label { color: var(--success); }
+    .rd-bar  .ref-bar-label { color: var(--text-muted); }
+    .ref-bar-text { font-size: 12px; color: var(--text-muted); line-height: 1.5; max-height: 72px; overflow: hidden; }
+    .ref-bar-expand { font-size: 11px; color: var(--primary); cursor: pointer; margin-top: 3px; display: inline-block; }
+
+    .summary-textarea { width: 100%; min-height: 80px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 7px; font-family: inherit; font-size: 13px; line-height: 1.7; color: var(--text); background: var(--surface2); resize: none; overflow: hidden; outline: none; transition: border-color 0.15s, background 0.15s; }
+    .summary-textarea:focus { border-color: var(--primary); background: white; }
+
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+    .raw-notes-toggle { font-size: 11px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 3px; user-select: none; }
+    .raw-notes-toggle:hover { color: var(--primary); }
+    .raw-notes { margin-top: 8px; }
+    .raw-note-row { font-size: 11px; color: var(--text-muted); padding: 6px 9px; background: var(--surface2); border-radius: 5px; margin-bottom: 3px; border: 1px solid var(--border); line-height: 1.5; }
+
+    .skeleton-textarea { width: 100%; height: 140px; border-radius: 7px; background: linear-gradient(90deg, #e2e6ea 25%, #f0f2f5 50%, #e2e6ea 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ── Portfolio Analysis ── */
+    .analysis-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; max-width: 1100px; }
+    .analysis-header { padding: 14px 18px; background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color: white; }
+    .analysis-header h2 { font-size: 15px; font-weight: 700; }
+    .analysis-header p { font-size: 11px; opacity: 0.75; margin-top: 3px; }
+    .analysis-body { padding: 18px; }
+
+    .risk-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+    .risk-table th { text-align: left; padding: 7px 10px; background: var(--surface2); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    .risk-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
+    .risk-table tr:last-child td { border-bottom: none; }
+    .risk-table tr:hover td { background: var(--surface2); }
+    .risk-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: 700; }
+    .badge-high { background: var(--danger-light); color: var(--danger); }
+    .badge-stuck { background: var(--warning-light); color: var(--warning); }
+    .badge-ok { background: var(--success-light); color: var(--success); }
+    .badge-watch { background: #fef3c7; color: #92400e; }
+
+    .analysis-section { margin-bottom: 20px; }
+    .analysis-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
+    .theme-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 14px 16px; font-size: 13px; line-height: 1.65; color: var(--text); }
+
+    .run-analysis-wrap { text-align: center; padding: 32px; }
+    .run-analysis-wrap p { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+
+    /* ── Toast ── */
+    .toast-wrap { position: fixed; bottom: 18px; right: 18px; display: flex; flex-direction: column; gap: 5px; z-index: 999; }
+    .toast { padding: 8px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.15); animation: slideIn 0.2s ease; }
+    .toast.success { background: #166534; color: white; }
+    .toast.error { background: #7f1d1d; color: white; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .hidden { display: none !important; }
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 9px 0; }
+    .optional-label { font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-light); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-title">📋 AE Notes Summarizer</div>
+
+      <!-- API Key -->
+      <div class="field">
+        <label>Claude API Key</label>
+        <div class="api-row">
+          <input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off" oninput="saveApiKey()" />
+          <button class="btn btn-secondary btn-sm" onclick="toggleKey(this)">Show</button>
+        </div>
+        <div class="key-saved" id="keySaved">✓ Saved</div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- File upload -->
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <p><strong>Click to upload</strong> or drag & drop</p>
+        <p style="margin-top:2px;font-size:10px">.xlsx · .xls · .csv</p>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFile(event)" />
+      <button class="btn btn-secondary btn-full" style="margin-bottom:9px" onclick="loadSampleData()">
+        ✦ Load Sample Data
+      </button>
+      <div id="fileLoaded" class="file-loaded hidden">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        <span id="fileLoadedText" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button class="btn-ghost" onclick="clearFile()" style="padding:0;font-size:10px">✕</button>
+      </div>
+
+      <!-- Column mapping -->
+      <div id="mappingSection" class="hidden">
+        <!-- Collapsible column config -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted)">Column config</span>
+          <span id="mappingToggleLabel" style="font-size:11px;color:var(--primary);cursor:pointer;font-weight:600" onclick="toggleMappingDetails()">Edit columns ▸</span>
+        </div>
+        <div id="mappingDetails" class="hidden">
+          <div class="field">
+            <label>Account name <span style="color:var(--danger)">*</span></label>
+            <select id="colAccount"></select>
+          </div>
+          <div class="field">
+            <label>AE notes <span style="color:var(--danger)">*</span></label>
+            <select id="colNotes"></select>
+          </div>
+          <div class="field">
+            <div class="label-row"><label>ARR / Deal size <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_arr">✓</span></div>
+            <select id="colARR"><option value="">— not mapped —</option></select>
+          </div>
+          <div class="field">
+            <div class="label-row"><label>Renewal date <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_date">✓</span></div>
+            <select id="colDate"><option value="">— not mapped —</option></select>
+          </div>
+          <div class="field">
+            <div class="label-row"><label>Previous RD notes <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_prevrd">✓</span></div>
+            <select id="colPrevRD"><option value="">— not mapped —</option></select>
+          </div>
+          <div class="field">
+            <div class="label-row"><label>AE / Owner <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_ae">✓</span></div>
+            <select id="colAE"><option value="">— not mapped —</option></select>
+          </div>
+          <hr class="divider" />
+        </div>
+
+        <div class="field">
+          <label>Additional instructions <span class="optional-label">(optional)</span></label>
+          <input type="text" id="customInstructions" placeholder="e.g. flag at-risk deals" />
+        </div>
+        <button class="btn btn-primary btn-full" id="generateBtn" onclick="startGeneration()">Generate Summaries</button>
+      </div>
+
+      <!-- Progress -->
+      <div id="progressSection" class="hidden" style="margin-top:8px">
+        <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-label" id="progressLabel">Starting…</div>
+      </div>
+    </div>
+
+    <!-- Account list -->
+    <div class="account-list" id="accountList"></div>
+
+    <!-- Footer -->
+    <div class="sidebar-footer hidden" id="sidebarFooter">
+      <button class="btn btn-secondary btn-sm" onclick="copyAll()" style="flex:1">📋 Copy All</button>
+      <button class="btn btn-secondary btn-sm" onclick="exportTxt()" style="flex:1">⬇ Export</button>
+    </div>
+  </div>
+
+  <!-- ══ MAIN PANEL ══ -->
+  <div class="main-panel" id="mainPanel">
+    <div class="placeholder" id="placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg>
+      <p>Upload a spreadsheet to get started</p>
+      <small>Accounts appear on the left as summaries generate</small>
+    </div>
+
+    <div id="tabSection" class="hidden" style="display:flex;flex-direction:column;gap:16px">
+      <div class="tab-bar">
+        <div class="tab active" id="tabAccount" onclick="switchTab('account')">Account View</div>
+        <div class="tab" id="tabPortfolio" onclick="switchTab('portfolio')">Portfolio Analysis</div>
+        <div class="tab" id="tabQueries" onclick="switchTab('queries')">💬 Queries</div>
+      </div>
+      <div id="viewAccount"><div id="activeCard"></div></div>
+      <div id="viewPortfolio" class="hidden"><div id="portfolioContent"></div></div>
+      <div id="viewQueries" class="hidden">
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-empty">
+              <div style="font-size:28px;margin-bottom:8px">💬</div>
+              <div style="font-weight:600;margin-bottom:4px">Ask anything about your accounts</div>
+              <div style="font-size:12px;color:var(--text-muted)">Query across all loaded AE and RD notes. Try: "Which accounts have incomplete legal?" or "Summarize Veem's situation."</div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <textarea id="chatInput" class="chat-input" placeholder="Ask a question about your accounts…" rows="1" oninput="autoResize(this)" onkeydown="chatKeydown(event)"></textarea>
+            <button class="btn btn-primary" id="chatSendBtn" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────────
+let parsedData = [], columns = [], accountGroups = {};
+let summaryResults = {};   // { acct: { update, checks, nextSteps, raw, arr, date, ae, prevRD, lastPrevRD } }
+let riskResults = {};      // { acct: { level, reason } } — from portfolio analysis
+let selectedAccount = null;
+let totalAccounts = 0, doneCount = 0;
+let currentTab = 'account';
+
+// ── API Key ────────────────────────────────────────────────────────────────────
+(function loadKey() {
+  const saved = localStorage.getItem('ae_summarizer_api_key');
+  if (saved) { document.getElementById('apiKeyInput').value = saved; document.getElementById('keySaved').style.display = 'block'; }
+})();
+function saveApiKey() {
+  const v = document.getElementById('apiKeyInput').value.trim();
+  if (v) { localStorage.setItem('ae_summarizer_api_key', v); document.getElementById('keySaved').style.display = 'block'; }
+  else { localStorage.removeItem('ae_summarizer_api_key'); document.getElementById('keySaved').style.display = 'none'; }
+}
+function toggleKey(btn) {
+  const i = document.getElementById('apiKeyInput');
+  i.type = i.type === 'password' ? 'text' : 'password';
+  btn.textContent = i.type === 'password' ? 'Show' : 'Hide';
+}
+
+// ── File handling ──────────────────────────────────────────────────────────────
+const dropzone = document.getElementById('dropzone');
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+function handleFile(e) { if (e.target.files[0]) processFile(e.target.files[0]); }
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+      const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+      if (!json.length) { showToast('Spreadsheet appears empty.', 'error'); return; }
+      parsedData = json; columns = Object.keys(json[0]);
+      dropzone.classList.add('hidden');
+      document.getElementById('fileLoaded').classList.remove('hidden');
+      document.getElementById('fileLoadedText').textContent = `${file.name} (${json.length} rows)`;
+      populateMappingSelects();
+      document.getElementById('mappingSection').classList.remove('hidden');
+    } catch (err) { showToast('Could not read file: ' + err.message, 'error'); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function loadSampleData() {
+  try {
+    const res = await fetch('sample-data.csv');
+    if (!res.ok) throw new Error('Could not load sample file.');
+    const buffer = await res.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buffer), { type: 'array' });
+    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+    if (!json.length) { showToast('Sample file appears empty.', 'error'); return; }
+    parsedData = json; columns = Object.keys(json[0]);
+    dropzone.classList.add('hidden');
+    document.getElementById('fileLoaded').classList.remove('hidden');
+    document.getElementById('fileLoadedText').textContent = `Sample data (${json.length} accounts)`;
+    populateMappingSelects();
+    document.getElementById('mappingSection').classList.remove('hidden');
+    showToast('Sample data loaded.', 'success');
+  } catch (err) { showToast('Error loading sample: ' + err.message, 'error'); }
+}
+
+function clearFile() {
+  parsedData = []; columns = [];
+  document.getElementById('fileInput').value = '';
+  dropzone.classList.remove('hidden');
+  ['fileLoaded','mappingSection','progressSection','sidebarFooter','tabSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('accountList').innerHTML = '';
+  document.getElementById('placeholder').classList.remove('hidden');
+  summaryResults = {}; accountGroups = {}; selectedAccount = null;
+}
+
+const COL_IDS = ['colAccount','colNotes','colARR','colDate','colPrevRD','colAE'];
+const OPTIONAL_IDS = ['colARR','colDate','colPrevRD','colAE'];
+
+function saveColConfig() {
+  const cfg = {};
+  COL_IDS.forEach(id => { cfg[id] = document.getElementById(id).value; });
+  localStorage.setItem('ae_col_config', JSON.stringify(cfg));
+}
+
+function loadColConfig() {
+  try { return JSON.parse(localStorage.getItem('ae_col_config') || 'null'); } catch { return null; }
+}
+
+function populateMappingSelects() {
+  const saved = loadColConfig();
+  const lower = columns.map(c => c.toLowerCase());
+
+  COL_IDS.forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = OPTIONAL_IDS.includes(id) ? '<option value="">— not mapped —</option>' : '';
+    columns.forEach(col => { const o = document.createElement('option'); o.value = col; o.textContent = col; sel.appendChild(o); });
+  });
+
+  if (saved) {
+    // Restore saved config if columns still exist in the new file
+    COL_IDS.forEach(id => {
+      if (saved[id] && columns.includes(saved[id])) {
+        document.getElementById(id).value = saved[id];
+        const detId = { colARR:'det_arr', colDate:'det_date', colPrevRD:'det_prevrd', colAE:'det_ae' }[id];
+        if (detId) document.getElementById(detId).classList.remove('hidden');
+      }
+    });
+    // Show mapping section collapsed by default when config is already saved
+    showMappingCollapsed();
+  } else {
+    // Auto-detect on first use
+    const trySet = (id, detId, kws) => {
+      const m = columns.find((_,i) => kws.some(k => lower[i].includes(k)));
+      if (m) { document.getElementById(id).value = m; if (detId) document.getElementById(detId).classList.remove('hidden'); }
+    };
+    trySet('colAccount', null,       ['account name','account','company','customer']);
+    trySet('colNotes',   null,       ['ae forecast','ae notes','ae note','forecast notes','notes']);
+    trySet('colARR',    'det_arr',   ['renewal subscription','original renewal','arr','revenue','amount']);
+    trySet('colDate',   'det_date',  ['financial reporting','renewal date','close date','financial']);
+    trySet('colPrevRD', 'det_prevrd',['rd forecast','rd notes','rd note','regional director','rd ']);
+    trySet('colAE',     'det_ae',    ['owner','ae name','account executive','rep name']);
+    showMappingExpanded();
+  }
+}
+
+function showMappingCollapsed() {
+  document.getElementById('mappingDetails').classList.add('hidden');
+  document.getElementById('mappingToggleLabel').textContent = 'Edit columns ▸';
+}
+function showMappingExpanded() {
+  document.getElementById('mappingDetails').classList.remove('hidden');
+  document.getElementById('mappingToggleLabel').textContent = 'Hide columns ▾';
+}
+function toggleMappingDetails() {
+  const hidden = document.getElementById('mappingDetails').classList.toggle('hidden');
+  document.getElementById('mappingToggleLabel').textContent = hidden ? 'Edit columns ▸' : 'Hide columns ▾';
+}
+
+// ── Extract most-recent entry from multi-entry notes field ─────────────────────
+function extractMostRecent(text) {
+  if (!text || !String(text).trim()) return '';
+  const str = String(text).trim();
+  // Split before each dated entry (e.g. "Apr 02, 2026")
+  const parts = str.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4})/);
+  // Return the first part with substantial content — skips empty strings or
+  // short fragments like bare timestamps ("11:54 AM") that precede the first entry
+  const meaningful = parts.find(p => p.trim().length > 30);
+  return meaningful ? meaningful.trim() : str.trim();
+}
+
+// ── Generation ─────────────────────────────────────────────────────────────────
+async function startGeneration() {
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) { showToast('Enter your Claude API key first.', 'error'); return; }
+  if (!apiKey.startsWith('sk-ant-')) { showToast('Key should start with sk-ant-', 'error'); return; }
+
+  const accountCol = document.getElementById('colAccount').value;
+  const notesCol   = document.getElementById('colNotes').value;
+  if (!accountCol || !notesCol) { showToast('Select required columns.', 'error'); return; }
+
+  const arrCol    = document.getElementById('colARR').value;
+  const dateCol   = document.getElementById('colDate').value;
+  const prevRDCol = document.getElementById('colPrevRD').value;
+  const aeCol     = document.getElementById('colAE').value;
+  const custom    = document.getElementById('customInstructions').value.trim();
+
+  // Persist column config so it auto-loads next time
+  saveColConfig();
+  showMappingCollapsed();
+
+  // Group by account
+  accountGroups = {};
+  parsedData.forEach(row => {
+    const acct = String(row[accountCol] || '').trim();
+    if (!acct) return;
+    if (!accountGroups[acct]) accountGroups[acct] = [];
+    accountGroups[acct].push(row);
+  });
+  const accounts = Object.keys(accountGroups);
+  if (!accounts.length) { showToast('No accounts found.', 'error'); return; }
+
+  summaryResults = {}; riskResults = {};
+  selectedAccount = null; totalAccounts = accounts.length; doneCount = 0;
+
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('progressSection').classList.remove('hidden');
+  document.getElementById('placeholder').classList.add('hidden');
+  document.getElementById('tabSection').classList.remove('hidden');
+  document.getElementById('tabSection').style.display = 'flex';
+  document.getElementById('activeCard').innerHTML = '';
+  document.getElementById('portfolioContent').innerHTML = portfolioPlaceholderHTML();
+
+  // Build account list
+  const listEl = document.getElementById('accountList');
+  listEl.innerHTML = '';
+  accounts.forEach(acct => {
+    const row0 = accountGroups[acct][0];
+    const arr  = arrCol  ? fmtARR(row0[arrCol])  : '';
+    const date = dateCol ? fmtDate(row0[dateCol]) : '';
+    const item = document.createElement('div');
+    item.className = 'account-item';
+    item.id = 'item_' + safeId(acct);
+    item.onclick = () => selectAccount(acct);
+    item.innerHTML = `
+      <span class="status-dot dot-pending" id="dot_${safeId(acct)}"></span>
+      <div class="account-item-info">
+        <div class="account-item-name">${escHtml(acct)}</div>
+        ${arr || date ? `<div class="account-item-sub">${[arr,date].filter(Boolean).join(' · ')}</div>` : ''}
+      </div>
+      <span id="flag_${safeId(acct)}"></span>`;
+    listEl.appendChild(item);
+  });
+
+  // Process each account
+  for (const acct of accounts) {
+    setDot(acct, 'processing');
+    updateProgress(doneCount, totalAccounts, `Processing ${acct}…`);
+
+    const rows = accountGroups[acct];
+    const row0 = rows[0];
+    const arr     = arrCol    ? String(row0[arrCol]    || '') : '';
+    const date    = dateCol   ? String(row0[dateCol]   || '') : '';
+    const ae      = aeCol     ? String(row0[aeCol]     || '') : '';
+    const prevRD  = prevRDCol ? String(row0[prevRDCol] || '') : '';
+    const lastPrevRD = extractMostRecent(prevRD);
+
+    let context = `Account: ${acct}\n`;
+    if (ae)   context += `AE/Owner: ${ae}\n`;
+    if (arr)  context += `ARR: $${arr}\n`;
+    if (date) context += `Renewal Date: ${date}\n`;
+    if (lastPrevRD) context += `\nMost Recent Previous RD Note:\n${lastPrevRD}\n`;
+    context += `\nNew AE Notes:\n`;
+    rows.forEach((row, i) => { context += `[Note ${i+1}]\n${row[notesCol] || '(empty)'}\n\n`; });
+
+    const prompt = `You are summarizing AE notes for an RD at a B2B SaaS company. Signal only — no filler, no activity reporting.
+
+${context}
+The 5 checks are exactly these, in this order:
+1. Tech Win — technical stakeholders have formally validated the solution as the preferred technical choice
+2. Legal Complete — all legal docs (MSA, SOW, DPA) finalized and approved by both parties
+3. EB Signoff — Economic Buyer has been met, reviewed the business case, and provided formal or informal sign-off
+4. Timeline Understood — a documented, validated timeline aligning the customer's Go-Live date with our Close date
+5. Pricing Agreed — final commercial terms including net pricing and payment terms formally accepted; no further negotiation needed
+
+Evaluate ONLY these 5 checks based on evidence in the notes. Do not invent or substitute other checks.
+
+Reply in EXACTLY this format (no extra text, no headers):
+
+WoW Update: [2-3 crisp sentences on what actually PROGRESSED vs last week — decisions made, deals moved, new risks surfaced. Compare to the previous RD note if provided. Never say "had a call" or "discussed." Say what changed or what's at stake.]
+
+5 checks: [X incomplete / 5 — name ONLY the checks that are NOT yet complete, comma-separated. Do NOT list checks that are complete. Example: if Tech Win and Pricing Agreed are done but the other three are not, write "3 incomplete / 5 — Legal Complete, EB Signoff, Timeline Understood". If all 5 are complete, write "0 incomplete / 5". If a check cannot be determined from the notes, count it as incomplete. If the customer is not renewing or churning, write "0/5 complete — customer churning".]
+CRITICAL: The line above MUST begin with the literal text "5 checks:" — never omit this label.
+
+Next steps (to commit):
+1. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]
+2. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]
+
+Important formatting rules:
+- Never print placeholder text like "[no date specified]", "[unknown]", "[owner]", or any bracketed placeholder. If a value is unknown, simply omit it.
+- Never include email addresses anywhere in the output.
+- Never use "AE" or "Account Executive" in the output. Use "AM" (Account Manager) instead.
+${custom ? `\nAdditional guidance: ${custom}` : ''}`;
+
+    try {
+      const text = await callClaude(apiKey, prompt);
+      summaryResults[acct] = { ...parseSummary(text), raw: rows, notesCol, arr, date, ae, prevRD, lastPrevRD };
+      setDot(acct, 'done');
+    } catch (err) {
+      summaryResults[acct] = { update: 'Error: ' + err.message, checks: '—', nextSteps: '—', raw: rows, notesCol, arr, date, ae, prevRD, lastPrevRD, error: true };
+      setDot(acct, 'error');
+    }
+
+    doneCount++;
+    updateProgress(doneCount, totalAccounts, doneCount < totalAccounts ? 'Processing…' : 'Done!');
+    if (doneCount === 1) selectAccount(acct);
+    document.getElementById('sidebarFooter').classList.remove('hidden');
+  }
+
+  document.getElementById('generateBtn').disabled = false;
+  updateProgress(totalAccounts, totalAccounts, `${totalAccounts} accounts done — run Portfolio Analysis →`);
+  showToast('All summaries done!', 'success');
+
+  // Automatically kick off portfolio analysis
+  runPortfolioAnalysis(apiKey);
+}
+
+function updateProgress(done, total, label) {
+  document.getElementById('progressFill').style.width = Math.round((done / Math.max(total,1)) * 100) + '%';
+  document.getElementById('progressLabel').textContent = label;
+}
+function setDot(acct, state) {
+  const d = document.getElementById('dot_' + safeId(acct));
+  if (d) d.className = `status-dot dot-${state}`;
+}
+
+// ── Portfolio Analysis ─────────────────────────────────────────────────────────
+async function runPortfolioAnalysis(apiKey) {
+  if (!apiKey) apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) { showToast('No API key for analysis.', 'error'); return; }
+
+  document.getElementById('portfolioContent').innerHTML = `
+    <div class="analysis-card">
+      <div class="analysis-header"><h2>🔍 Portfolio Analysis</h2><p>Analyzing themes and risk signals…</p></div>
+      <div class="analysis-body"><div class="skeleton-textarea"></div></div>
+    </div>`;
+
+  // Build concise summary of all accounts
+  const accounts = Object.keys(summaryResults);
+  let portfolio = '';
+  accounts.forEach(acct => {
+    const s = summaryResults[acct];
+    portfolio += `\n---\nAccount: ${acct}`;
+    if (s.arr)  portfolio += ` | ARR: $${s.arr}`;
+    if (s.date) portfolio += ` | Renewal: ${s.date}`;
+    if (s.ae)   portfolio += ` | AM: ${s.ae}`;
+    portfolio += `\n`;
+    portfolio += `Previous RD Note (last entry): ${s.lastPrevRD || 'none'}\n`;
+    portfolio += `New WoW Update: ${s.update || '—'}\n`;
+    portfolio += `5 checks: ${s.checks || '—'}\n`;
+    portfolio += `Next steps: ${s.nextSteps || '—'}\n`;
+  });
+
+  const prompt = `You are an RD (Regional Director) analyzing your entire book of business at a B2B SaaS company. Below is a summary of all accounts from this week's AE notes.
+
+${portfolio}
+
+Produce a portfolio-level analysis with EXACTLY these sections:
+
+THEMES
+List 2-3 themes as numbered points. Each point must start with a short bold label (3-5 words) followed by a dash and 1-2 sentences of explanation. Use this exact format:
+1. **Label here** — Explanation sentence(s).
+2. **Label here** — Explanation sentence(s).
+
+RISK TABLE
+For each account, assign one of: HIGH RISK, STUCK, WATCH, or ON TRACK.
+- HIGH RISK: renewal is in genuine jeopardy — lost economic buyer, customer actively evaluating alternatives or churn, critical unresolved blocker with no clear path forward, or health severely declining with no mitigation plan. Technical challenges with a committed customer and a reasonable delivery timeline do NOT qualify as HIGH RISK.
+- STUCK: WoW updates show no meaningful change for 2+ consecutive weeks — same blockers, same next steps, no movement on checks, no new stakeholder engagement. A single week without updates is NOT stuck.
+- WATCH: some concern but still moving; situation needs monitoring
+- ON TRACK: progressing normally toward commit; no significant blockers
+You MUST include every single account in the table — do not skip or omit any account, including those that are ON TRACK.
+
+For the Recommended Action column: you are coaching the RD on what to do next to move the deal forward or protect the renewal. Draw on challenger sale and qualified sales leader principles — e.g. reframe the problem, get to the economic buyer, establish a mutual action plan, pressure-test the timeline, multi-thread the relationship, challenge the status quo, or quantify the cost of inaction. Be specific and directive. One crisp sentence.
+
+Format as a simple list, one account per line (four pipe-separated fields):
+[Account Name] | [LEVEL] | [one-sentence reason] | [recommended action for RD]
+
+WoW DELTA
+List 2-3 accounts where the situation materially improved or worsened since last week. Use this exact format:
+1. **Account Name** — [improved/worsened]: one sentence explaining what changed and why.
+2. **Account Name** — [improved/worsened]: one sentence explaining what changed and why.`;
+
+  try {
+    const text = await callClaude(apiKey, prompt, 2048);
+    renderPortfolioAnalysis(text, accounts);
+  } catch (err) {
+    document.getElementById('portfolioContent').innerHTML = `<div style="color:var(--danger);font-size:13px;padding:16px">Portfolio analysis failed: ${escHtml(err.message)}</div>`;
+  }
+}
+
+function portfolioPlaceholderHTML() {
+  return `<div class="run-analysis-wrap">
+    <p>Portfolio analysis will run automatically after all accounts are summarized.<br>You can also trigger it manually below.</p>
+    <button class="btn btn-primary" onclick="runPortfolioAnalysis()">Run Portfolio Analysis</button>
+  </div>`;
+}
+
+function renderPortfolioAnalysis(text, accounts) {
+  // Parse sections
+  const themesMatch = text.match(/THEMES\s*([\s\S]*?)(?=RISK TABLE|$)/i);
+  const riskMatch   = text.match(/RISK TABLE\s*([\s\S]*?)(?=WoW DELTA|$)/i);
+  const deltaMatch  = text.match(/WoW DELTA\s*([\s\S]*?)$/i);
+
+  const themes = themesMatch ? themesMatch[1].trim() : '';
+  const riskBlock = riskMatch ? riskMatch[1].trim() : '';
+  const delta = deltaMatch ? deltaMatch[1].trim() : '';
+
+  // Parse risk table lines and update sidebar flags
+  const riskRows = [];
+  riskBlock.split('\n').forEach(line => {
+    const m = line.match(/^(.+?)\s*\|\s*(HIGH RISK|STUCK|WATCH|ON TRACK)\s*\|\s*(.+?)(?:\s*\|\s*(.+))?$/i);
+    if (!m) return;
+    let [, name, level, reason, action] = m;
+    // Strip leading dash/hyphen and whitespace from name
+    name = name.trim().replace(/^[-–—]\s*/, '');
+    level = level.trim().toUpperCase();
+    reason = (reason || '').trim();
+    action = (action || '').trim();
+
+    // Enrich with ARR, renewal date, and AM from summaryResults
+    const acct = accounts.find(a => a.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(a.toLowerCase()));
+    const meta = acct ? summaryResults[acct] : null;
+    const arr    = meta ? meta.arr  : '';
+    const am     = meta ? (meta.ae || '') : '';
+    const rawDate = meta ? (meta.date || '') : '';
+    // Format for display (handles Excel serial numbers via fmtDate)
+    const dateStr = fmtDate(rawDate);
+
+    // Parse renewal date for sorting (handle Excel serial number or string)
+    let dateMs = Infinity;
+    if (rawDate) {
+      const rawStr = String(rawDate).trim();
+      const n = Number(rawStr.replace(/,/g,''));
+      if (!isNaN(n) && n > 1000 && rawStr === String(Math.floor(n))) {
+        // Excel serial number
+        dateMs = (n - 25569) * 86400 * 1000;
+      } else {
+        const parsed = new Date(rawStr);
+        if (!isNaN(parsed.getTime())) dateMs = parsed.getTime();
+      }
+    }
+
+    riskRows.push({ name, level, reason, action, arr, am, dateStr, dateMs });
+
+    // Update sidebar flag
+    if (acct) {
+      riskResults[acct] = { level, reason };
+      const flagEl = document.getElementById('flag_' + safeId(acct));
+      if (flagEl) {
+        if (level.includes('HIGH'))  flagEl.innerHTML = '<span class="risk-flag risk-high">⚠ High</span>';
+        else if (level === 'STUCK')  flagEl.innerHTML = '<span class="risk-flag risk-stuck">⏸ Stuck</span>';
+      }
+    }
+  });
+
+  // Sort: at-risk first (HIGH RISK, STUCK, WATCH) then ON TRACK; within each group, sort by renewal date ascending
+  const levelOrder = { 'HIGH RISK': 0, 'STUCK': 1, 'WATCH': 2, 'ON TRACK': 3 };
+  riskRows.sort((a, b) => {
+    const lo = (levelOrder[a.level] ?? 4) - (levelOrder[b.level] ?? 4);
+    if (lo !== 0) return lo;
+    return a.dateMs - b.dateMs;
+  });
+
+  const tableRows = riskRows.map(r => {
+    const badgeClass = r.level === 'HIGH RISK' ? 'badge-high' : r.level === 'STUCK' ? 'badge-stuck' : r.level === 'WATCH' ? 'badge-watch' : 'badge-ok';
+    const arrLine = r.arr ? `$${escHtml(r.arr)}` : '';
+    const amLine  = r.am  ? escHtml(r.am) : '';
+    const subHtml = [arrLine, amLine].filter(Boolean).map(s => `<span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted)">${s}</span>`).join('');
+    const accountCell = `<td style="font-weight:600">${escHtml(r.name)}${subHtml}</td>`;
+    return `<tr>${accountCell}
+      <td><span class="risk-badge ${badgeClass}">${escHtml(r.level)}</span></td>
+      <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${escHtml(r.dateStr)}</td>
+      <td style="font-size:12px">${escHtml(r.reason)}</td>
+      <td style="font-size:12px;color:var(--primary)">${escHtml(r.action)}</td></tr>`;
+  }).join('');
+
+  document.getElementById('portfolioContent').innerHTML = `
+    <div class="analysis-card">
+      <div class="analysis-header">
+        <h2>🔍 Portfolio Analysis</h2>
+        <p>${accounts.length} accounts · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</p>
+      </div>
+      <div class="analysis-body">
+        ${themes ? `<div class="analysis-section">
+          <div class="analysis-section-title">📊 Themes This Week</div>
+          <div class="theme-block">${formatAnalysisText(themes)}</div>
+        </div>` : ''}
+
+        ${riskRows.length ? `<div class="analysis-section">
+          <div class="analysis-section-title">🚦 Account Risk Assessment</div>
+          <table class="risk-table">
+            <thead><tr><th>Account</th><th>Status</th><th>Renewal</th><th>Reason</th><th>Recommended Action</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>` : ''}
+
+        ${delta ? `<div class="analysis-section">
+          <div class="analysis-section-title">📈 WoW Delta — Notable Changes</div>
+          <div class="theme-block">${formatAnalysisText(delta)}</div>
+        </div>` : ''}
+
+        <div style="margin-top:12px">
+          <button class="btn btn-secondary btn-sm" onclick="runPortfolioAnalysis()">↺ Re-run Analysis</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabAccount').classList.toggle('active', tab === 'account');
+  document.getElementById('tabPortfolio').classList.toggle('active', tab === 'portfolio');
+  document.getElementById('tabQueries').classList.toggle('active', tab === 'queries');
+  document.getElementById('viewAccount').classList.toggle('hidden', tab !== 'account');
+  document.getElementById('viewPortfolio').classList.toggle('hidden', tab !== 'portfolio');
+  document.getElementById('viewQueries').classList.toggle('hidden', tab !== 'queries');
+  if (tab === 'queries') setTimeout(() => document.getElementById('chatInput')?.focus(), 50);
+}
+
+// ── Chat / Queries ─────────────────────────────────────────────────────────────
+const chatHistory = []; // { role: 'user'|'assistant', content: string }
+
+function buildChatContext() {
+  const accounts = Object.keys(summaryResults);
+  if (!accounts.length) return 'No account data loaded yet.';
+  let ctx = `You are an expert assistant helping an RD (Regional Director) at a B2B SaaS company query their book of business. Answer concisely and precisely based ONLY on the data below. If information isn't available, say so.\n\n`;
+  accounts.forEach(acct => {
+    const s = summaryResults[acct];
+    ctx += `---\nAccount: ${acct}`;
+    if (s.arr)  ctx += ` | ARR: $${s.arr}`;
+    if (s.date) ctx += ` | Renewal: ${fmtDate(s.date)}`;
+    if (s.ae)   ctx += ` | AM: ${s.ae}`;
+    ctx += '\n';
+    if (s.lastPrevRD) ctx += `Previous RD Note: ${s.lastPrevRD}\n`;
+    const latestNote = s.raw && s.notesCol ? extractMostRecent(s.raw.map(r => String(r[s.notesCol]||'')).join('\n\n')) : '';
+    if (latestNote) ctx += `Current AM Note (latest): ${latestNote}\n`;
+    ctx += `WoW Update: ${s.update || '—'}\n`;
+    ctx += `5 Checks: ${s.checks || '—'}\n`;
+    ctx += `Next Steps: ${s.nextSteps || '—'}\n`;
+  });
+  return ctx;
+}
+
+function chatKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+}
+
+function appendChatMsg(role, content, id) {
+  const box = document.getElementById('chatMessages');
+  // Clear empty state on first message
+  const empty = box.querySelector('.chat-empty');
+  if (empty) empty.remove();
+
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  if (id) div.id = id;
+  div.innerHTML = `<div class="chat-bubble${content === '…' ? ' thinking' : ''}">${escHtml(content)}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+function updateChatMsg(id, content) {
+  const div = document.getElementById(id);
+  if (div) div.querySelector('.chat-bubble').textContent = content;
+  document.getElementById('chatMessages').scrollTop = 99999;
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const question = input.value.trim();
+  if (!question) return;
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) { showToast('No API key set.', 'error'); return; }
+  if (!Object.keys(summaryResults).length) { showToast('No accounts loaded yet.', 'error'); return; }
+
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chatSendBtn').disabled = true;
+
+  appendChatMsg('user', question);
+  const thinkingId = 'chat_thinking_' + Date.now();
+  appendChatMsg('assistant', '…', thinkingId);
+
+  chatHistory.push({ role: 'user', content: question });
+
+  try {
+    const systemPrompt = buildChatContext();
+    const messages = chatHistory.map(m => ({ role: m.role, content: m.content }));
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages
+      })
+    });
+    if (!res.ok) throw new Error((await res.json()).error?.message || res.statusText);
+    const reply = (await res.json()).content[0].text;
+
+    chatHistory.push({ role: 'assistant', content: reply });
+    updateChatMsg(thinkingId, reply);
+  } catch (err) {
+    updateChatMsg(thinkingId, 'Error: ' + err.message);
+  } finally {
+    document.getElementById('chatSendBtn').disabled = false;
+    document.getElementById('chatInput').focus();
+  }
+}
+
+// ── Account selection ──────────────────────────────────────────────────────────
+function selectAccount(acct) {
+  if (selectedAccount) document.getElementById('item_' + safeId(selectedAccount))?.classList.remove('selected');
+  selectedAccount = acct;
+  document.getElementById('item_' + safeId(acct))?.classList.add('selected');
+  switchTab('account');
+
+  const s = summaryResults[acct];
+  const card = document.getElementById('activeCard');
+  if (!s) { card.innerHTML = skeletonCard(acct); return; }
+  renderCard(acct, s);
+  requestAnimationFrame(() => { const ta = document.getElementById('activeSummary'); if (ta) autoResize(ta); });
+}
+
+function skeletonCard(acct) {
+  return `<div class="account-card"><div class="account-header"><div class="account-header-left"><div class="account-name">${escHtml(acct)}</div></div></div><div class="account-body"><div class="skeleton-textarea"></div></div></div>`;
+}
+
+function renderCard(acct, s) {
+  const rows = s.raw || [];
+  const chips = [];
+  if (s.arr)  chips.push(`💰 $${s.arr}`);
+  if (s.date) chips.push(`📅 ${fmtDate(s.date)}`);
+  if (s.ae)   chips.push(`👤 ${s.ae}`);
+  const riskBadge = riskResults[acct] ? riskBadgeHTML(riskResults[acct].level) : '';
+
+  // Most recent AE note entry
+  const latestAE = extractMostRecent(rows.map(r => String(r[s.notesCol]||'')).join('\n\n'));
+  const aeNoteHtml = latestAE ? `
+    <div class="ref-bar ae-bar">
+      <div class="ref-bar-label">Current AE Note</div>
+      <div class="ref-bar-text" id="aeNoteText">${escHtml(latestAE)}</div>
+      ${latestAE.length > 200 ? `<span class="ref-bar-expand" onclick="expandRefBar('aeNoteText', this)">Show more ↓</span>` : ''}
+    </div>` : '';
+
+  const prevRDHtml = s.lastPrevRD ? `
+    <div class="ref-bar rd-bar">
+      <div class="ref-bar-label">Previous RD Note</div>
+      <div class="ref-bar-text" id="prevRdText">${escHtml(s.lastPrevRD)}</div>
+      ${s.lastPrevRD.length > 200 ? `<span class="ref-bar-expand" onclick="expandRefBar('prevRdText', this)">Show more ↓</span>` : ''}
+    </div>` : '';
+
+  document.getElementById('activeCard').innerHTML = `
+    <div class="account-card">
+      <div class="account-header">
+        <div class="account-header-left">
+          <div class="account-name">${escHtml(acct)} ${riskBadge}</div>
+          ${chips.length ? `<div class="account-chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>` : ''}
+        </div>
+        <div class="account-actions">
+          <button class="btn-card" onclick="selectSummary()">Select all</button>
+          <button class="btn-card" onclick="regenSelected()">↺ Re-run</button>
+        </div>
+      </div>
+      <div class="account-body">
+        ${aeNoteHtml}
+        ${prevRDHtml}
+        <textarea class="summary-textarea" id="activeSummary" oninput="autoResize(this)">${escHtml(buildSummaryText(s))}</textarea>
+        <div class="card-footer">
+          <div class="raw-notes-toggle" onclick="toggleRaw()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            View all AE notes (${rows.length})
+          </div>
+        </div>
+        <div class="raw-notes hidden" id="rawNotesPanel">
+          ${rows.map(r=>`<div class="raw-note-row">${escHtml(String(r[s.notesCol]||''))}</div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function riskBadgeHTML(level) {
+  if (!level) return '';
+  const l = level.toUpperCase();
+  if (l.includes('HIGH')) return `<span style="font-size:11px;font-weight:700;padding:2px 7px;background:rgba(220,38,38,0.25);border-radius:5px;margin-left:6px">⚠ HIGH RISK</span>`;
+  if (l === 'STUCK')      return `<span style="font-size:11px;font-weight:700;padding:2px 7px;background:rgba(217,119,6,0.25);border-radius:5px;margin-left:6px">⏸ STUCK</span>`;
+  return '';
+}
+
+function expandRefBar(id, btn) {
+  const el = document.getElementById(id);
+  if (el) { el.style.maxHeight = 'none'; el.style.overflow = 'visible'; }
+  if (btn) btn.style.display = 'none';
+}
+
+function autoResize(ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+function selectSummary() { const ta = document.getElementById('activeSummary'); if (ta) { ta.focus(); ta.select(); } }
+function toggleRaw() { document.getElementById('rawNotesPanel')?.classList.toggle('hidden'); }
+
+async function regenSelected() {
+  if (!selectedAccount) return;
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) { showToast('No API key.', 'error'); return; }
+  const acct = selectedAccount;
+  const s = summaryResults[acct];
+  const custom = document.getElementById('customInstructions').value.trim();
+
+  let context = `Account: ${acct}\n`;
+  if (s.ae)   context += `AE/Owner: ${s.ae}\n`;
+  if (s.arr)  context += `ARR: $${s.arr}\n`;
+  if (s.date) context += `Renewal Date: ${s.date}\n`;
+  if (s.lastPrevRD) context += `\nMost Recent Previous RD Note:\n${s.lastPrevRD}\n`;
+  context += `\nNew AE Notes:\n`;
+  (s.raw||[]).forEach((row,i) => { context += `[Note ${i+1}]\n${row[s.notesCol]||'(empty)'}\n\n`; });
+
+  const prompt = `You are summarizing AE notes for an RD at a B2B SaaS company. Signal only, no filler.\n\n${context}\nThe 5 checks are exactly: 1. Tech Win, 2. Legal Complete, 3. EB Signoff, 4. Timeline Understood, 5. Pricing Agreed. Evaluate ONLY these — do not invent or substitute others.\n\nReply in EXACTLY this format:\n\nWoW Update: [2-3 crisp sentences on what PROGRESSED vs prior note. No "had a call."]\n\n5 checks: [X incomplete / 5 — name ONLY the checks NOT yet complete. Do NOT list complete ones. E.g. if 1 remains: "1 incomplete / 5 — Legal Complete". If all done: "0 incomplete / 5". If churning: "0/5 complete — customer churning".]\n\nNext steps (to commit):\n1. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]\n2. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]\n\nImportant: never print bracketed placeholders like [no date specified] or [unknown]. If a value is unknown, omit it entirely. Never include email addresses.${custom?`\n\nAdditional guidance: ${custom}`:''}`;
+
+  showToast('Re-generating…', 'success'); setDot(acct, 'processing');
+  try {
+    const text = await callClaude(apiKey, prompt);
+    const parsed = parseSummary(text);
+    summaryResults[acct] = { ...s, ...parsed };
+    const ta = document.getElementById('activeSummary');
+    if (ta) { ta.value = buildSummaryText(parsed); autoResize(ta); }
+    setDot(acct, 'done'); showToast('Re-generated!', 'success');
+  } catch (err) { setDot(acct, 'error'); showToast('Error: ' + err.message, 'error'); }
+}
+
+// ── Claude API ─────────────────────────────────────────────────────────────────
+async function callClaude(apiKey, prompt, maxTokens = 512) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `API error ${res.status}`); }
+  return (await res.json()).content[0].text;
+}
+
+// ── Parse / build text ─────────────────────────────────────────────────────────
+function parseSummary(text) {
+  // State-machine parser — robust against Claude omitting the "5 checks:" label
+  const lines = text.split('\n');
+  let state = 'pre';
+  const update = [], checks = [], nextSteps = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Detect section headers and transition state
+    if (/^WoW Update:/i.test(trimmed)) {
+      state = 'update';
+      const val = trimmed.replace(/^WoW Update:\s*/i, '');
+      if (val) update.push(val);
+      continue;
+    }
+    if (/^5 checks:/i.test(trimmed)) {
+      state = 'checks';
+      const val = trimmed.replace(/^5 checks:\s*/i, '');
+      if (val) checks.push(val);
+      continue;
+    }
+    // Handle case where Claude writes the checks value without the "5 checks:" label
+    if (state === 'update' && /^\d+\s*(incomplete|complete)\s*\/\s*5/i.test(trimmed)) {
+      state = 'checks';
+      checks.push(trimmed);
+      continue;
+    }
+    if (/^Next steps/i.test(trimmed)) {
+      state = 'nextsteps';
+      // Don't add the "Next steps (to commit):" header line itself
+      continue;
+    }
+
+    if (state === 'update') update.push(line);
+    else if (state === 'checks') checks.push(line);
+    else if (state === 'nextsteps') nextSteps.push(line);
+    // 'pre' lines (e.g. leading date) are skipped
+  }
+
+  return {
+    update: update.join('\n').trim(),
+    checks: checks.join('\n').trim(),
+    nextSteps: nextSteps.join('\n').trim()
+  };
+}
+function buildSummaryText(s) {
+  const today = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  return [
+    today,
+    `WoW Update: ${s.update||'—'}`,
+    '',
+    `5 checks: ${s.checks||'—'}`,
+    '',
+    `Next steps (to commit):`,
+    s.nextSteps||'—'
+  ].join('\n');
+}
+
+// ── Copy / Export ──────────────────────────────────────────────────────────────
+function accountToText(acct) {
+  const s = summaryResults[acct]; if (!s) return '';
+  const header = [`━━━ ${acct} ━━━`, s.arr?`ARR: $${s.arr}`:'', s.date?`Renewal: ${fmtDate(s.date)}`:''].filter(Boolean).join('\n');
+  const body = acct === selectedAccount && document.getElementById('activeSummary') ? document.getElementById('activeSummary').value : buildSummaryText(s);
+  return `${header}\n${body}\n`;
+}
+function copyAll() { fallbackCopy(Object.keys(summaryResults).map(accountToText).filter(Boolean).join('\n')); showToast('Copied!', 'success'); }
+function exportTxt() {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([Object.keys(summaryResults).map(accountToText).filter(Boolean).join('\n')], { type: 'text/plain' }));
+  a.download = `RD_Summaries_${new Date().toISOString().slice(0,10)}.txt`; a.click();
+}
+function fallbackCopy(text) {
+  if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).catch(()=>execCopy(text)); return; }
+  execCopy(text);
+}
+function execCopy(text) {
+  const ta = document.createElement('textarea'); ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+// ── Analysis text formatter ────────────────────────────────────────────────────
+function formatAnalysisText(raw) {
+  if (!raw) return '';
+  const lines = raw.split('\n');
+  const items = [];
+  let current = null;
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    // Match numbered item: "1. **Label** — text" or "1. **Label**: text"
+    const m = trimmed.match(/^\d+\.\s+\*\*(.+?)\*\*\s*[—–:\-]\s*(.*)$/);
+    if (m) {
+      if (current) items.push(current);
+      current = { label: m[1].trim(), body: m[2].trim() };
+    } else if (current) {
+      // continuation line
+      current.body += ' ' + trimmed;
+    } else {
+      // plain text fallback — wrap as a label-less item
+      items.push({ label: '', body: trimmed });
+    }
+  });
+  if (current) items.push(current);
+
+  if (items.length === 0) return `<p style="font-size:13px;line-height:1.6;color:var(--text)">${escHtml(raw)}</p>`;
+
+  return items.map(item => {
+    // Colour tag for improved/worsened in WoW Delta
+    let bodyHtml = escHtml(item.body);
+    bodyHtml = bodyHtml.replace(/\b(improved)\b/gi, '<span style="color:var(--success);font-weight:600">$1</span>');
+    bodyHtml = bodyHtml.replace(/\b(worsened|declined|at risk|deteriorated)\b/gi, '<span style="color:var(--danger);font-weight:600">$1</span>');
+    return `<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
+      <div style="flex-shrink:0;width:20px;height:20px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px">
+        <span style="font-size:10px;font-weight:700;color:var(--primary)">${items.indexOf(item)+1}</span>
+      </div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text)">
+        ${item.label ? `<span style="font-weight:700;color:var(--text)">${escHtml(item.label)}</span> — ` : ''}${bodyHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Formatters ─────────────────────────────────────────────────────────────────
+function fmtARR(v) {
+  if (!v) return '';
+  const n = parseFloat(String(v).replace(/[$,]/g,''));
+  if (isNaN(n)) return String(v);
+  if (n >= 1000000) return `${(n/1000000).toFixed(1)}M`;
+  if (n >= 1000)    return `${(n/1000).toFixed(0)}K`;
+  return String(v);
+}
+function fmtDate(v) {
+  if (!v) return '';
+  const str = String(v).trim();
+  // Excel stores dates as serial numbers (days since Jan 1 1900)
+  const n = Number(str.replace(/,/g,''));
+  if (!isNaN(n) && n > 1000 && str === String(Math.floor(n))) {
+    const d = new Date((n - 25569) * 86400 * 1000);
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+  const d = new Date(str);
+  if (isNaN(d.getTime())) return str;
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function safeId(str) { return btoa(unescape(encodeURIComponent(str))).replace(/[^a-z0-9]/gi,''); }
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg, type='success') {
+  const w = document.getElementById('toastWrap'), t = document.createElement('div');
+  t.className = `toast ${type}`; t.textContent = msg; w.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+</script>
+</body>
+</html>

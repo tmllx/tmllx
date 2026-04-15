@@ -1,0 +1,1612 @@
+"Account Name","AE Forecast Notes"
+"Apex Semiconductor Corp","Mar 23, 2026 - Health: 9  healthy. The primary technical risk (loss of .jar export) was mitigated via a Python-based notebook workaround delivered on 3/19. Champion (Sam Whitfield) is fully aligned on the $15k renewal and the $330/hr service rate.
+
+Update: Held technical walkthrough with Priya Patel on 3/19; notebook provided and currently being tested by their team. JP confirmed the renewal price and directed us to the ProcureNet portal for procurement. Currently coordinating with Dana Chen (AR) to swap portal admins and Rachel (Deal Desk) on an ALARA ticket to finalize the custom rate language in the quote.
+
+Next 3 steps (to commit):
+
+Quote Finalization: Clear the ALARA ticket and receive the updated PDF order form from Rachel.
+
+Procurement Alignment: Confirm Sam/Apex Procurement triggered the ProcureNet invite to [internal AR email] for Dana Chen.
+
+Signature: Send finalized PDF to JP for signature once the portal admin swap is confirmed."
+"Meridian Analytics LLC","4/9/26: Customer health: 5. Technical gap: Feedback in terms of real time predictions is poor. Looks like customer has that big gap and is currently evaluating Snowflake which is giving them better accuracy and speed. Update/last action: 4/9 Asked to reschedule the meeting with Mike, CTO and Nathan. Follow up on ML Package and logs for us to prep the demo. 4/8: Sent over a follow up on the renewal asking for their feedback and plans. 
+
+Action items:
+1. Inference side: Investivate logs from Mike, CIO (Jamie K) 
+2. Get ML package and sample data to build test run to reproduce the latency (Derek Sullivan) 
+3. Demo of scoring code inference compared to PPS (Tyler Brooks) 
+4. Alignment on agentic
+5. Check on renewal proposal
+
+4/6 Rescheduled meeting with Mike, CTO and Nathan. Follow up on ML Package and logs for us to prep the demo. 
+
+4/1 asked Nina to help us send an email to Mike, CTO. If I don't hear back from the CIO by Thursday, I will follow up. 
+
+ 3/30 - We had a call scheduled tomorrow, but since Nathan, SVP of Risk is ooo this week, he asked to postpone it until 4/6. Several people are involved, including Tom, Amid, Jamie K., Lars Jensen, Derek Sullivan, and Tyler Brooks. 
+
+On 3/25 we received the data we need from Mike, CIO, and we will meet on 3/25 with our product engineering teams.
+Next steps.
+
+3/25: meeting with Mike and Nathan (we invited our product engineering team and Jamie K) for a product-focused call to review performance enhancements and governance capabilities in more dept.
+
+3/16/26: Confirmed with Mike that we will meet on 3/24. We invited our engineering team and Jamie K.
+Next steps:
+
+
+3/12/26: On 3/9 sent over an invite to Mike and Nathan to meet on 3/10.
+
+3/6/26: Sent a note to Nathan on 3/5 and Tom sent over follow up to Mike on 3/4
+
+02/26/25: Met with Mike, CIO and EB, to discuss feedback about real time predictions and possible solutions.
+
+02/25/26: Internal prep for Valid call on 02/26 with Mike, CIO.
+
+02/11/26: Agreed with Mike, CIO, to meet on 02/20.
+
+02/10/26: no show and didn't respond to reschedule. 
+
+02/09/26: Nathan and Mike declined invite. Working to reschedule technical Q&A session with Jamie K.
+
+02/02/26: Followed up with Nat to reschedule call with Mike and Jamie K. Sent an invite to meet on 02/09 to go over technical inquiries.
+
+01/14: Met with CIO and Nathan who shared some concerns about the real time predictions. We will have a technical call at the end of the month to go over their concerns and share the pros against Snowflake...
+
+12/09: Sent the proposal to Michael and Nathan
+
+12/08: Working with Nat to coordinate a meeting mid January to go over the renewal.
+
+12/01/2025:
+Emailed Nathan that I will start working on the proposal and invited him to meet about 2026 goals
+
+
+10/09 Will reach out next week to check if he wants a proposal for the renewal. 09/24 Met with Nathan to introduce myself as their new AM."
+"Summit Partners Group LLC","4/9/26: Customer health: 8. Partner led customer.
+Update: 4/8: Resent order form to partner. Waiting on customer's PO.
+Next steps:
+1. Follow up with the partner on order processing. 
+
+4/1: Sent updated order form to partner with expiration date 4/17.
+
+ On 3/31 Kevin, Summit Partners partner, confirmed that they will sign by 4/17, they are just waiting on the sell through evidence from the customer.
+
+On 3/25 send the order form to Chris, CEO, via DocuSign and asked Kevin about status of 2 final approvals.
+
+3/13/26: Kevin, partner, confirmed on 3/13 that they may be able to process renewal by end of March.
+
+3/12/26: On 3/9 confirmed with Kevin the contact info of the CEO [partner contact email] who will sign the DocuSign once customer sends over the PO
+
+3/5/26: Confirmed with Kevin that customer committed to renewal
+
+02/26/26: Confirmed with partner, Kevin, on 02/26 that they sent out the proposal to the customer. He said: ""Quote is in their hands for processing. They take a while, but I expect an on-time renewal. "" Customer committed to the partner about renewal. 
+Next steps:
+1. Follow up with the partner on order processing. 
+
+02/02/26: Emailed Kevin from Summit Partners to check on any updates about the renewal
+
+12/08/25: Sent some resources to Kevin so he can prepare the proposal and additional content to the client.
+
+12/03:
+
+Emailed Summit Partners, Kevin and Karen, to confirm capacity for the renewal so I can prepare the proposal."
+"Copal Foods S.A.","4/9/26: Customer health: 4. Value gap and engagement: Previously partner led account. Team we used to work with liked Google over DR. We are trying to gain the business of a new DS leader and currently helping to explore the tool.
+Update: 4/8 Sent special pricing to partner so they can send out discount to customer. 4/7 Send a note to customer asking for reconsideration on discounted pricing for renewal including gen ai sku.
+Next steps:
+1. Send special pricing to see if we can save them.
+2. Partner to follow up with Davido, EB, on next steps.
+3. Review with Catalina, DS Leader, Copal Foods requirements to implement agents.
+4. Coordinate enablement sessions for Marco, new end user and data scientist.
+
+4/6 - checked with partner Jorge if we hear back from Davido, CDO. 
+
+4/1 - Asked Davido, CDO, if we can meet to discuss discounted pricing for renewal including gen ai sku.
+
+On 3/30 I met with the leader of DS who said the decision was up to the CDO. 
+
+On 3/27 Davido, CDO, sent a note that they won't renew based on their current Google tech stack. 
+
+3/25/26: Quickly spoke with Catalina, ds leader, and she helped me coordinate a call with Davido, CDO, on 3/26 to discuss the renewal.
+
+We met on 3/17 for an agentic demo.
+
+3/12/26:  On 3/9 I met with Catalina, new DS leader, and prepped for a follow up call with Davido, EB, on 03/17.  
+
+Sent invite to meet on 3/9. Emailed the customer on 3/4. Texted Jorge, partner, to align on next steps and check if he shared pricing.
+
+02/26/26: Met with Copal Foods on 02/24 for an end to end demo. 
+
+02/17/26: Emailed proposal to partner. We will present proposal to customer on 02/24.
+
+02/12/26: Follow up call on 02/24.
+
+02/11/26: Pending approval for quote (Waiting on Tom).
+
+02/10/26: Waiting on proposal to be approved so I can send over to the partner. 
+
+02/06/26: Met with new leader, Catalina, and possible end user, to review DR capabilities. We have a technical follow up call on 2/24 to see if DR is a good fit for Copal Foods.
+
+02/02/26: Invited Carlos and Jorge from ChannelCo to connect this week. 
+
+01/15/26: Carlos, Data Science Leader, reported that they won't be renewing as they want to move to Vertex AI to reduce expenses. They asked about DR through Google Marketplace but we couldn't offer it as they are MTS. I am trying to schedule time with them. 
+
+
+12/17/25: Followed up with Jorge.
+
+12/02/25: Met Jorge the partner to plan the next qbr with the client. They are using GCP and Google is trying to sell their platform. Partner and I will work to expand to different teams and showcase agentic ai as well sometime on 12/11 or 12/12"
+"Clearfield Finance LLC","Apr 2, 2026 — Health: 6.5 — Weak Upside
+
+Customer health: 6.5. Health is suppressed by 0% platform usage (on new builds) following a staff transition and current tax-season resource constraints. Champion (Marcus) is engaged and committed to a 3-year ""right-sized"" renewal, but the Value Gap remains the primary risk until the CEO (Derek) approves the 2026 roadmap spend.
+
+Update: Sent pre-PTO ""bridge"" email to Marcus today to secure meeting holds for renewal. Currently securing Deal Desk approval for a 3-year ""Success Bundle"" ($74k ARR)  bundled engineering hours to execute a ""Shadow Build"" of their delinquency model.
+
+Next steps (to commit):
+
+Finalize Deal Desk approval to discount platform base to absorb mandatory service attach.
+
+Confirm  review session with Marcus and Derek (CFO)."
+"Palatine Auto Finance NA LLC","Apr 08, 2026 
+
+Health score: 6
+Issue: Value gap
+
+What Changed Week Over Week (WOW)
+Palatine confirmed intent to downsell MLOps and deployments in favor of AWS. We have scheduled an executive alignment call for 4/14 to demonstrate a ""better together"" story with AWS and share our Agentic roadmap to protect the MLBuild/Citizen Data Science portion of the renewal.
+
+The 5 Checks
+
+Tech Win (TW): Confirmed. Customer validated preference for MLBuild and low-code/no-code for citizen data scientists. Currently losing MLOps to AWS; technical win now depends on proving compatibility in a hybrid stack.
+
+Legal Complete (LC): Not Started. Documentation for the reduced software scope has not yet been initiated.
+
+EB Signoff (EBS): In Progress. Champion (Rashid) is engaged for next week’s executive call. Formal sign-off on the downsized renewal path is pending the outcome of the strategy session.
+
+Chriseline Understood (TU): In Progress. Renewal is targeted for May. Specific internal procurement and signature milestones for the new scope are being confirmed.
+
+Pricing Agreed (PA): Not Started. Pricing scenarios for the MLBuild-only renewal have not yet been presented or reviewed.
+
+Remaining Risk
+Significant downsell risk as the customer migrates core MLOps capabilities to AWS. The platform's long-term stickiness depends on successfully positioning DataDavidot as the primary experimentation and agent-building tool.
+
+Next 3 Customer-Visible Steps
+
+Exec Alignment Call (AWS Integration + Agentic Roadmap) -> DR Exec + Jordan -> Apr 14
+
+Technical scope alignment for MLBuild-only renewal -> Jordan + Rashid -> Apr 16
+
+Present updated pricing for the reduced renewal scope -> Jordan -> Apr 17
+
+Apr 02, 2026 - Meeting with Palatine team tomorrow for questions around the orderform I sent over to them.
+
+Mar 18, 2026 
+Customer health: 8
+
+Customer has a lot of usage and we have a verbal commit to renew. We just met with them last week and are working to set up an enablement session for new users in the coming weeks.
+
+Next 3 steps (to commit): 
+1. Check in on how the OF looks if everything looks okay (they have a lot of specifics on it they have had in the past)
+2. Follow up to book enablement session
+3. Get order form signed and back ASAP.
+
+Mar 12, 2026 - Met wit the team yesterday to execute account handoff. Handoff has taken place and we've had the renewal conversation.
+
+Next Steps:
+
+Setup enablement with Rashid (EB) and Nisha (user) to give them a fresh walkthrough of the platform.
+
+Work with our deal desk team to finalize contract for them and ensure it is sent over in the format they request.
+
+Send contract over by the EoW next week to ensure we give them time to ask questions and push it to correct people.
+
+Feb 26, 2026 - Meet with Rashid and Sumo (power user) to learn about what's coming up in initiatives
+
+Discuss upcoming renewal.
+
+Understand if there's genai interest.
+
+02/09/2026
+
+Palatine AF has given verbal commit to renew; AOER secured in January 2026; May 2026 renewal will include a $75k user and deployment expansion"
+"Whitmore Insurance Group Inc.","Apr 2, 2026 - Health: 7 - Engagement/M&A Risk
+
+Technical value is high following the recent production launch of the Private Flood Pricing models ). However, health is impacted by the transition to an unassigned CFDS support model and potential tool consolidation risk following the acquisition by Coastal Risk Partners (Nationwide Group).
+
+Update: Facilitated transition sync with Ryan Mitchell (Technical Lead) and established a direct line to Sarah Lawson (Business Lead) and Kelly Turner (New Procurement Lead). Submitted Legal ticket LR0089234 to research the requested parent-level MSA for Nationwide/Arrow Group to align with their new corporate requirements.
+
+Next 3 steps (to commit): 1. Resolve MSA verification with Legal/Deal Desk (Ticket LR0089234) to address Kelly Turner's procurement blockers.
+2. Conduct Renewal Strategy Sync with Sarah Lawson and Kelly Turner (week of 4/13) to validate 2026  roadmap.
+3. Deliver ""Production Success"" value summary to James Whitmore (President) highlighting the regulatory necessity of DataDavidot’s explainability features to defend against parent-company consolidation."
+"Dalton Equipment Co","11:54 AM Apr 07, 2026 
+Health score: 8
+
+What Changed WOW: Evaluating contract on April 28, flat renewal or renewal + adding TS
+
+TW: Confirmed
+Evidence: Predictive solution validated with technical stakeholders and currently in production use.
+
+LC: Confirmed
+Evidence: Confirmed no legal review needed for predictive renewal. 
+
+EBS: Confirmed
+Evidence: EB Name Claire Henderson confirmed intent to renew during  discussion kast weej.
+
+TU: In Progress
+Notes: Approval process and signature timeline still being confirmed with EB. She said after finalizing at the end of this month she was sure we'd have enough time to get it done on their end
+
+PA: Not Started
+Notes: Pricing options shared; customer reviewing right-sizing and TS expansion scenarios.
+
+Remaining Risk: pricing alignment + Software package not yet confirmed with EB.
+
+Next 3 Customer-Visible Steps
+Pricing/Software review  → Dalton → Apr 28
+alignment discussion with EB → Customer + DR → 4/28
+Pricing scenario review and selection → Customer → 4/28
+
+Support Needed: None at this time
+
+
+Mar 31, 2026 , 9:31 AM - The account is stable with a clear path to renewal. The client is currently undergoing a two-year migration to Microsoft Fabric, creating a strategic opportunity for us to position DataDavidot as a key integration partner. Business adoption is healthy, with users actively trusting model outputs and a steady pipeline of one new use case per quarter.
+
+Renewal & Expansion Strategy
+Katie (EB) has requested a 1-year renewal to maintain flexibility during their infrastructure shift. While the base renewal is secure, we are pursuing an upsell by decoupling Chrise Series from the previous 10-deployment requirement. I will present two options on April 28th: a flat renewal and an expanded feature set. Procurement risk is low, as the client has confirmed internal timelines are not an issue.
+
+Next Milestones
+
+April 28 @ 10:00 AM ET: Roadmap deep dive and quote review with Katie and Meena.
+
+Early May: Finalize contract signatures ahead of the May 27th expiration.
+
+
+Mar 18, 2026 -
+Customer health: 10
+
+Main user and EB are both very happy with the platform. Business is adopting the results well and happy with what they're seeing. They have a pipeline of use cases they want to knock out 1 per quarter
+
+Next 3 steps (to commit): 
+1. Meeting with EB in the coming weeks when she's back from vacation to see about adding on MLOps.
+2. Davidson Equipment who is similar to what they do but in another region wants to work with them as they are both CAT dealerships but need TS to do that, so going to attempt to upsell them there.
+3. Get OF out following that conversation.
+
+Mar 11, 2026 - Met with our main user there last week, the EB had to skip last minute due to an internal call. Next best actions for this account:
+
+1. Find time to meet with Katie (EB) to further discuss initiatives within their organization
+2. During that call ask Katie about the renewal, based on Meena's conversation with us (main user) we are very optimistic about the renewal. She told us they're in the process of rolling out a 2nd use case model, the first one has been going well and they have a pipeline of use cases they want to keep rolling out, ideally one a quarter.
+3. Discuss adding in TS so they can further work with Davidson Equipment who is also in the same vertical of business and a CAT dealership.
+
+Feb 26, 2026 - 
+
+Next Best Action 1: The ""New AE"" Value Alignment Call
+A formal ""Intro & Roadmap"" session with Claire Henderson. Instead of a standard ""checking in"" call, frame this as a strategy alignment to support her second year as Sr. Director.
+
+The Goal: Confirm her priorities have shifted from ""settling in"" to ""expanding impact."" Mention that you’re aware of the Thompson/Mark collaboration interest and want to ensure Dalton isn't being throttled by technical gaps.
+
+Forecast Impact: Validates the Upsell opportunity early in your tenure.
+
+Next Best Action 2: The ""Technical Blocker"" Audit (with Raj & Jenna)
+
+The Move: Host a technical deep dive with Jenna and Lalima, supported by Raj.
+
+The Goal: Get specific on the ""Data Set Limits."" If they are hitting ceilings on their maintenance predictions, we need to quantify the cost of that friction.
+
+Forecast Impact: Moves the Chrise series (TS) add-on from a ""nice-to-have"" to a ""blocker-removal"" necessity in the CRM.
+
+Next Best Action 3: The ""Thompson Synergy"" Proposal
+The Move: Work with Thompson to understand exactly what code Mark wants to trade.
+
+The Goal: Present a ""Success Blueprint"" to Katie showing exactly how adding TS allows her team to instantly ingest and utilize the work Thompson has already done.
+
+Forecast Impact: Creates a Compelling Event. The renewal is no longer just about Dalton; it’s about their ability to collaborate across the broader org.
+
+10/24/25
+1. Have you started renewal discussions? N 
+- THey just renewed in Q2
+- We are talking about expanding to business critical
+- They are using actively and are engaged
+
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? N
+- Low marutirty customer just coming up to speed on predictive, not ready for agentic
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? N
+- Just got first models into production, working on calculating that now"
+"Verdant Health Inc.","Apr 08, 2026 -
+
+Renewal Forecast Update
+
+Health score: 1
+
+What Changed WOW
+No new signal or engagement; sent an Outreach Framework (OF) to Jordan Miller (CTO) on Mar 12, but he remains completely unresponsive. Opportunity moved to Omitted due to total lack of communication.
+
+The 5 Checks
+
+TW: Not Started - Notes: Customer is very quiet about usage; small team with limited bandwidth. ROI for predictive/agentic solutions is not currently documented or validated.
+
+LC: Not Started - Notes: No legal or procurement discussions have commenced.
+
+EBS: Not Started - Notes: Jordan Miller (CTO) is the EB but has not responded to any outreach since the last renewal 2 years ago. Relationship is extremely single-threaded.
+
+TU: Not Started - Notes: No confirmed timeline. Historically, this customer ignores outreach for months and signs ""the week of"" expiration.
+
+PA: Not Started - Notes: Renewal discussions have not started; pricing/value narrative has not been presented.
+
+Remaining Risk
+Severe risk due to zero engagement and being single-threaded with an unresponsive CTO. While historical behavior suggests a last-minute sign, there is no current verbal or written commitment.
+
+Apr 02, 2026  - Still attempting to engage with Alex, still 0 engagement
+
+Mar 18, 2026 
+Customer health: 1
+ Still no engagement back from EB.
+
+Next 3 steps (to commit): 
+1. Continue Outreach
+2. Keep an eye on usage
+3. Keep bumping EB
+
+
+Mar 17, 2026 - Continuing outreach, no known TB, very single threaded no one talks to us. 
+
+Mar 13, 2026, 12:27 PM - Sent out an OF to Alex yesterday, he's been very unresponsive. I have this in Omitted at this point due to their lack of engagement and the lack of communication. I sent the OF in attempt to see if that would spark conversations with him.
+
+Feb 23, 2026 -
+WHO : Jordan Miller, CTO
+WHAT : I've had no communication with him since taking over.
+WHAT : Last renewal he came to us the week of and decided to sign, same situation. He didn't respond for months then came back right before.
+WHEN : He's not responded to us since they last renewed 2 years ago.
+WHO : Jordan Miller, CTO, EB
+
+Nov 05, 2025 
+
+1. Have you started renewal discussions? At this time we have not, planning to bring it up at our next EBR.
+2. Have we received a clear verbal commitment to renew? No, Alex was very on the fence last renewal, and he's a tough customer to get ahold of for check in's.
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? Our main contact is the CTO, but they're very early in their AI journey. I think it would be worth showing agentic especially because Verdant Health was recently acquired by Labcorp and now has a little more spend.
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? GenAI was a big intiative for them last renewal because they were wanting to really automate as much as possible. As we know GenAI didn't workout as expected in the industry. They have a small team and little bandwidth, but they are very quiet about how they use us."
+"Crestline Industrial Systems Inc.","Apr 08, 2026 
+Health score: 2
+
+What Changed WOW:
+Customer has pivoted from a definitive non-renewal to reviewing a ""right-sized"" $15k ARR proposal. Provided SOC 2 per Marks request earlier this week
+
+The 5 Checks
+
+TW: Not Started Evidence: Customer has cited a lack of ROI and engagement for 8 months; enablement sessions have been consistently cancelled.
+
+LC: In Progress Evidence: Order form for $15k sent; manual delivery of unredacted SOC 2 in progress to satisfy security requirements.
+
+EBS: In Progress Evidence: Mark (EB) acknowledges the tool's power but is currently reviewing the proposal with ""higher-ups"" for final intent.
+
+TU: Not Started Notes: No specific signature window or internal procurement timeline has been confirmed by the customer.
+
+PA: In Progress Notes: Proposals for $15k/yr (2 and 3-year options) have been sent and are currently under internal review.
+
+Remaining Risk:
+High risk of churn despite the lower price point. The customer has spent the last 6-8 months stating they do not intend to renew, and engagement remains low.
+
+Apr 02, 2026 - Still looking at keeping them on at a smaller contract. Working to get Mark a SOC 2 Unredacted, for some reason SecureShare did not work for him.
+
+Mar 18, 2026 2:55 PM , Order form sent for 15kARR to Mark, he is reviewing with higher ups and will get back to me.
+
+Mar 18, 2026 -
+Customer health: 2
+
+Have told us for about the last 6-8 months they do not intend to renew. Our EB thinks we're a powerful tool, but they have had lack of engagement and time on building out a successful project with ROI. Last week he did mention we could send over a ""rightsized"" contract, so I sent some proposals for 3 and 2 years at 15k/yr.  So far they've had no engagement, we've tried enablement sessions and they always cancel.
+
+Next 3 steps (to commit): 
+1. Follow-up with Mark to see how he's thinking about the proposals
+2. Work to finalize a deal with them to keep them on if possible
+3. Work to revisit others in the business or propose a use case ideation session with Mark if we can get a commit.
+
+Mar 13, 2026 - Sent a downsized offer to Mark (EB) at HYG, he is a fan of the tool but they have not been able to find success. I'm hoping to get him in on a downsell to keep them around, and we've also offered a use case ideation session as part of the agreement if they agree to continue the contract.
+
+Feb 23, 2026 
+WHO : Mark Simmons, Manager of IT Innovation
+WHAT : Spoke with him in December, we had time to connect and he canceled and did not ever reschedule, despite my many efforts
+WHAT : I've tried working with partners, they've just not seen much success during their times as customer. Mark mentioned last call we had he was getting pressure from leadership to show value they've found with us and they just haven't found value. 
+WHEN: I've offered executive intros a few times, he last told me he may reach out in late Q1 to do this. I just bumped him again today to see if that's of interest to them.
+WHO : Raj Kumar, CIO. I have tried to engage with him, but have received no response at this point in time.
+
+
+Dec 01, 2025 - Working to setup a potential meeting between Tom and champion there in attempt to save this account.
+
+Nov 05, 2025 
+
+1. Have you started renewal discussions? Yes, we're working to get the new user enabled to try and help them save the contract. Our Champion is a big DataDavidot fan, but they've had no use cases get up and running and if we cannot get anything working soon he's told me they will have to churn as he can't justify investment.
+
+2.Have we received clear verbal commitment to renew? We're in crunch time with them currently, they've been with us for a few years and have had 0 use cases get off the ground. Monday 11/10 we're enabling a new user they have to try and get something tangible by May.
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? We're currently working to save the contract on the predictive side, and simultaneously looking into C-suite and IT folks to try and expand. Our team for predictive is very at risk.
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? Right now the customer has directly told us they have no ROI to show"
+"Northgate Capital Management LLC","4/9/26: Customer health: 7. Note about health; health flag is red as the previous champion and main user retired and they have 0 modeling hours in the last 6 months. Predictive AI client.
+Update: On 4/1 followed up with David on the proposal for the Q2 renewal 
+
+Next 3 steps:
+1. Follow up with CRO and other team members
+2. Check on feedback about the proposal with David
+3. Coordinate demo for generative ai on the week of 4/13 or 4/22
+
+n 3/26 sent times for agentic demo and emailed David the proposal for the Q2 renewal 
+
+On 3/19 met with David, Portfolio Manager, and Peter, end user.
+
+3/9/26: Followed up with David and Peter on times to meet.
+Next steps: 
+
+3/5/26: Reached out to David Peterson, Portfolio Manager and one of our main points of contact to coordinate time
+
+3/4/26: Reached out to Mehmet Yilmaz, Chief Risk Officer, and David Peterson. EB, Thomas Kim, and previous main user, Peter Chang, left company. I don't have notes from previous csm.
+
+Next steps: 
+1. Follow up with CRO and other team members
+2. Send out proposal.
+3. Send out an invite to make introductions."
+"Summit Community Bank","Apr 08, 2026 
+Renewal Forecast Update
+
+Date: April 8, 2026
+
+Health score: 1
+Issue: Technical / Product blocker
+
+What Changed WOW:
+Customer explicitly stated they do not intend to renew and are moving to an internally built tool. Confirmed non-renewal for 5/31.
+
+The 5 Checks
+
+Tech Win (TW): Not Started
+
+Notes / Evidence: Customer is moving to an internally built tool developed by Danny. Cited ""last mile"" friction where DataDavidot required the calling system to perform feature engineering, whereas their internal tool allows for a simple API call (passing only an ID).
+
+Legal Complete (LC): Not Started
+
+Notes / Evidence: No legal progress; customer intent is to let the subscription expire.
+
+EBS Signoff (EBS): Not Started
+
+Notes / Evidence: Decision-makers (Spencer and Danny) confirmed the shift to an internal strategy and declined right-sizing or GenAI pivot attempts.
+
+Chriseline Understood (TU): Confirmed
+
+Notes / Evidence: Confirmed non-renewal for 5/31.
+
+Pricing Agreed (PA): Not Started
+
+Notes / Evidence: Customer declined right-sizing offers; no pricing will be agreed upon as they are churning.
+
+Remaining Risk
+Confirmed churn. The customer has successfully deployed their internal replacement (Probability of Default model) and feels the DataDavidot integration is too heavy for their developers.
+
+Mar 30, 2026 - First meeting with customer today, and they told me they do not intend to renew.
+
+Next Steps:
+
+Status: Confirmed Non-Renewal for 5/31.
+
+Primary Loss Reason: Competition (In-house/Internal Build).
+
+Secondary Loss Reason: Product Gap / Technical Friction (Difficulty with production feature engineering/API integration).
+
+Customer Feedback: The customer felt the ""last mile"" of integration was too heavy for their developers. They required a way to trigger data preprocessing/queries via an API call (e.g., passing only an ID), which they didn't feel was adequately supported even after meeting with our technical teams.
+
+Mar 18, 2026 -
+
+Customer health: 7
+
+Another one I just took over, we have time on with them 3/30 week. The prior AM has told me they have given verbal commit, but I will have a better understanding next week.
+
+Next 3 steps (to commit): 
+1. Meet with them for intros.
+2. On the agenda we also have current priorities and initiatives and then we also have renewal.
+3. Discuss renewal on that call and get an order form out, renewal is quickly approaching so I want to get that out ASAP after that call.
+
+
+Mar 13, 2026 - Meeting at the end of the month so will know more that will be our initial handoff call
+
+AG Feb 26, 2026 - Jennifer Walsh and Michael Torres intro'd to me as of this morning. I have setup time with them for intros at the end of March, we will be talking more about current initiatives and their upcoming renewal. As of now we consider them green
+
+MM 11.18.25
+- spoke with Jennifer Walsh (EB) and Michael Torres (analyst). this is budgeted for next year - they said it should be a smooth process but to reach out in late March to reconnect on this
+
+MM 11.5.25
+1. Have you started renewal discussions? N 
+- renewal is 5/31/26. I recently inherited this account. I have tried reaching out to Jennifer Walsh to setup intros but have not heard back.
+2. Have we received a clear verbal commitment to renew? N
+- unclear. I can't find any information on this account in Slack or Google Drive. hoping EB will take a meeting
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? N
+- need to get intro at the bank
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? N
+- I haven't found anything on their usage of the platform"
+"Meridian Online University Inc.","April 2, 2026 - Health: 7 - Weak Upside
+
+Note about health: Account is historically a ""flat"" renewer with a 4.5% standard YOY increase ($87k–$90k range).  The customer recently requested a seat reduction (5 to 3) and has pivotally ""lost interest"" in GenAI/Agents since Jan 2026, likely due to On-Prem technical hurdles. 
+
+Update: Official transition to Ana Rodriguez. Confirmed MSA/Order Form is with MOU Purchasing. We are holding the line on the 5-user minimum and the $3k incremental standard increase.
+
+Next 3 steps (to commit):
+
+Paperwork Sprint: Push Lisa Chen to finalize the MSA in April to ensure no On-Prem license expiration/lockout in May.
+
+GenAI Resuscitation: Use the 4/13 sync to understand why they went from ""building use cases"" in Sept to ""no interest"" in Jan. Determine if this was a technical blocker we can solve with the new CITO."
+"Northern Territory Safety Authority","Apr 2, 2026 - Health: 3 - technical gap (IT/Architecture) & value gap (v8 limitations)
+
+Customer is a high churn risk and ""likely not to renew"" the current $84k on-prem instance. Internal IT is a strict Microsoft shop and is blocking the Kubernetes upgrade required for v11. Because they are stuck on legacy v8, the business (FIU) cannot access the Jupyter Notebooks and GenAI/NLP capabilities they need to drive value.
+
+Update: Held an alignment call with partner Paul Martinez (Vertex Consulting), Tom M., and Jamie K. Mark confirmed they are ""likely to not renew"" the $84k flat renewal. We aligned on a 12-month ""Bridge Year"" survival strategy: dropping unused services and discounting to $35.5k to accommodate their budget pressure and keep the logo. However it is not a guarantee the customer will sign. 
+
+Next 3 steps (to commit): 1. Ana to send the finalized $35.5k bridge quote to Mark.
+2. Mark to socialize the bridge pricing with the FIU business unit to secure verbal agreement.
+3. Deploy their 31 unused project hours to scope an Azure STS migration (buys our Architecture team a runway to bypass IT completely next year)."
+"Prestige Live Events","Apr 08, 2026 - Continuous outreach to the EB to attempt to have a conversation on the renewal
+
+Apr 01, 2026 - Still working to engage with the EB, he has went radio silent on meeting following our first email he sent regarding scheduling.
+
+Mar 18, 2026 -
+Customer health: 5 
+
+I have been attempting to meet with the EB, he reached out Friday about scheduling some time. I sent some time to him but nothing back yet, very much a lack of engagement. Came to me already in omitted, but with the EB willing to meet I think there may be some life.
+
+Next 3 steps (to commit): 
+1. Coordinate time to meet with the EB ASAP
+2. Understand current initiatives and priorities for them and if it makes sense to keep DataDavidot in some capacity. From my understanding they were building a ticket pricing model in the past.
+3. If lack of engagement see if we can stay on in the ML experimentation portion only to stick around.
+
+Mar 13, 2026 - Working to set up time with Ryan next week
+
+12/1/25 - Followed up with Ryan today asking when he can connect and that we have a commitment to help them be more successful. First model still not deployed due to limited bandwidth of Ryan.
+
+10/22/25
+1. Have you started renewal discussions? N (Recommended >5 months out)
+If 'N': When is the renewal date, and what is the plan to engage within the next 30 days? - The renewal date is June 5, 2026. Our main contact, Ryan has not been very responsive throughout onboarding. Based on our interactions, he's happy with Taylor and Leo's service, but has been very busy. Supposedly, he's working with 13 other startups as an advisor/consultant. We've reached out to confirm the implementation approach several times, but he has not been responsive. I'll follow up before the end of the week sharing availability, and if no response after that, I'll share a calendar invite asking him to propose an alternative time if needed. 
+2. Have we received a clear verbal commitment to renew? No.
+If 'N': What specific business challenge or competing priority is currently preventing a commitment? - Ryan is very busy. Next step is to confirm our implementation approach and deploy the first model with him. 
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? No. 
+If 'N': What is the plan to get on their calendar in Q4/Q1? (e.g., Champion-led intro, direct outreach with a case study) - We haven't gotten over Ryan's head yet, but I think we're getting close to wanting to do that. The owner of the company, Scott should be aware that any hold up is a result of Ryan's non responsiveness. I can talk to Taylor and Leo about the best way to communicate as we do not want to damage the relationship that we've built with our champion. 
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? No. 
+If 'N': What is the one key business metric we will use to build a use case for ROI? (e.g., developer hours saved, improved model accuracy
+- Taylor has done an excellent job of measuring and sharing model accuracy, but ROI will largely depend on volume of tickets bought/sold. With the predictive model not implemented, we don't have an estimate for how many predictions will be made, tickets bought, sold, etc.
+
+Yellow = Customer may renew, concessions needed (at the moment, Ryan is busy, but we need to get his attention/interest)."
+"DriveNow Marketplace","Apr 08, 2026 - 
+Health score: 3
+Issue: Value gap 
+
+What Changed Week Over Week (WOW)
+Customer sentiment moved toward a ""slash-and-burn"" mindset, explicitly stating a target budget of $20k—well below the current $65k renewal level.  We were attemtping to meet with a contact who Tony mentioned had a lot of use and success and she is now insisting on no meeting.
+
+The 5 Checks
+
+Tech Win (TW): In Progress
+Notes / Evidence: The primary ""Highest Bid"" project failed in production. Stakeholders are currently auditing to see if it can be saved, but sentiment is that it is ""dead in the water"". Claude and SageMaker are being used for newer workloads due to speed and cost.
++4
+
+Legal Complete (LC): Not Started
+Notes / Evidence: No legal review has been initiated as the technical and commercial path is still fundamentally in question.
+
+EB Signoff (EBS): In Progress
+Notes / Evidence: Brad Collins (Decision Maker) is engaged but skeptical. He is currently focused on cost-cutting and has not signed off on a path forward beyond a potential ""life support"" SKU.
++3
+
+Chriseline Understood (TU): Not Started
+Notes / Evidence: A documented signature timeline has not been validated as the customer is still in the ""autopsy"" phase of their primary project.
+
+Pricing Agreed (PA): Not Started
+Notes / Evidence: Major misalignment exists. The customer threw out a $20k ""price anchor,"" while the current spend is $65k. No commercial terms have been accepted.
+
+
+Remaining Risk
+The customer views Claude + Snowflake as a faster, cheaper alternative, and their main DataDavidot project's failure has removed the primary justification for their current spend levels. 
++1
+
+Next 3 Customer-Visible Steps
+
+Technical ""autopsy"" support for Highest Bid Model -> Jordan -> 4/10 
+
+Intro call with Jennifer Santos (SageMaker user) -> Jordan -> 4/10 
+
+Send 1-pagers on Agentic Governance for 10-30 agents -> Jordan -> 4/13 
+
+Support Needed: Manager alignment
+Shane is highly skeptical and in a ""slash-and-burn"" mindset regarding software costs; leadership involvement may be needed to validate the value narrative and ""Life Support"" SKU pricing. 
++2
+
+You said
+Correct formatting
+
+AE Forecast Excellence
+Custom Gem
+AE Forecast Excellence said
+Renewal Forecast Update
+
+Health score: 3
+Issue: Value gap
+
+What Changed Week Over Week (WOW)
+Customer sentiment moved toward a ""slash-and-burn"" mindset. Following a project failure in production, the customer explicitly stated a target budget of $20k—$30k, which is a significant reduction from the current $65k renewal level.
+
+The 5 Checks
+
+Tech Win (TW): In Progress
+Notes / Evidence: The primary ""Highest Bid"" project failed in production. Stakeholders are currently auditing to see if it can be saved, but sentiment is that it is ""dead in the water."" Claude and SageMaker are being used for newer workloads due to speed and cost.
+
+Legal Complete (LC): Not Started
+Notes / Evidence: No legal review has been initiated as the technical and commercial path is still fundamentally in question.
+
+EB Signoff (EBS): In Progress
+Notes / Evidence: Brad Collins (Decision Maker) is engaged but skeptical. He is currently focused on cost-cutting and has not signed off on a path forward beyond a potential ""life support"" SKU.
+
+Chriseline Understood (TU): Not Started
+Notes / Evidence: A documented signature timeline has not been validated as the customer is still in the ""autopsy"" phase of their primary project.
+
+Pricing Agreed (PA): Not Started
+Notes / Evidence: Major misalignment exists. The customer threw out a $20k ""price anchor,"" while the current spend is $65k. No commercial terms have been accepted.
+
+Remaining Risk
+The customer views Claude + Snowflake as a faster, cheaper alternative. The failure of their primary DataDavidot model has removed the main justification for current spend levels, leading to a high risk of significant downsell or non-renewal.
+
+Next 3 Customer-Visible Steps
+
+Technical ""autopsy"" support for Highest Bid Model -> Jordan -> 4/10
+
+Intro call with Jennifer Santos (SageMaker user) -> Jordan -> 4/10
+
+Send 1-pagers on Agentic Governance for 10-30 agents -> Jordan -> 4/13
+
+Apr 02, 2026 1:03 PM  - This was a transition call as Jordan takes over for Tony. The renewal is currently at high risk. The customer’s primary high-value project (Highest Bid Model) has failed to produce results in production, and they are aggressively exploring cheaper or more integrated alternatives like Claude (Anthropic), SageMaker, and Snowflake’s native AI capabilities.
+
+Key Discovery & Pain Points
+Project Failure: The ""Highest Bid Model/Auction Velocity"" project—the main driver for their DataDavidot spend—was run as a 50/50 split experiment in production. It yielded no significant difference in profit or velocity compared to the baseline.
+
+""Autopsy"" Phase: The team is conducting a final 1-2 week audit to see if the model can be saved, but sentiment is that it is ""dead in the water.""
+
+Competitive Pressure: * Claude (Anthropic): The team is seeing high ""velocity"" here. A project that took weeks in DataDavidot was replicated in 2 days using Claude.
+
+Connectors: They are heavily invested in Snowflake, Atlassian, and Airtable. Claude’s native connectors to these tools have created a ""lights on"" moment for them.
+
+SageMaker: Other internal teams (Jennifer/David) have migrated to SageMaker since it is ""already included"" in their AWS spend.
+
+Budget Consolidation: The company is in a heavy cost-cutting phase, even questioning legacy contracts like Salesforce and Tableau due to AI's ability to replicate their functionality.
+
+Renewal Outlook
+Current Status: Likely non-renewal at current levels ($65k).
+
+The ""Life Support"" Option: Shane is open to a ""minimal access"" or ""just in case"" contract to keep the tool available for future projects.
+
+Target Price Point: Shane explicitly mentioned a budget of $20k - $30k (1/3 to 1/2 of current spend) for a base package (5 deployments, limited seats).
+
+Next Steps & Strategy
+Technical Save: Jordan to offer technical resources to assist with the ""autopsy"" of the Highest Bid Model to see if DataDavidot's expertise can uncover why backtests didn't align with production.
+
+Pivot to Governance: Jordan introduced DataDavidot’s Agentic AI governance and monitoring capabilities. While the customer is building agents elsewhere, they acknowledged the future need for governing an autonomous workforce.
+
+Follow-up Action: Jordan to send ""Better Together"" stories regarding SageMaker integration and 1-pagers on Agentic Governance.
+
+
+
+Mar 18, 2026 
+Customer health: 8
+
+First meeting with them at the end of the month. Tony has assured me they are in good health and have given verbal commit to renew.
+
+Next 3 steps (to commit): 
+1. Meet with DriveNow Marketplace team last week of March
+2. Go through intros and talk future plans of DataDavidot, additionally Tony has shared they may want to add on more deployments so discuss rightsizing their contract and adding any additional products they might need.
+3. Get OF out with updated contract.
+
+Mar 13, 2026 - Meeting with them at the end of the month for full on handoff, and renewal conversation.
+
+Feb 26, 2026 - Transition from Tony Dorr to Jordan Gemondo underway. 
+
+Next Steps:
+Execute a ""Value Realization"" QBR Instead of a standard check-in, host a Quarterly Business Review (QBR) with Brad Collins and the technical leads (Rainier Sabangan and Jennifer Santos).
+
+Quantify the financial impact of the ""Highest Bid Prediction"" model and the efficiency gains from the Snowflake automation.Goal: Secure an executive ""win"" story to justify the renewal budget.
+
+2. Perform a Capacity & License AuditWith the original ""Advanced"" package capped at 10 users and 5 deployments, we need to evaluate if these limits are now throttling their growth. Tony mentioned he believes there may be interest to grow deployments and users.
+
+Action: Review current usage metrics with the Dedicated CSM and AI Architect.
+
+Goal: Use the ""Brand Churn"" and ""Factoring Approvals"" roadmap  as the catalyst to propose a tier upgrade or additional worker/deployment units.
+
+3. Strategic ""Handover & Roadmap"" Deep Dive
+
+Formally transition the relationship from Tony Dorr to Jordan Gemondo by leading a roadmap session.
+
+Goal: Move DriveNow Marketplace from a ""Use Case"" customer to a ""Platform"" customer by aligning DataDavidot with their 2026 corporate objectives.
+
+
+Oct 21, 2025
+
+Green 
+1. Have you started renewal discussions? N (Recommended >5 months out)
+They are on a 1 year contract and it is too early to start renewal conversations. 
+DriveNow Marketplace has already purchased more deployments and has seen a lot of value in DataDavidot.
+We will start renewal conversations in January - February of 2026. 
+
+2. Have we received a clear verbal commitment to renew? N
+There is currently no risk with this customer churning. 
+
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? N
+We are planning to have a c-level presentation on our agentic solution in early 2026 to align to their renewal in June.
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? Y
+3x time savings for building ML models compared to snowflake notebooks 
+100k - 500k estimated ROI from Auction velocity use case"
+"Curi Holdings, Inc.","4/9/26: Customer Health: 7. Customer is currently using datarobot for insurance claims use cases and is planning to keep developing new use cases. Last action: 4/8: Met Joseph, Data Scientist, and Tommy, System Administrator. Sent proposal for renewal to Stephanie, VP, Data & Strategic Operations.
+Updates: 
+1. Follow up on next steps for renewal
+2. Invite Stephanie, VP, Data & Strategic Operations, to meet 
+3. Continue to align on 2026 goals and priorities.
+
+ 4/8. Followed up On Prem customer that had a recent outage and.
+
+on 4/1 sent an invite to Joe and Tommy to make introductions on
+
+3/4/26: Introduced myself to Joseph/Joe, Senior Data Scientist ande Tommy Lokey	 system administrator 
+
+Nov 05, 2025 
+
+
+1. Have you started renewal discussions?
+
+No. Renewal due on June 30th 2026. Plan to engage EB by end of November for an EBR and Agentic positioning. 
+
+
+2. Have we received a clear verbal commitment to renew? Y/N
+
+No. No renewal discussion yet. Will update after EBR in November. 
+
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? 
+
+No. Chief Analytics Officer is EB. Will position agentic solutions discussion during November EBR
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? 
+
+No. On-prem customer that has been historically reserved about sharing their value / AI consumption metrics."
+"Hometap Equity Partners, LLC","Apr 07, 2026 -
+
+Health score: 8
+
+What Changed WOW: Customer agreed to evaluate agentic expansion and pricing scenarios following scheduled demo (4/10)
+
+TW: Confirmed
+Evidence: Predictive solution validated with technical stakeholders and currently in production use. Working to win Agentic
+LC: In progress
+Evidence: Confirmed no legal review needed for predictive renewal. Legal review may be needed for agentic
+
+EBS: Confirmed
+Evidence:  Eric Chacon (CIO) confirmed intent to renew during March discussion.
+
+TU: In Progress
+Notes: Approval process and signature timeline still being confirmed with EB, but we're waiting to know if they want only pred or pred/agentic
+
+PA: In progress
+Notes: Pricing options shared; customer reviewing right-sizing and agentic expansion scenarios.
+
+Remaining Risk: Approval timeline and pricing alignment not yet confirmed with EB.
+
+Next 3 Customer-Visible Steps
+Agentic capability demo → DR → Apr 10
+Approval timeline alignment discussion with EB → Customer + DR → 4/10
+Pricing scenario review and selection → Customer → 4/13
+
+Support Needed: None at this time
+
+
+Apr 01, 2026 - Demo scheduled for 4/10 with Leo and Shreya from the DR side. Doing a demo with EB (CIO) and champion on agentic AI to show product roadmap.
+
+Mar 18, 2026 
+Customer health: 8
+
+Working to just iron out the renewal and what package/years they want. We have a verbal commit from the EB and champion but ironing out details now. Also, they currently have only pred, they are asking to see agentic capabilities because they may add that on to their package as well 
+Next 3 steps (to commit): 
+1. Internal sync with our team to prepare the agentic demo, and talk about the roadmap of agentic as that's something they've asked
+2. Setup time for agentic demo with Hometap team for CIO and champion
+3. Post demo finalize details for renewal and get OF out 
+
+Mar 17, 2026 - Met with Hometap team yesterday to present renewal options to them. Sending over the document. Nest steps
+
+Giving their team a roadmap session on where we are now with agentic and where we see it going. Presenting to CIO and other DS on their team.
+
+Looking to align a TSM and a person from product on for this call.
+
+Mar 11, 2026 - Presenting the Hometap team with renewal options next Monday. They've asked to see renewal options for 1,2 and 3 year types as well as some with more/less software. I've put together 3 different offers with different years as well. Additionally we've added in some of the contracts the ability to add GenAI and keep their rate flat.
+
+Next steps:
+1. Meet with the team and present offers Monday
+2. Further discuss roadmap to see if genAI/Agentic AI makes sense for projects moving forward. In the past they've mentioned GenAI and wanting to add it on.
+3. Finalize renewal deals after conversation
+
+Feb 23, 2026 
+WHO : Bobby Kelsey, Sr Manager Data & Analytics, David Johnson, Director of Data Products
+WHAT : 2/9 we had an EBR. They're happy with the renewal and have said they intend to renew. Working with Tom Mailloux tomorrow to present them with 1,2, & 3 year renewal options as they've asked to see all 3.
+WHAT : N/A. Have alignment from the CIO at this point so I feel confident we're not at risk. He was on the last call and emphasized Bobby and David's intention to renew
+WHEN : 3/9, we will present them with the renewal docs. I intend to send them over ahead of time, and ideally finalize the renewal that day 
+WHO : N/A
+
+
+Nov 05, 2025 -
+
+1. Have you started renewal discussions? Not yet, working on a few high priority projects with Matthias currently, I believe they will renew due to how happy they are and how much they use us for now + the ideas they have for future use.
+2. Have we received a clear verbal commitment to renew? Not yet, I have not directly asked it yet.
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? CIO has been on some calls around predictive, typically just listens in and doesn't add much context. I believe our champions would be willing to at least gauge his interest on agentic for us to see if a pitch is possible. They have interest in generative, so I think maybe a hybrid generative/agentic pitch could be the answer.
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? No, but they are very happy customers at this time. I will work to put a number on it though.
+
+
+Aug 16, 2024 Interested in GenAI - pitching POV and narrowing in on business value use case - demo coming up 8/26
+
+Feb 27, 2024 Happy customer - checking to see if there is interest for Chrise Series / Gen AI"
+"American First Finance","4/9/26: Customer health: 9. Technical gap: Generative AI feedback wasn't positive, customer wants to remove it on the renewal. Update/last action: 4/9 Sent order form to sign
+Next items: 
+1. Feedback with product team and Wallace.
+2. Send out proposal to Ana from First Cash to sign
+3. Follow up after call with Tyler Brooks and Wallace for agentic on 3/31
+
+4/3 CRO of American First Finance and I was able to get a verbal commit to close on April. It will be a down sell, but doing my best to keep as much ARR as possible considering I am also trying to push to a multiyear as they are pushing back on it.
+
+4/1 Send out discounted offering to Wallace (waiting on Tom's approval). I'm also working to schedule a call with the product team so their CRO can share feedback. 
+
+3/31: We met with the Chief Risk Officer and Head of DS to go over the agentic library. They are not interested on the agentic offering and working to convince them to keep agentic/generative ai and renew on Q1.
+
+3/31: The meeting reviews American First Finance's use of DataDavidot's generative and agentic AI applications, discusses technical limitations due to data connectivity, and explores available product templates and deployment options. The client confirms their current setup will remain cloud-based with data push mechanisms, and expresses limited ability to adopt agentic features due to infrastructure constraints. No immediate changes are planned, but the team will revisit agentic capabilities in six to twelve months and awaits a proposal for predictive-only access.
+
+3/30: We are meeting with the Chief Risk Officer and Director of DS tomorrow to go over the agentic library. I'll try to pull this into this quarter, but I'm also trying to convince them to keep the Gen AI SKU as they only asked to renew for the predictive. They found some gaps with the Gen AI piece since they are not fully connected to DataDavidot. I can share more updates after our call tomorrow. I'm also working to schedule a call with the product team so their CRO can share feedback. 
+
+On 3/24 I sent options to Wallace to meet with product and Austin, senior DS. On 3/26 followed up with Wallace and sent an invite to meet on 3/31
+
+3/19/26: QBR with Wallace, CRO, and Ken, Director of DS.
+
+3/19/26: Customer Health: 9. Notes about health: Customer is very happy with predictive ai modeling. Wallace, CRO, didn't think Gen AI is strong and wants to remove it from the renewal. Update: Met with Wallace, CRO and EB, and Ken, Champion and Leader of DS, for a qbr. We discussed their predictive modeling makes DataDavidot one of their top tooling for analytics. Using now Querychat for agents.
+Next steps:
+1. Follow up on TTMD vs Querychat feedback on a feedback call with CRO and our product team (waiting on product to help with this request)
+2. Check on proposal feedback with Wallace 
+3. Follow up on development of use case pipeline for bank and cash flow scoring
+
+3/9/2026: Confirmed meeting on 3/12 with Wallace, CRO. 
+
+Sent proposal to Wallace, CRO, the proposal on 2/11 and followed up on 2/17
+
+1/11/26: Started working with Wallace on the renewal. 
+
+02/03/26: Checked with Wallace on Hackathon outcome and ask if they want to pursue any of the projects with agentic
+
+12/01/2025:
+Predictive AI experience is good, Agentic AI experience has been bumpy. Will check with Wallace, CRO, on 2026 goals and understand where the renewal is at. 
+
+Dec 14, 2023 asked CSM when next point is (email sent 11/29) looking to position genAI. Meeting schedule 1/9 will prep before with Anana"
+"Veem","Apr 08, 2026 
+
+Health Score: 7
+Issue: Technical / Product blocker
+
+What Changed WOW
+Sent over the Order Form (OF) today. The support ticket for serverless migration is in the final testing phase with the customer; once confirmed, this removes the primary technical blocker.
+
+The 5 Checks
+
+Tech Win (TW): In Progress
+Notes: Customer is currently happy with the platform, but the serverless migration has been a blocker. Parallel model running issues were resolved previously; waiting on final test results from Varinder next week to confirm the serverless fix.
+
+Legal Complete (LC): Confirmed
+Notes: Flat renewal proposed via OF; no indications of new legal review required for this term.
+
+EB Signoff (EBS): In Progress
+Notes: Champion (Varinder) is aligned and ""happy with the platform."" Need to transition from the technical fix into a formal sign-off conversation with the EB.
+
+Chriseline Understood (TU): Confirmed
+Notes: Renewal is July 2026. OF has been delivered well in advance to ensure a smooth path to signature.
+
+Pricing Agreed (PA): In Progress
+Notes: OF sent based on a flat renewal proposal. Final confirmation of pricing acceptance is expected following the resolution of the serverless migration.
+
+Remaining Risk
+Momentum often stalls when the champion (Varinder) becomes busy; need to ensure the technical fix doesn't drag into another two-week silence. Additionally need to have next conversations on agentic with Varinder on use cases he shared.
+
+Next 3 Customer-Visible Steps
+
+Confirm final test results for serverless migration → Varinder → Apr 10
+
+Pivot to Agentic AI discussion and use case workshop → Varinder + DR DS Team → Apr 17
+
+Schedule alignment call with Varinder and EB to finalize renewal → Jordan + Varinder → Apr 24
+
+
+
+Apr 01, 2026 - Sent over OF today, working to also schedule a conversation with our champion on agentic as he has some ideas for agents. I believe we have fixed the other end of the support ticket, he told me he will run final tests next week and let me know, but has been overly busy the past 2 weeks,
+
+Mar 18, 2026 -
+Customer health: 7
+
+I would put this higher if we could get this serverless migration handled. I believe we will have it done ideally by the end of this week, but that's been a blocker. Our team has been on it, but Varinder is sometimes slow to get back with us and we lose the momentum on the projects when he stops responding.
+
+Next 3 steps (to commit): 
+1. Ensure we get this finalized asap and get the support ticket handled to get them to serverless
+2. After figuring things out then setup a conversation with him and the EB. Varinder mentioned they are happy with the platform besides this small issue they've been facing. 
+3. Fix issue and pivot into agentic as that's also something they want to discuss. I want to fix the issue on the predictive side first as that's what they use us for mainly 
+
+Mar 11, 2026 - Met with Varinder, (champion). He had some issues running models in parallel that was the main priority for them to get corrected. Support helped them solve it and they are now happy with that again.
+
+Next 3 actions: Check in with Varinder at the end of this week to see how internal use cases discussions around agentic and gen AI are progressing.
+
+Set up a call with our data science team and Veem to discuss use cases and where we can add agentic/Gen into their current processes, as this is something of interest to Veem.
+
+Explore other predictive use cases where we may be able to become even more sticky within Veem.
+
+Feb 26, 2026 - Meeting with Varinder next week to discuss the renewal
+
+Feb 23, 2026 - 
+WHO : Varinder Singh, Data Scientist
+WHAT : Spoke with Varinder about a month ago, working to set him up with a genAI/Agentic demo.
+WHAT : Varinder hs told me many times they're happy with the tool. He is a tough guy to get on a meeting. I'm confident in the renewal, I think there is opportunity to grow it just may take longer
+WHEN : Working to schedule it as we speak, I sent an email out last week to have a conversation on renewal terms.
+WHO :N/A
+
+Nov 05, 2025 -
+
+1. Have you started renewal discussions? At this time no, working to get intro'd in. Old users will not respond to me, working to expand and get time on with main user as we've been successful prior with them.
+2. Have we received a clear verbal commitment to renew? No, still trying to meet with them.
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? No
+4. Is the customer's estimated ROI for predictive or agentic solutions documented?  The last year, their model’s detection rate improved from 60% to 80%, significantly reducing fraudulent activity and transactions. Again have been struggling to get set-up with the champion there currently."
+"Curative","4/9/26: Customer health: 6. Note about health: Brand new to the account and don't have much context on the current status. The account has low usage.
+Update: 4/9: followed up with JB on feedback and asked to meet to align on next steps for renewal.
+Next steps: 
+1. Follow up on proposal for renewal
+2. Schedule Agentic ai demo
+3. Keep aligning on 2026 priorities
+
+ On 3/31 followed up with JB on feedback about the proposal ad next steps.
+
+3/26: Meeting with Isaac, CTO, VP of Engineering - JB, and Rich - New engineering manager of the platform.
+
+
+3/5/26: Reached out to Isaac, CTO, to coordinate call
+
+3/4/26: Waiting on Tony to share context on the account
+
+
+Oct 21, 2025
+Yellow
+1. Have you started renewal discussions? N (Recommended >5 months out)
+Curative is still 7-8 months out from their contract renewal 
+Our focus is on value and helping them deliver AI apps and their GenaI use cases 
+We have met with C-level at our nvidia event in san jose and also have interest from his team to evaluate automl 
+
+2. Have we received a clear verbal commitment to renew? Y/N
+Curative is still 7-8 months out from their contract renewal 
+Our focus is on value and helping them deliver AI apps and their GenaI use cases 
+My plan for the renewal is to revisit in January and understand their 6 month roadmap and ask if their contract was up today if they would renew. 
+We are focused on supporting their new term low hanging fruit use cases and then transitioning to higher value enterprise use cases for 2026
+
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? NY
+Curative already has our GenAI offering 
+Curative is planning to evaluate AutoML for 2026
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? N 
+No ROI at the moment
+We are focused on identifying quick wins with TTMD and TTMdocs"
+"Prima Assicurazioni S.p.A.","Apr 08, 2026 
+Health score: 3
+Issue: Champion loss, competitive pressure (Databricks), and lack of production stickiness.
+
+What Changed WOW
+Risk Escalation: Following the departure of our main champion (Emiliano), the account has entered a ""black box"" state. We met with the new stakeholder, Gianluca, who previously supported DataDavidot but no longer uses it in his current domain. He is currently auditing internal teams to see if they want to continue the partnership. The primary technical team is leaning heavily into Databricks and DIY Python, viewing DataDavidot only as a ""sandbox"" for experiments rather than a production necessity. Meeting with Gianluca is scheduled for next week
+
+The 5 Checks
+
+TW: At Risk. Evidence: The team is ""code-first"" and currently avoids DataDavidot’s monitoring/deployment capabilities. They build models in DR but deploy them elsewhere, leading to a perception that the platform is replaceable by DIY Python.
+
+LC: In Progress. Notes: Renewed through July 2025 (current term). Future legal/security reviews will be needed if we pivot to GenAI/Agentic frameworks as proposed.
+
+EBS: Not Started. Notes: Significant gap in leadership following Emiliano's exit. Gianluca is a Sr. Product Manager, but we have not yet identified or secured a new high-level Economic Buyer (targeting Chief Underwriting Officer).
+
+TU: In Progress. Notes: We are in a critical 2-week window to hear back from Gianluca regarding the team's intent to continue. If the feedback is negative, the timeline for a ""save"" strategy is urgent.
+
+PA: Not Started. Notes: Pricing has not been discussed. The current goal is to justify the existence of the contract before discussing terms.
+
+Remaining Risk
+High risk of churn due to Databricks ""noise"" and the technical team's preference for manual coding. Without a pivot to a business-centric use case (Underwriting) or a production-level ""wedge"" (Monitoring), the account is likely to be consolidated into their Databricks spend.
+
+Next 3 Customer-Visible Steps
+
+Sync with Gianluca to hear internal feedback on usage/value → Jordan (DR) + Gianluca (Prima) → Next Week (4/14)
+
+Cold outreach/Multi-threading to Chief Underwriting Officer regarding ""Authentic Governance"" → Jordan (DR) → 4/15/26
+
+Technical ""Wedge"" presentation: Proposing DR Monitoring for stalled manual Python projects → Olga (DR) → 4/22/26
+
+
+
+Apr 02, 2026 - Still waiting to hear back from our new contact as he performs his internal contact.
+
+Mar 18, 2026 
+Customer health: 5
+
+Just took over this account recently. I'm told our former champion has left the company. We recently met with a Sr Product Manager who is responsible for the contract going forward. He just transitioned into the role he knows who we are but his team didn't use us, so he's going to talk with other teams to understand usage and value.
+
+Next 3 steps (to commit): 
+1. Coordinate time with Gianluca in a couple weeks to hear what his team has said about if they want to continue with us
+2. If they say yes, continue on with business as usual maybe propose GenAI/Agentic as a topic of conversation for them as they are an insurance company.
+3. If there is an engagement gap from the team, I think it makes the most sense to pivot and attempt to look for other teams that could use us. We have a few months and we should have a better understanding where they're at in a couple of weeks.
+
+Mar 11, 2026 - Expecting to hear from someone this week on the current state of the contract. Olga (CFDS DataDavidot) reached out to the team in our joint slack channel to ask about who the new contact would be Friday last week. Someone from the Prima team alerted us that the new stakeholder was OOO and would be reaching out to us by the end of this week.
+
+1. Wait to hear back from new stakeholder, check in Friday if still no message
+2. Setup time with new stakeholder to see how they're thinking about the renewal, Olga has some ideas of other ways they could utilize DataDavidot.
+3. Decide if we need to attempt to get into other business units based off these conversations and where they stand.
+
+Feb 26, 2026 - We’ve lost our main champion (Emiliano) and the team is leaning hard into Databricks and DIY Python. They currently see DataDavidot as just a ""sandbox"" for experiments, not a must-have for production.
+
+We’re moving away from the technical team (who are stuck in legacy/code-only mode) and going straight to Underwriting. We need to prove DR’s value in governance and speed-to-market for actual business apps, not just data science tools.
+
+Next Best Actions (NBAs)
+
+High-Level Intro: Jordan to email the Chief Underwriting Officer. Focus on ""Authentic Governance"" and the 4–5 month PIV timeline to show we can move faster than their internal Python projects.
+
+Stakeholder Map: Hit LinkedIn to find out who took over Emiliano’s budget and authority. We need to multi-thread into the Product and Analytics teams in Spain/Italy immediately.
+
+Technical ""Wedge"": Olga to dig into their cloud setup and re-engage summer contacts. We need to find one ""stalled"" project (like Fraud or Service) where DataDavidot’s monitoring could beat their current manual process.
+
+LH - Nov 06, 2025 
+
+1. Have you started renewal discussions? NO
+- Renewal date 13th July 2026
+- Plan is to engage with champion, Emilliano Carluccio, around agentic AI by end of November 2026. Offer a workshop or demo of our offering.
+
+2. Have we received a clear verbal commitment to renew? NO
+- Account is heavily reliant on Databricks for models in production.
+- Experimentation is the only area of DataDavidot they use, so we will have to try find other areas of the business that could potentially leverage DR for more end to end usage.
+
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? NO
+- Emilliano is open to introducing us to the CTO and MLOps team BUT only if we show some clear value add that Databricks cannot compete with. Will suggest this again late November
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? NO
+- Speed of experimentation and iteration. Use DR for Experimentation only (50 model workers). No ROI shared, but productivity gains is the metric."
+"American AgCredit","Apr 2, 2026
+Customer health: 6
+Note about health: Engagement & Technical gap. User sentiment is highly positive (""good signal"" reported by Nathan today). However, the account is undergoing a major organizational transition (splitting into 2 groups, Julia leaving, Richard joining late April), and there is an unresolved technical/IT question that could slow momentum ( followed up with our architect for next steps). 
+Update: Met with Champion Nathan on an enablement call today; the team is engaged and shared their upcoming restructure. Emailed EB Minet to schedule an introductory strategy/renewal sync for the week of April 13th . 
+Next 3 steps (to commit): 
+1. Fahad - Jamie Keager/IT email thread to unblock any technical hurdles before I return on 4/13.
+2. Conduct introductory strategy sync with Minet (EB) the week of 4/13 to align on the new two-group structure, onboarding Richard, and the upcoming renewal.
+3. Manage the license transition by coordinating Julia's deactivation and Richard's activation to keep them within their 5-user contract limit."
+"NESTLÉ México, S.A. de C.V.","4/9/26: Customer health: 6. Note about health: value gap & technical gap: End user left and EB moved teams. We have a new EB who doesn't knows much about DR. Business champion is motivated.
+Update: 4/8: Talked to SoftwareOne to update their account so we can start working on the proposal for the renewal. 4/9: Sent a note to Lucio, data analyst, to check on model development.
+Next steps: 
+1. Follow up on code from rudy so we can get the forecasting use case up and running - check if 3rd enablement session is needed in early April
+2. Ask Anana to introduce to new Analytics leader, Alicia.
+3. Start renewal conversation
+
+3/31 followed up after technical time with Rudy to enable new members. Rudy sent some code so we asked if they are being able to implement it. 
+
+on 3/27 had technical time with Rudy to enable new members.
+
+On 3/17 followed up with business champion, Anana, to introduce us to Alicia, new leader of analytics and EB. Helped new end users with technical enablement and questions on 3/10.
+
+3/10/26: Helped with enablement questions.
+
+3/4/26: TS training for new team members
+
+02/11/26: Met with Anana - we agreed to do a training for the new team members. Her new boss, Alicia, is evaluating different tools. 
+
+02/03/26: Sent invite to meet on 02/11 for a qbr. 
+
+12/22/25: Touched base with Anana on invoicing from SoftwareOne. 
+
+12/01: 
+New VP is pushing Nestle to use an alternative AI solution. We need to prove value and make a relationship with her. I will work with Anana on it since they have services now, but we need them to pay first to SoftwareOne."
+"Sohar International Bank SAOG","Apr 08, 2026 - First meeting next week
+
+Apr 02, 2026 - Champion is leaving, Anas (CFDS, DR) working to set up intro call for me with the new Champion. So far I have not met them yet.
+
+
+Mar 31, 2026 9:33 AM - We have just found out this opp is to add services on. They had them for year 1 of their 3 year. Anas to introduce me and we will bring this up to them then,"
+"SAG, LCC","Apr 2, 2026
+
+Customer health: 2 - engagement and value gap. VRI audit confirms zero internal SAG users (including Champion Jillian) have not logged in during 2026. The 8 live deployments are being maintained solely by Evolutio contractors. High risk that external Python contractors will take over the Azure environment to cut costs.
+
+Update: Conducted a forensic audit of usage logs. Azure export friction from last year was resolved, so this is a pure engagement/strategy gap. Account has been effectively dark since Q3 2025.
+
+Next steps (to commit): 1. Send a  check-in email to Jillian post-PTO for a confirmation on their FY27 strategy and whether they are moving to an in-house Python build.
+2. Sync with Andrew at Evolutio to assess if their contractor billables are also being cut and verify the status of the 8 live models.
+3. If Jillian ghosts the April 13th outreach, escalate to CTO Sandeep Joshi with a ""decommissioning protocol"" warning to definitively qualify them in or out for July."
+"New York Rangers, LLC","Apr 07, 2026 
+Health score: 9
+
+What Changed WOW: Working to move them to 11.0 pricing and potentially making a marketing story with them. Still an internal discussion and not something we have yet pitched to them
+
+TW: Confirmed
+Evidence: TTMD has been extremely successful and they want to continue growing it out
+
+LC: Not Started.
+
+EBS: In progress, we have verbal from his team of the renewal, but not an official sign off.
+
+TU: In Progress
+Notes: Approval process and signature timeline still being confirmed with EB, but they do understand when it needs to be done. I am optimistic we can have it done before.
+
+PA: In progress 
+Notes: Internally we are working to get them moved to 11.0
+
+Remaining Risk: Legal approval and getting the official sign off from the EB not just his team.
+
+Next 3 Customer-Visible Steps
+11.0 pricing on our end → DR → Apr 17
+
+Approval timeline alignment discussion with EB → Customer + DR → 4/20
+
+Pricing scenario review and selection → Customer → 4/20-25 once we finalize what the offer is and if they agree to be a customer we can reference.
+
+
+Apr 02, 2026 - Verbal commit from the customer, we will be meeting internally next week to discuss pricing before we present to the customer.
+
+Mar 25, 2026, 11:49 AM - Sentiment: High. Customer characterizes the partnership as a ""huge success"" that has ""surpassed the scope of the project.""
+
+Executive Summary
+The ""Ardie"" (Agentic AI) application has moved from a pilot/experimental phase to a stable, value-driving tool for Hockey Operations. Rich Dry (MSG) is seeing high engagement in summarizing scouting reports and identifying player targets. The focus is now shifting from development to operationalization and internal expansion (Scouts, Coaches, Front Office).
+
+Key Value Drivers & Risks
+Value: High stickiness. The tool is being used for critical talent evaluation (goaltender identification) and potential daily league-wide intelligence newsletters.
+
+Risk (Technical Dependency): The customer identified ""Derek-dependence"" as a risk. They are concerned about support if their primary DataDavidot engineer is unavailable.
+
+Expansion Barrier: To roll this out to the broader organization, we must solve for granular content security (e.g., ensuring scouts cannot see each other's proprietary reports).
+
+Next Steps:
+Architect Security Layer: Derek to propose a technical framework for ""Domain Security"" (User ID-based data filtering) by next week to unblock departmental expansion.
+
+Formalize Knowledge Transfer: Schedule a ""Deep Dive"" session with Rich to grant repo access and walk through the backend. This mitigates the ""Derek-dependence"" risk and builds customer autonomy.
+
+Initiate Renewal Paperwork:  begin the track track for a multi-year renewal (Year 2/3) now, leveraging the current high sentiment to avoid last-minute procurement delays. Additionally may add in execution hours.
+
+Mar 18, 2026
+Customer health: 6
+
+Have set up time yesterday to meet with the EB starting next week. Derek Pernicek has lead conversations with them and says they are happy but also may expect more services then what they paid for so that is something we're going to discuss on the first call.
+
+Next 3 steps (to commit): 
+1. Coordinate a prep call with Derek prior to next week's call
+2. Meet Rich (EB) and understand current priorities and how they've thought about the TTMD product they've been using so far
+3. Understand the renewal and what fits for them whether it's more services less product or more of both. Figure out how to align with them.
+
+Mar 13, 2026 - Derek setting up an EBR to introduce me
+
+Feb 26, 2026 - Account transition underway. Derek is working to build some features in to ensure they can utilize DataDavidot well during the trade deadline which he believes will be crucial to our renewal. After we get past that he is going to intro me to check on upcoming initiatives, and then we will have the renewal conversation
+
+11.4.25
+1. Have you started renewal discussions? No'
+
+7/21/2026 - My champion Rich Dry and a user Matt are attending Agents in the AM NYC. Derek and I are going onsite this Friday to discuss the progress we have made with talk to my docs and talk to my data, work out any issues with TTMdocs, algin on the roadmap and value. Confirm next steps and action plan 
+
+2. Have we received a clear verbal commitment to renew? No
+
+They are currently in season and slammed with games and ad hoc request from coaches. We have been working through the challenges of their talk to my docs application. 
+unified logging across TTMDocs for the application, llm deployment, and agentic deployment
+improvements in latency / user experience. agent responses can take a while and there's no real indication that work is happening in the background
+
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? No
+
+The plan is to get Talk to My Docs working for them and then spread this success up the chain and get an introduction from my champion to 
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? Yes
+
+We have a JSP with documented use cases, need to attached hard ROI to this week in person with them. For talk to my docs we will use time savings and the cost of that. For their predictive model they already had built and brought into DR, we will use improved model accuracy."
+"Public Holdings, Inc.","4/9/26:  Customer health: 7: We lost technical champion and new DS leader is starting on March 23rd.
+Update: 4/8 Met new director of data for the first time. Sent out pricing for the renewal.
+Next 3 steps:
+1. Demo the predictive capabilities to Dimitriy, new Director of Data, on April 14th or 15th
+2. Schedule QBR & call to revise next steps for renewal
+3. Check on proposal feedback
+
+3/26: Alli, Strategic Finance Leader, introduced me via email to Dimitriy, new director of Data. I sent out a note with options to meet.
+
+On 3/9 I spoke with Alli who is the Strategic Finance Leader and we agreed to coordinate a call with the new director of Data.
+
+3/9/26: Alli, Strategic Finance Leader, emailed me on 3/9 asking me to check back early April as they have a new Director of Data starting on 3/23.
+
+3/4/26: Reached out to Alli, Strategic finance leader, to check who should be my main point of contact since David, champion, left company.
+
+
+12/01/2025: 
+David Hill, our champion, notified me that he is leaving the company. His last day is Dec 5th. He is the main user so this change puts our partnership at risk."
+"ISMIE Mutual Insurance Company","Apr 08, 2026 - Health score: 4 (Previously 5)
+Issue: Value gap and active pricing objection (EB requesting a rate cut).
+
+What Changed WOW
+Risk Escalation: Following a meeting on 3/19, the Economic Buyer (Jim) explicitly challenged the ROI of the $15k ARR, citing low platform utilization. To defend the current spend and pivot away from a price cut, we have scheduled a use case brainstorming session for next week (4/15) to identify ""quick win"" scenarios that justify the cost.
+
+The 5 Checks
+
+TW: Confirmed. Evidence: The frequency model remains in production and is delivering value to underwriters, but the technical win is currently too narrow to justify the total cost in the customer's eyes.
+
+LC: In Progress. Notes: Renewal is July 31. No legal blockers yet, but potential GenAI/HIPAA requirements for new use cases may require a new review cycle.
+
+EBS: At Risk. Notes: Jim (EB) is actively pushing for a discount. He has signaled that the current utilization does not justify the contract value.
+
+TU: In Progress. Notes: 7/31 expiration. The window to save the full-value renewal is closing; we must prove value in the next 14 days to keep the signature timeline on track.
+
+PA: At Risk. Notes: Customer requested a price cut on 3/19. We have countered with a ""Value Realization"" plan. Pricing is currently unconfirmed and highly sensitive.
+
+Remaining Risk
+High risk of contraction. If the brainstorming session next week does not result in a high-conviction ""Quick Win"" (e.g., Claims Severity Classification or Provider Churn), the customer is likely to insist on a significant discount or non-renewal.
+
+Next 3 Customer-Visible Steps
+
+Use case brainstorming session to identify and quantify 2+ ""Quick Wins"" → Jordan (DR) + Jim/Greg (ISMIE) → 4/15/26
+
+Technical validation of selected use case data availability → Greg (ISMIE) + Chris/Q (DR) → 4/22/26
+
+Delivery of ""Value-Based Renewal"" proposal (defending $15k ARR) → Jordan (DR) → 4/30/26
+
+Apr 02, 2026 - April 8th use case brainstorming session on with the team to try and find some quick wins
+
+Mar 19, 2026 7:26 AM , Met with EB who threw a bit of a curveball at me. He told me they don't feel like they use the platform enough to justify the 15k ARR they spend. They've asked about a price cut, but based on where we're at with pricing at this time we've counter and proposed helping them find another quick time to value use case to justify the spend.
+
+Customer health - 7
+
+Mar 18, 2026 -
+Customer health: 8
+
+Met with Greg (Champion) last week to introduce myself. He is very happy with the product and results they're getting and has set me up with the EB this week to discuss the renewal with his boss/EB
+
+Next 3 steps (to commit): 
+1. Meet with EB 
+2. Discuss other initiatives outside of predictive, gauge if agentic/genAI is a priority
+3. Finalize renewal.
+
+Mar 11, 2026 - Met with their Sr Manager of DS (Champion) they are happy with the platform and want to discuss other use cases in May when they finish up on some current other projects.. They have interest in using LLM's but they have to be HIPPA compliant.
+
+1. The ""Compliance First"" Technical Validation
+Before we get Greg (champion) excited about a demo, I must address his primary blocker: HIPAA compliance. Since he is a solo data scientist at a physician-focused insurance firm, he cannot risk data exposure.
+
+Action: Consult your internal security/technical team to get a specific ""DataDavidot & HIPAA"" whitepaper or a summary of how the platform handles PHI (Protected Health Information).
+
+2. High-Value Resource Drop & ""Jim"" (EB) Connection
+ handle the immediate administrative follow-up while positioning yourself as a thought leader in his specific niche (Insurance + GenAI).
+
+Action: Send a dual-purpose email:
+
+Part A: Attach targeted GenAI resources specifically for Insurance
+
+3. The ""May Milestone"" Calendar Hold
+Greg is currently heads-down on an underwriter dashboard and training new users. You don't want to nag him, but you don't want to be forgotten.
+
+Action: Instead of waiting until May to reach out, send a placeholder calendar invitation now for mid-to-late May for the ""Insurance Data Scientist Strategy Session.""
+
+Feb 26, 2026 - Account Transition completed, meeting with their Senior Manager of data science next week, Talking current initiatives, and then discussing renewal"
+"Long Term Stock Exchange","Apr 08, 2026 - 
+
+Renewal Forecast Update
+
+Health score: 4
+Issue: Technical / Product blocker
+
+What Changed Week Over Week (WOW)
+The account is in a ""Restart"" phase. Current focus is on scheduling a meeting with Juan (EB/Champion) to pivot from ""static reporting"" to a revenue-driving predictive use case following the failure of their previous production model.
+
+The 5 Checks
+
+Tech Win (TW): In Progress – Notes: Previous implementation failed. Juan currently views the tool as ""static."" We must prove predictive utility for intraday trading volume to regain the win.
+
+Legal Complete (LC): In Progress – Notes: Status uncertain; need to confirm if the pivot to new use cases requires updated documentation or if existing terms cover the restart.
+
+EB Signoff (EBS): In Progress – Notes: Juan (CTO) is a strong champion but frustrated with the ""building block"" approach. He has not formally signed off on the renewal.
+
+Chriseline Understood (TU): Not Started – Notes: Signature window and internal LTSE approval steps are currently unknown.
+
+Pricing Agreed (PA): Not Started – Notes: Commercial alignment has not begun; Juan is focused on validating revenue impact before discussing costs.
+
+Remaining Risk
+The technical failure of the previous model (TTMD) has created a value gap. There is a high risk of non-renewal if the new ""Revenue Use Case"" isn't validated and the AWS ""Lego"" perception isn't overcome.
+
+Next 3 Customer-Visible Steps
+
+Secure meeting with Juan to present ""Vision"" for revenue-driving insights * AE * 4/15
+
+Present intraday trading volume prediction POC (Outcome vs. Features) * AE/SA * 4/22
+
+Confirm internal LTSE procurement and approval timeline * AE * 4/22
+
+Support Needed
+Technical/Strategic Alignment: Need SA leadership to help position DataDavidot as a ""finished vision"" solution rather than just building blocks to counter the AWS-style frustration.
+
+Apr 02, 2026 - Working to get time on for a session with Mackenzie on better enabling LTSE to continue utilizing DataDavidot. He has went dark but during our first call he was very open to learning more and improving so I expect he may be busy.
+
+Mar 18, 2026 
+Customer health: 4
+
+Met with Juan (CTO, EB) last week. He isn't happy about the results thus far with DataDavidot and is struggling to justify the renewal due to lack of ROI. 
+
+I know Juan seems to have also been expecting a little bit more on the execution side from us. They attempted to use TTMD but that did not work so they had to pivot to the pred side which has lead us to where we are with little to no value to show.
+
+Next 3 steps (to commit): 
+1. Briefing Zhilei to see if we can come up with some sort of plan to either add some execution to their plan or do a one off execution session
+2. Zhilei, Tom, and I to meet with Juan to discuss potential use cases/execution
+3. Discuss alternatives and how we partner with AWS as well as Juan mentioned they're looking into Sagemaker
+
+
+Mar 11, 2026 - Red- Met with Juan, the CTO yesterday. He isn't happy about the results the've gotten so far from the platform. He wants more of an execution style contract. Based on yesterdays conversation I think the 3 best next actions would be.                                                 1. Pivot from ""Platform Access"" to ""Solution Architecture""
+Juan is frustrated with the ""Lego building block"" approach of AWS and DataDavidot. He doesn't want a tool; he wants a finished engine.
+
+The Action: Schedule a ""Business Value Mapping"" session instead of a technical demo. Bring a Lead Data Scientist who specializes in Capital Markets or Exchanges.
+2. Deploy a ""White-Glove"" Restart Program
+Juan mentioned the handoff from the previous AM (Sailor) was ""bumpy"" and he felt abandoned (""here you go, over to you"").
+
+The Action: Formally propose a ""First Value"" Sprint. Offer dedicated hours to build one specific, revenue-driving use case for them, rather than letting his small team struggle with the ""Legos.""                                                                                                     3. Align with the AWS Partnership Strategy
+Juan is already talking to AWS and storing 100% of his data there. He’s looking for a reason to choose one over the other or see how they work together."
+"REV Federal Credit Union","Apr 08, 2026 
+Health score: 7
+Issue: None
+
+What Changed Week Over Week (WOW)
+Momentum is building as we have secured a confirmed meeting this Friday with both the Champion and the Economic Buyer (EB) to finalize renewal intent.
+
+The 5 Checks
+
+Tech Win (TW): Confirmed. Evidence: 5 models in production for customer behavior; Champion reports high organizational satisfaction.
+
+Legal Complete (LC): Not Started. Notes: Will be addressed once renewal intent is confirmed by the EB this Friday.
+
+EB Signoff (EBS): In Progress. Notes: Meeting scheduled for Friday to move this to ""Confirmed.""
+
+Chriseline Understood (TU): Not Started. Notes: Goal for Friday's call is to map out the signature path before the July expiration.
+
+Pricing Agreed (PA): Not Started. Notes: Expansion/upsell opportunities identified; need to align on commercial figures with the EB.
+
+Remaining Risk
+The EB has been a ""no-show"" previously; the primary risk is another scheduling conflict or the EB raising unexpected budgetary hurdles during the Friday session.
+
+Next 3 Customer-Visible Steps
+
+Confirm renewal intent and explore expansion options with EB -> CSM + EB -> Apr 10
+
+Document internal procurement and signature milestones -> CSM -> Apr 17
+
+Review and finalize renewal quote for signature -> CSM -> Apr 24
+
+Support Needed: None at this time. Awaiting the outcome of the EB meeting.
+
+Apr 01, 2026 - Champion joined call with only 5 minutes, EB wasn't able to make it. Champion said feedback in the organization is good on DataDavidot, using us for 5 models to predict customer behavior. She believes their may also be options to upsell to other departments within the org.
+
+Feel optimistic about the renewal, and would be willing to commit it following the call next week with the EB when we finally get the conversation on with the EB.
+
+Mar 18, 2026 
+Customer health: 6
+
+Still working to get a meeting on with them post handoff. I was told from the former AM we expect them to renew, but I have yet to meet them.
+
+Next 3 steps (to commit): 
+1. Continue working to coordinate calendars and find time to meet
+2. Discuss and learn about initiatives going forward and what's most important to them
+3. Talk renewal and if they intend to renew.
+
+Mar 13, 2026 - Still attempting to get a conversation with them following the handoff from Connor, going to have him send a bump email next week to try and get their attention.
+
+YELLOW
+
+Feb 09, 2026 
+Meeting on Feb 23 to talk about renewal in in July
+
+Nov 12, 2025 
+Karan delivered the NBP model. Checking in to ensure they're using it.
+
+Renewal Template:
+https://docs.google.com/document/d/1NP2kdijysF-PMdD8gdBWNypfWS5K_zJveR3JiAv-Hv0/edit?usp=sharing
+
+Oct 14, 2025 
+They seem happy but it also seems like Karan does all the work for them. Trying to adjust expectations
+
+Oct 01, 2025 
+Meeting with them on Oct 7
+
+Sep 16, 2025 
+Intro'ed via email.
+Getting invited to their next enablement sessions
+
+Aug 18, 2025 
+I've never met - need an intro"
+"CAS (Chemical Abstracts Service)","Apr 2, 2026
+Customer health: 6 - Value Gap / Engagement
+
+Note about health: While the core platform ($125k) is stable, the $50k GenAI add-on (Talk to My Data) is at risk for the 7/30 renewal. The customer has only utilized 3 of 20 purchased enablement hours, suggesting a stall in the chatbot use cases that drove the initial purchase. Last year’s ""Why Buy"" was a 12-month test to prove GenAI value before a long-term contract rewrite; without active engagement, the $50k portion is a churn threat.
+
+Update: Conducted a deep dive into historical win notes and current health flags. Identified that the Champion (Don Swartwout) had planned Q2 expansions that haven't materialized. Noted a significant legal/procurement bottleneck from the previous cycle that requires an early start for the 7/30 deadline.
+
+Next 3 steps (to commit):
+
+AE Sync (4/14): Debrief with the returning AE to confirm if ""Talk to My Data"" was  successfully enabled by the CFDS and identify the friction point for the 17 unused hours.
+
+The ""Burn Down"" Pitch (4/20): Meet with Don Swartwout to offer the 17 remaining hours as a ""no-cost"" resource to  get a chatbot into production before the renewal.
+
+EB Alignment (5/01): Present the GenAI progress to Jim Perry (EB) to justify the $50k renewal and discuss the original ""Year 2"" plan of folding GenAI into a unified multi-year agreement."
+"Firebird Music Holdings, LLC","Apr 08, 2026 
+Health score: 6 Issue: Unresponsive 
+
+What Changed Week Over Week (WOW)
+Customer is currently unresponsive following the delivery of the Order Form on April 2nd. 
+
+The 5 Checks
+
+Tech Win (TW): Confirmed Evidence: Customer is seeing ROI from a ticket forecasting model in production and has previously renewed. 
+
+Legal Complete (LC): In Progress Evidence: Order form sent; however, no confirmation yet if they will follow existing terms or require a new legal review. 
+
+EB Signoff (EBS): In Progress Evidence: Ryan Mitchell (VP of Engineering) identified as EB, but is currently ""not super engaged"" and has not provided formal intent to renew for this cycle. 
+
+
+Chriseline Understood (TU): Not Started Notes: No documented milestones or signature window; status is currently just ""following up"" with no confirmed approval path. 
+
+Pricing Agreed (PA): Not Started Notes: Draft order form was sent 3.5 months early, but the customer is still ""reviewing internally"" with no feedback on terms.
+
+Apr 02, 2026 - Customer has orderform, we have a next call on next month. I have been following up to get feedback on the OF, but no response yet.
+
+Mar 18, 2026 
+Customer health: 6
+Customer is not super engaged from what I've been told from the last AM, but seem to renew.
+
+Sent over an email to Ryan Mitchell (EB) last week with an order form to get ahead of it and put something in front of them
+
+Next 3 steps (to commit): 
+1. Coordinate time to meet with Ryan again to further discuss renewal
+2. Ryan is working to hire a DS, see if we can get with that person ASAP to add value
+3. Look to explore additional use cases with them.
+
+Mar 12, 2026 - Reached out to Ryan today looking to discuss the renewal, and sent him a draft of the order form as we are about 3.5 months out from the renewal.
+
+Next steps:
+Have discussions around the renewal and if there's any reason they don't intend to renew.
+
+Work to build out some additional use cases with them.
+
+Talk with Ryan to see about other priorities going forward around potentially GenAI
+
+Feb 26, 2026 - Account transition complete, planning to meet Ryan (VP of Engineering) and their newly hired upcoming data scientists, sending out the quote and then next EBR with them in a few months to finalize contract
+
+
+10/24/25
+1. Have you started renewal discussions?N
+- They are low touch and don't have service hours so they recently renewed which is a positive sign
+2. Have we received a clear verbal commitment to renew?/N
+- Renewal discussion will start in Q4
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? N
+- Very small, low maturity shop. Not ready for agentic at this time
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? N
+- Anecdotally, they are seeing ROI from a ticket forecasting model for their clients. They monetize this capability within a suite of services."
+"Retail Capital LLC dba Credibly","4/9/26: Customer health: 8. Note about health; our Champion, Dan Yelle has confirmed a flat renewal is certain. We just need to make sure he and Nathan (CTO) are comfortable with the move to serverless and that they can control costs. Update: 4/1 Meeting on 4/9 to introduce new Account Manager and have a conversation about serverless.
+Next 3 steps:
+1. 4/9 Intro new Account Manager to Credibly team
+2. Send over renewal proposal
+3. Discuss JSP and goals for 2026
+
+3/12/26: Stacey will schedule call with customer to introduce. There are pending discussion around serverless so she will help with that.
+
+3/9/26: Sent out a note to Stacey on 3/6 to follow up on account transition. She will send out the information by EOD Monday 3/9.
+
+11/18/25 - Credibly
+1. Have you started renewal discussions? No
+We’ve had casual conversations about the renewal being next Summer but nothing formal.  
+2. Have we received a clear verbal commitment to renew? Y/N
+No. Although, despite the struggles we’ve had this past year (technically) Dan said our relationship is strong and he doesn’t see Credibly moving away from DR. Rather, I think we need to find the right sized licenses for them come renewal time. 
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? Y/N
+Nathan is the CTO and sits on our QBRs. However we’ve not dug into Agentic just yet. We’ve been large;y focused on resolving outages and latency issues of late. 
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? Y/N
+Not officially documented. We do know however that all of their loan decisions are made using DR, which is fundamental to their operations 24/7."
+"Mercury Financial LLC","April 2, 2026
+
+Customer health: 2 Note: Red Flag - Acquisition/Value Gap. 
+
+Mercury was acquired by Atlanticus, and we received a formal non-renewal notice on March 9th due to a parent company mandate to consolidate onto AWS SageMaker. The account is currently ""Omitted"" in the forecast until we validate the Agentic POC.Update: On March 23rd, we synced with CDO Santiago Hernandez. While the risk team is moving to SageMaker, Santiago explicitly requested if we can provide a  Proof of Value for an ""Agentic Underwriting"" use case that Atlanticus/Sirius AI hasn't solved: using LLMs to parse unstructured transactional data for risk indicators. If we can provide ""the math"" and a demonstration of how we can identify hidden risk/approvals he will grant further access to his team. 
+
+Next 3 steps (to commit):Resource Alignment: Sync with CSE  to assign a technical resource to build the ""Transaction-to-Risk"" POC using the 98 unused pre-paid hours.
+Deliver ""The Math"": Present a case study or proof of value to Santiago  showing DataDavidot's marginal lift in underwriting via unstructured data parsing.
+Displace Sirius AI: Execute the agentic POC to prove DataDavidot is the superior ""anti-lock-in"" multi-cloud solution for their new fintech-specific requirements."
+"Personify Health (dba Virgin Pulse)","April 2, 2026
+
+Health: 7
+
+Health Note: Health is a 7 due to a Value Gap in MLOps and Services. While technical adoption is high (1,700+ models created), we are single-threaded through one power user (Justin Mason). The $33,000 MLOps ARR is under-utilized due to JAR exports (only 4/20 deployments active in-platform), and 59/70 enablement hours remain unused . 
+
+Update: Completed strategic handoff call from Colby Miller to Ana G-H. Justin Mason is officially the new Lead PoC.Discovered historical friction with S3/Firewall uploads (Case 00186318) that is impacting user sentiment.
+
+Next 3 steps (to commit):Unblock User Diversification: Partner with Justin (Admin) to enable ""Full Platform Access"" for Jenna Kim by mid-April to mitigate ""Justin-only"" concentration risk.
+Initiate Service Burn-Down: Pitch a ""Platform Health Audit"" and ""Overview Session"" for new users (Emma/Michelle) to utilize the remaining 59 hours before the July 30 renewal.
+MLOps Governance Pilot: Bridge the value gap for the $33k MLOps spend by onboarding their 60+ JAR-exported models into DataDavidot Monitoring Agents."
+"CAA North & East Ontario","Apr 08, 2026 -
+
+Health score: 2 
+
+Primary Issue: Value Gap What Changed Week Over Week (WOW)
+
+VP of Enterprise Solutions (EB) confirmed lack of intent to renew following data migration to Microsoft Fabric.
+
+The 5 Checks
+
+Tech Win
+
+ (TW): Not Started – Evidence: Current usage is minimal; the team has migrated data to Fabric and is focusing on on-premises dashboards with no ML currently active in the new environment.
+
+Legal Complete (LC): Not Started – Evidence: No discussion on terms has occurred given the explicit intent to non-renew.
+
+EB Signoff (EBS): Not Started – Evidence: VP David Coffey explicitly reached out to state they do not intend to renew the current arrangement.
+
+Chriseline Understood (TU): Confirmed – Evidence: Contract expires at the end of July.Pricing 
+
+Agreed (PA): Not Started – Evidence: No commercial alignment; customer is transitioning to Fabric for similar purposes.
+
+Remaining Risk
+Customer has already signaled a formal intent to churn due to platform consolidation into Microsoft Fabric.
+
+Next 3 Customer-Visible Steps
+Position workshop to demonstrate DataDavidot differentiators/add-ons to Fabric → Jordan → Apr 15
+Propose smaller package/downsize alternative to maintain partnership → Jordan → Apr 22
+
+Schedule technical deep dive on Generative AI/Agentic use cases → Jordan → Apr 30
+
+Mar 31, 2026 - Attempted to reengage the EB here and continue the conversation on an agentic/genAI. Still nothing back yet.
+
+Mar 18, 2026 - First meeting of handover occurred I met with Manager of reporting solutions and emailed with EB. They've both told me there is a competing product, Microsoft Fabric.
+
+Next Steps:
+1. Working to find some other value with them and see if there's any way to save them prior to ending, they also have GenAI and we may be able to build a project.
+2. Attempting to position a workshop to show how we differentiate/add to fabric
+3. Setup time with product and David to see where we can show any differentiators/additives.
+
+Mar 18, 2026 - 
+Customer health: 5
+Meeting with the manager of reporting solutions today as I was referred to her, but last week her boss I assume reached out to Connor Sullivan to tell us they don't intend on renewing.
+
+
+Next 3 steps (to commit): 
+1. Meet with Kayla to better understand what their priorities are and where their roadmap is heading
+2. Take those notes back to their VP of Enterprise Solutions to attempt to align with his priorities.
+3. Discuss alternatives to keep them as customers for a smaller package
+
+Mar 12, 2026 - VP of Enterprise Solutions reached out to Connor yesterday telling us they intend to not renew.
+
+Next Steps:
+
+1. Having a meeting in the coming weeks with the Manager of reporting solutions, she's interested in keeping the contract going.
+2. Going to look to meet with the VP of ES as well, the prior message went to the old AE.
+3. Looking to find value with the manager of reporting to see if we can find value and quickly save the product.
+
+Feb 26, 2026 - Former account owner has told me they have no intent to renew and that the CEO has directly told us they will not be.
+
+RED - CHURNING
+
+Feb 09, 2026 
+Almost certainly churning. They are unresponsive
+
+Nov 12, 2025 
+Renewal Template:
+https://docs.google.com/document/d/1pGvtSHB-G8vArwxTsrZy03LQvMlTT8Ut5uqFTr1McvQ/edit?usp=sharing
+
+Red - not likely to renew
+1. Have you started renewal discussions? Y/N (Recommended >5 months out)
+No- they've been ignoring us for over a year. 
+2. Have we received a clear verbal commitment to renew? Y/N
+No
+3. Have we secured a C-level or IT meeting to discuss Agentic solutions? Y/N
+No - CEO was asked and he said they don't use DataDavidot at all
+
+4. Is the customer's estimated ROI for predictive or agentic solutions documented? Y/N
+No 
+
+
+Oct 14, 2025 
+My outreach has been ignored. Still chasing.
+CEO said they're churning in July 2025
+
+Oct 01, 2025 
+Radio silence from my outreach
+
+
+Sep 16, 2025 
+No usage. CEO said in July 2025 they don't get any value from the tool
+
+Aug 18, 2025 
+Haven't had recent conversations with us.
+Usage seems light
+
+11/28 Working on GenAI interests. Separate opp for that.
+
+ARR: 42k
+Renewal Date: July 2026
+Champion: David Coffey
+Recurring/Upcoming Meetings: 
+Status: rollout went well for membership churn. working through GenAI interests now for their call center"
