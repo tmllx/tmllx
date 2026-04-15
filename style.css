@@ -84,16 +84,8 @@ section { margin-bottom: 48px; }
 
 /* ── Impact list ── */
 .impact-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
-.impact-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 0.975rem; }
-.impact-list li::before {
-  content: '';
-  display: block;
-  width: 6px; height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-  flex-shrink: 0;
-  margin-top: 9px;
-}
+.impact-list li { display: flex; align-items: baseline; gap: 16px; font-size: 0.975rem; }
+.impact-year { font-size: 0.78rem; color: var(--muted); flex-shrink: 0; white-space: nowrap; min-width: 72px; }
 
 /* ── Contact ── */
 .contact-grid { display: flex; flex-direction: column; gap: 10px; }
