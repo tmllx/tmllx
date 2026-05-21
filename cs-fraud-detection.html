@@ -32,21 +32,21 @@
 
     <div class="cs-col">
       <span class="cs-col-label">Situation</span>
-      <p>A top U.S. credit card issuer needed an AI-powered fraud detection platform capable of monitoring billions of transactions in real time. The engagement involved significant technical complexity, a large delivery team, and a contract structure that created meaningful commercial risk — including convenience termination clauses that could have left the project exposed mid-delivery.</p>
+      <p>Mastercard was experiencing intermittent failures in the clusters responsible for routing fraud scoring on payment transactions. When these clusters degraded, the result was point-of-sale delays and declined transactions — a problem affecting billions in transaction volume annually. I was brought in to lead a $250K paid proof of concept to determine whether failures could be predicted and traffic rerouted before they caused customer-facing disruption.</p>
     </div>
 
     <div class="cs-col">
       <span class="cs-col-label">Approach</span>
-      <p>I closed the $6M engagement and took on accountability for both the commercial and delivery sides. On the delivery side, I managed a 10-person team through implementation — coordinating across technical workstreams, managing client stakeholders, and keeping the program on track through the complexity that comes with large-scale financial services deployments.</p>
-      <p>On the commercial side, I restructured the contract to shift the risk profile — moving to milestone-based payment terms and eliminating the convenience termination clauses that had created the most significant exposure.</p>
+      <p>We trained anomaly detection models on Splunk telemetry data, identifying cluster health signatures that preceded failures before they materialized. The models powered an automated routing layer that redirected transaction traffic proactively — eliminating the latency and declines caused by reactive failover.</p>
+      <p>After a successful proof, I identified the opportunity to replicate the architecture across six other Mastercard services. I built the stakeholder relationships needed to position that expansion, then structured the deal to protect it. The original contract included a termination-for-convenience clause that left us exposed across a multi-year buildout. I renegotiated: any early exit would require Mastercard to pay more than 60% of remaining contract value — converting meaningful commercial risk into downside protection.</p>
     </div>
 
     <div class="cs-col">
       <span class="cs-col-label">Impact</span>
-      <div class="cs-impact-stat">$6M</div>
-      <div class="cs-impact-stat-label">engagement closed, delivered, and fully protected</div>
+      <div class="cs-impact-stat">$6M ARR</div>
+      <div class="cs-impact-stat-label">grown from a $250K pilot</div>
       <hr class="cs-impact-divider">
-      <p>The platform now monitors billions of transactions annually. The contract restructuring eliminated key commercial risk while maintaining a strong client relationship — and the delivery model held up under the operational demands of a major financial institution.</p>
+      <p>Six systems built across Mastercard services over three years. Billions in annual transaction volume protected from cluster-failure-driven disruption. Contract restructured so more than 60% of remaining value was due on early termination.</p>
     </div>
 
   </div>

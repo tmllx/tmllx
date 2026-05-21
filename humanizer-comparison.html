@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Humanizer Comparison — tmllx.com</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f5f0;
+      --surface: #ffffff;
+      --border: #e0ddd8;
+      --text: #1a1a18;
+      --muted: #6b6b66;
+      --tag-before-bg: #fff0f0;
+      --tag-before: #c0392b;
+      --tag-after-bg: #f0fff4;
+      --tag-after: #1a7a40;
+      --tag-neutral-bg: #f0f4ff;
+      --tag-neutral: #2c4fa3;
+      --accent: #2c4fa3;
+      --highlight: #fffde7;
+      --highlight-border: #f9c74f;
+      --del-bg: #ffeaea;
+      --del-text: #b71c1c;
+      --ins-bg: #e8f5e9;
+      --ins-text: #1b5e20;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .page-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px 24px;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .page-header p {
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 640px;
+    }
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .legend-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+    }
+    .main { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+    /* Page section headers */
+    .page-section {
+      margin-bottom: 40px;
+    }
+    .page-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Comparison block */
+    .comparison {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .comparison-meta {
+      padding: 12px 18px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .comparison-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .tag-pattern {
+      background: var(--tag-neutral-bg);
+      color: var(--tag-neutral);
+    }
+    .tag-clean {
+      background: var(--tag-after-bg);
+      color: var(--tag-after);
+    }
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .col {
+      padding: 16px 18px;
+    }
+    .col + .col {
+      border-left: 1px solid var(--border);
+    }
+    .col-header {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .col-header.before { color: var(--tag-before); }
+    .col-header.after { color: var(--tag-after); }
+    .col-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .col-dot.before { background: var(--tag-before); }
+    .col-dot.after { background: var(--tag-after); }
+    .col-text {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+    .col-text.before {
+      color: #555;
+    }
+
+    /* Inline highlights */
+    del {
+      text-decoration: none;
+      background: var(--del-bg);
+      color: var(--del-text);
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-style: normal;
+    }
+    ins {
+      text-decoration: none;
+      background: var(--ins-bg);
+      color: var(--ins-text);
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-style: normal;
+    }
+
+    /* Notes */
+    .note {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: var(--highlight);
+      border-left: 3px solid var(--highlight-border);
+      font-size: 12px;
+      color: #5a4f00;
+      border-radius: 0 4px 4px 0;
+    }
+    .note strong { font-weight: 700; }
+
+    /* Summary box */
+    .summary-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-top: 40px;
+    }
+    .summary-box h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .pattern-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .pattern-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+    .pattern-count {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--tag-neutral-bg);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pattern-desc { color: var(--text); }
+    .pattern-desc span { color: var(--muted); display: block; font-size: 11.5px; }
+
+    @media (max-width: 760px) {
+      .main { padding: 20px 16px; }
+      .page-header { padding: 20px 16px; }
+      .columns { grid-template-columns: 1fr; }
+      .col + .col { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Humanizer Comparison — tmllx.com</h1>
+  <p>AI writing patterns flagged across index.html, about.html, and projects.html, with suggested rewrites. The site is already pretty clean — most issues are subtle: corporate jargon, rule-of-three lists, and -ing phrase padding.</p>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-swatch" style="background: var(--del-bg); border: 1px solid #f5a0a0;"></div>
+      Flagged text (original)
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background: var(--ins-bg); border: 1px solid #80c896;"></div>
+      Replacement text (humanized)
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══════════════════════════════════
+       index.html
+  ══════════════════════════════════ -->
+  <div class="page-section">
+    <div class="page-section-title">index.html</div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Tagline</span>
+        <span class="tag tag-pattern">AI vocabulary</span>
+        <span class="tag tag-pattern">passive framing</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            AI strategy leader <del>helping enterprises operationalize</del> predictive, generative, and agentic AI.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            <ins>I help enterprises get real operating value out of</ins> AI — <ins>not just pilots.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Operationalize" is heavy AI jargon. First-person is more direct. The added "not just pilots" gives it an edge — a real opinion.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Impact list items</span>
+        <span class="tag tag-clean">mostly clean</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Delivered $100M+ <del>validated</del> annual value across enterprise AI programs<br><br>
+            Led strategic partnerships with BCG, NVIDIA, and SAP<br><br>
+            <del>Scaled</del> global retention and renewal operations across 200+ accounts
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Delivered $100M+ in annual value across enterprise AI programs<br><br>
+            Led partnerships with BCG, NVIDIA, and SAP<br><br>
+            <ins>Ran</ins> global retention and renewal operations across 200+ accounts
+          </div>
+          <div class="note"><strong>Why:</strong> "Validated" is a filler qualifier — the number speaks for itself. "Scaled" implies you grew something from nothing; "ran" is more accurate and less puffed-up. "Strategic" before "partnerships" adds no information.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       about.html
+  ══════════════════════════════════ -->
+  <div class="page-section">
+    <div class="page-section-title">about.html</div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Bio — paragraph 1</span>
+        <span class="tag tag-pattern">rule of three ×2</span>
+        <span class="tag tag-pattern">AI vocabulary</span>
+        <span class="tag tag-pattern">vague qualifier</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            I help enterprises turn AI capability into <del>operating leverage</del>. My work <del>spans</del> strategy, customer transformation, and commercial execution across predictive, generative, and agentic AI. I've led global portfolios, built partnerships with BCG and NVIDIA, and supported programs delivering $100M+ in <del>validated annual impact</del>. Recently I've focused on scaling adoption and designing renewal and pricing models that make AI platforms <del>durable</del> inside large organizations.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            I help enterprises turn AI capability into <ins>something that shows up in their financials</ins>. The work <ins>has mostly been</ins> strategy and commercial execution — figuring out which AI bets are worth making and getting them to stick. I've worked across predictive, generative, and agentic AI, <ins>built</ins> partnerships with BCG and NVIDIA, and been part of programs delivering $100M+ <ins>in annual business impact</ins>. Lately I've been focused on the harder end of that problem: <ins>designing renewal and pricing models that make AI platforms survive past the first year.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Operating leverage" is MBA jargon that floats above what he actually does. "Validated annual impact" buries the number with a qualifier. The ending now has a sharper point of view — "survive past the first year" is more real than "durable." The rule-of-three list for work areas was trimmed to two since all three were near-synonyms in context.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Bio — paragraph 2</span>
+        <span class="tag tag-pattern">rule of three</span>
+        <span class="tag tag-clean">largely human</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            I live on the North Shore of Massachusetts with my wife and daughter. Outside of work I enjoy <del>cooking, furniture making, gravel riding, and working on small projects that combine design, materials, and function</del>. I'm currently designing a home in rural Vermont, where I grew up, as a long-term base for <del>building, making, and spending more time</del> close to the landscape that shaped me.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            I live on the North Shore of Massachusetts with my wife and daughter. Outside work I <ins>cook, make furniture, and ride gravel</ins>. I'm also slowly designing a house in rural Vermont, where I grew up — <ins>part workshop, part home base for being outdoors</ins>.
+          </div>
+          <div class="note"><strong>Why:</strong> This paragraph is already one of the most human on the site. Minor trims: "currently" removed (implied), "building, making" are the same thing, "close to the landscape that shaped me" is slightly elevated — the Vermont house detail does that work on its own. "Outside of work I enjoy X" → "Outside work I X" is more direct.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Experience — DataRobot AMER role</span>
+        <span class="tag tag-pattern">-ing phrase padding</span>
+        <span class="tag tag-pattern">AI vocabulary</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Led enterprise AI transformation strategy across a $20M+ portfolio spanning financial services, healthcare, CPG, and TMT. Delivered $100M+ in <del>validated</del> annual business impact and built GenAI expansion strategy <del>generating $2M+ incremental pipeline</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Led enterprise AI transformation strategy across a $20M+ portfolio spanning financial services, healthcare, CPG, and TMT. Delivered $100M+ in annual business impact and built a GenAI expansion strategy <ins>that opened $2M+ in new pipeline</ins>.
+          </div>
+          <div class="note"><strong>Why:</strong> "Validated" is a filler qualifier — remove it. "Generating $2M+ incremental pipeline" ends with a dangling -ing phrase and the word "incremental" adds nothing. "That opened $2M+ in new pipeline" is more direct.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Experience — DataRobot AI Success role</span>
+        <span class="tag tag-pattern">AI vocabulary ("solution motion")</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Managed $10M ARR strategic portfolio with 125% Net Dollar Retention and zero churn in FY21. Built and scaled BCG–DataRobot <del>joint solution motion</del> and designed a 400-person enablement program improving modeling efficiency by 40%.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Managed $10M ARR strategic portfolio with 125% Net Dollar Retention and zero churn in FY21. Built the BCG–DataRobot <ins>partnership</ins> and designed a 400-person enablement program improving modeling efficiency by 40%.
+          </div>
+          <div class="note"><strong>Why:</strong> "Joint solution motion" is consultant-speak that few readers would parse. "Partnership" says the same thing plainly. "Scaled" is also removed — "Built" already implies growth.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Experience — BCG role</span>
+        <span class="tag tag-pattern">-ing phrase padding</span>
+        <span class="tag tag-pattern">vague corporate framing</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Supported enterprise transformation initiatives <del>combining analytics, workflow redesign, and change management across global stakeholder groups</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Supported enterprise transformation projects at large global companies, <ins>working across analytics, process redesign, and change management.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Combining X, Y, and Z across global stakeholder groups" is a textbook AI rule-of-three piled onto a vague -ing phrase. The rewrite says the same thing without the structure.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Skills — section headers</span>
+        <span class="tag tag-pattern">title case overuse</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            <del>AI Value Creation</del><br>
+            <del>Commercial Leadership</del><br>
+            <del>Analytics &amp; Technology</del><br>
+            <del>Partnerships &amp; GTM</del>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            <ins>AI value creation</ins><br>
+            <ins>Commercial leadership</ins><br>
+            <ins>Analytics &amp; technology</ins><br>
+            <ins>Partnerships &amp; GTM</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> The humanizer skill flags title case in section headers as an AI tell. Sentence case matches the rest of the site's heading style and feels less like a generated outline.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       projects.html — Apps
+  ══════════════════════════════════ -->
+  <div class="page-section">
+    <div class="page-section-title">projects.html — App cards</div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Meeting Agent description</span>
+        <span class="tag tag-pattern">rule of four (list padding)</span>
+        <span class="tag tag-pattern">-ing phrase padding</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            <del>Agentic workflow automating</del> call preparation, follow-up email generation, risk analysis, and coaching <del>to scale account management capacity</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            <ins>An agent that handles</ins> call prep, follow-up drafting, and deal risk flagging — <ins>so account managers can spend more time on actual accounts.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Agentic workflow automating X, Y, Z, and W to scale capacity" is a textbook AI sentence — rule of four list, -ing opener, vague benefit. The rewrite has a clearer payoff and reads like something a human actually wrote.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Portfolio Risk Analyzer description</span>
+        <span class="tag tag-pattern">rule of three</span>
+        <span class="tag tag-pattern">corporate abstractness</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Surfaces <del>early-warning signals</del> across an account portfolio to identify <del>renewal risk, expansion readiness, and intervention priorities</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            <ins>Shows you which accounts are heading toward a bad renewal before it's too late to do anything about it.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Early-warning signals" and "intervention priorities" are abstract. The rewrite says the same thing in language a reader actually thinks in. The rule-of-three list of outcomes is condensed into a single concrete one.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">ROI Calculator description</span>
+        <span class="tag tag-pattern">AI vocabulary ("validated ROI narratives")</span>
+        <span class="tag tag-pattern">-ing phrase padding</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Connects workflow-level AI adoption metrics to business outcomes, <del>generating validated ROI narratives for executive and renewal conversations</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Connects AI adoption data to dollar outcomes. <ins>Useful for renewals where the value story needs to hold up in front of an executive.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Generating validated ROI narratives" is dense AI-speak. "ROI narrative" isn't real language — it's what an AI would call a business case. The rewrite is specific about the use case.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Renewal Risk System description</span>
+        <span class="tag tag-pattern">AI vocabulary ("escalation pathways")</span>
+        <span class="tag tag-pattern">subjectless framing</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            <del>Structured forecasting and qualification framework that standardizes</del> renewal readiness scoring and <del>escalation pathways across distributed teams</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            <ins>A scoring system that gives distributed renewal teams a shared language for risk — so escalations happen earlier and nothing slips through.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Structured forecasting and qualification framework that standardizes" is the kind of thing only an AI would write. "Escalation pathways" is a bureaucratic abstraction. The rewrite shows what it does for a person.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       projects.html — Case Studies
+  ══════════════════════════════════ -->
+  <div class="page-section">
+    <div class="page-section-title">projects.html — Case studies</div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">Retention Operations Redesign</span>
+        <span class="tag tag-pattern">AI vocabulary ("operationalize")</span>
+        <span class="tag tag-pattern">weak ending</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Led global retention strategy and <del>operating model transformation</del> during a <del>critical</del> platform transition. Redesigned renewal processes end-to-end, then designed and deployed a suite of internal agents, tools, and dashboards to <del>operationalize the new motion at scale</del>. <del>The result was measurably stronger in-period performance across a distributed global team.</del>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            DataRobot was mid-transition to a new platform model and the renewal process hadn't kept pace. I rebuilt it — new playbooks, new escalation paths, new qualification criteria — then built the internal agents and dashboards to run it across a global team. <ins>In-period gross retention improved 30%.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Operating model transformation" and "operationalize the new motion at scale" are heavy jargon. The weak ending ("measurably stronger in-period performance") buries the actual number. Starting with the business context grounds the reader immediately. The 30% outcome is already on the page as a badge — move it into the narrative where it lands harder.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">$100M Annual Business Impact</span>
+        <span class="tag tag-pattern">AI vocabulary ("Orchestrated")</span>
+        <span class="tag tag-pattern">-ing phrase padding</span>
+        <span class="tag tag-pattern">false range</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Led AI transformation strategy across a $20M+ account portfolio spanning financial services, healthcare, CPG, and TMT. <del>Orchestrated</del> end-to-end adoption programs <del>linking</del> predictive, generative, and agentic AI capabilities to measurable profitability outcomes, <del>from use-case prioritization through production deployment</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Led AI transformation strategy across a $20M+ portfolio spanning financial services, healthcare, CPG, and TMT. I <ins>worked with customer teams to figure out which AI use cases were worth building</ins> — predictive, generative, and agentic — <ins>and saw them through to production.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Orchestrated" is a classic AI word that sounds grand and says little. "Linking X to Y, from A through B" is a false range — "from use-case prioritization through production deployment" just means "start to finish." The rewrite is first-person and concrete.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">250% YoY Revenue Growth</span>
+        <span class="tag tag-pattern">-ing phrase padding ("unlocking")</span>
+        <span class="tag tag-pattern">promotional language</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Co-engineered a vertical go-to-market strategy targeting Supply Chain buyers for a predictive analytics platform. Defined solution positioning, customer segmentation, and delivery motion from the ground up, <del>securing marquee enterprise logos and unlocking a new growth segment for the company</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Co-engineered a vertical go-to-market strategy targeting Supply Chain buyers for a predictive analytics platform. Defined positioning, segmentation, and delivery model from scratch, <ins>landed several large enterprise customers, and turned Supply Chain into one of the company's fastest-growing segments.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Securing marquee enterprise logos" is promotional and vague. "Unlocking a new growth segment" is a classic AI -ing tack-on. The rewrite names the actual outcome — customers won, vertical grown.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-meta">
+        <span class="comparison-label">BCG Joint Solution Motion</span>
+        <span class="tag tag-pattern">-ing phrase padding</span>
+        <span class="tag tag-pattern">AI vocabulary ("repeatable channel motion")</span>
+      </div>
+      <div class="columns">
+        <div class="col">
+          <div class="col-header before"><div class="col-dot before"></div>Before</div>
+          <div class="col-text before">
+            Built and scaled a joint go-to-market solution with BCG, combining DataRobot's AutoML platform with BCG's transformation methodology. Developed the engagement model, co-delivery playbook, and client pipeline from scratch, <del>generating immediate revenue and establishing a repeatable channel motion</del>.
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-header after"><div class="col-dot after"></div>After</div>
+          <div class="col-text">
+            Built the DataRobot–BCG partnership — engagement model, delivery playbook, and early client pipeline — from scratch. <ins>The first engagements brought in $500K and opened a $2M pipeline.</ins>
+          </div>
+          <div class="note"><strong>Why:</strong> "Generating immediate revenue and establishing a repeatable channel motion" is an -ing tail that buries the actual numbers already shown in the outcome badge. Move the specific outcomes into the prose where they do more work.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       Summary
+  ══════════════════════════════════ -->
+  <div class="summary-box">
+    <h3>Patterns found — summary</h3>
+    <div class="pattern-list">
+      <div class="pattern-item">
+        <div class="pattern-count">7</div>
+        <div class="pattern-desc">Rule of three (or four)
+          <span>Lists padded to three items when two would do. Appears in bio, app descriptions, and case study copy.</span>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-count">6</div>
+        <div class="pattern-desc">-ing phrase padding
+          <span>"generating validated ROI narratives," "unlocking a new growth segment," "establishing a repeatable channel motion"</span>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-count">5</div>
+        <div class="pattern-desc">AI vocabulary
+          <span>"operationalize," "orchestrated," "validated," "operating leverage," "solution motion"</span>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-count">3</div>
+        <div class="pattern-desc">Vague filler qualifiers
+          <span>"validated annual impact," "incremental pipeline," "strategic partnerships" — the qualifier adds nothing to the number.</span>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-count">2</div>
+        <div class="pattern-desc">Weak or buried outcomes
+          <span>Case study endings that describe process instead of results. The numbers are there — they just need to be the last word.</span>
+        </div>
+      </div>
+      <div class="pattern-item">
+        <div class="pattern-count">1</div>
+        <div class="pattern-desc">Title case headers
+          <span>Skills section uses title case on all four headers. Sentence case is less AI-formulaic.</span>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top: 20px; font-size: 12.5px; color: var(--muted);">
+      <strong>Overall assessment:</strong> This site is well above average for AI-written content — the voice is consistent, the numbers are specific, and the personal bio paragraph is genuinely human. The issues are mostly polish: trim the jargon, front-load the outcomes, and cut the -ing padding that creeps into case study copy. No wholesale rewrites needed.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
