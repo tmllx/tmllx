@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Likelihood to Renew (LTR)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #f5f3ef;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 24px 20px 60px;
+    }
+
+    .page-header { margin-bottom: 14px; }
+    .page-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+    .ltr-tag { font-size: 14px; font-weight: 400; color: #aaa; font-family: 'Helvetica Neue', sans-serif; }
+    .page-header p { font-size: 12px; color: #aaa; margin-top: 2px; font-family: 'Helvetica Neue', sans-serif; }
+    /* How it works panel */
+    .how-it-works {
+      margin-top: 12px;
+      background: #fff; border: 1.5px solid #e8e4df;
+      border-radius: 10px; overflow: hidden;
+      display: flex; flex-wrap: wrap;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    .hiw-section { padding: 14px 16px; flex: 1; min-width: 200px; }
+    .hiw-divider { width: 1px; background: #f0ede8; margin: 10px 0; }
+
+    .hiw-label {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #bbb; margin-bottom: 8px;
+    }
+
+    .hiw-formula {
+      font-size: 11px; color: #666; line-height: 1.55;
+    }
+    .pill {
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      padding: 1px 7px; border-radius: 20px;
+      margin: 0 1px;
+    }
+    .pill-r { background: #fee2e2; color: #dc2626; }
+    .pill-a { background: #fef3c7; color: #d97706; }
+    .pill-g { background: #dcfce7; color: #16a34a; }
+
+    .hiw-thresholds { display: flex; flex-direction: column; gap: 7px; }
+    .hiw-threshold {
+      display: grid;
+      grid-template-columns: 10px 1fr auto;
+      grid-template-rows: auto auto;
+      column-gap: 8px; row-gap: 1px;
+      align-items: start;
+    }
+    .th-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      margin-top: 2px; flex-shrink: 0;
+      grid-row: 1;
+    }
+    .th-green { background: #22c55e; }
+    .th-amber { background: #f59e0b; }
+    .th-red   { background: #ef4444; }
+
+    .th-name {
+      font-size: 11px; font-weight: 600; color: #333;
+      grid-column: 2; grid-row: 1;
+    }
+    .th-val {
+      font-size: 10px; font-weight: 700; color: #aaa;
+      grid-column: 3; grid-row: 1;
+      white-space: nowrap;
+    }
+    .th-desc {
+      font-size: 10px; color: #999; line-height: 1.4;
+      grid-column: 2 / 4; grid-row: 2;
+    }
+
+    .hiw-overrides { display: flex; flex-direction: column; gap: 8px; }
+    .hiw-override {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 8px 10px; border-radius: 6px;
+      border-left: 3px solid transparent;
+    }
+    .hiw-override-critical { background: #fff5f5; border-left-color: #fca5a5; }
+    .hiw-override-amber    { background: #fffbeb; border-left-color: #fcd34d; }
+
+    .override-icon {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .hiw-override-critical .override-icon { background: #dc2626; color: #fff; }
+    .hiw-override-amber    .override-icon { background: #d97706; color: #fff; }
+
+    .override-title { font-size: 11px; font-weight: 600; color: #333; margin-bottom: 2px; }
+    .override-body  { font-size: 10px; color: #888; line-height: 1.45; }
+
+
+    /* Outer layout: factors left, score right */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 288px;
+      gap: 14px;
+      align-items: start;
+    }
+
+    /* 2-column factor grid */
+    .factors {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .factor-card {
+      background: #fff; border-radius: 10px;
+      border: 1.5px solid #e8e4df; overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    /* override highlights */
+    .factor-card.eb-critical { border-color: #fca5a5; }
+    .factor-card.champion-warn { border-color: #fcd34d; }
+
+    .factor-top { padding: 10px 12px 7px; }
+
+    .factor-title-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 2px;
+    }
+    .factor-name { font-size: 13px; font-weight: 700; }
+    .factor-right { display: flex; align-items: center; gap: 6px; }
+
+    .factor-badge {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 9px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 6px; border-radius: 20px; flex-shrink: 0;
+    }
+    .badge-manual { background: #f0edff; color: #6b4fe8; }
+    .badge-auto   { background: #e6f9f0; color: #1a8c5e; }
+
+    .factor-weight { font-family: 'Helvetica Neue', sans-serif; font-size: 9px; color: #bbb; white-space: nowrap; }
+
+    .factor-question {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; color: #999; line-height: 1.3; margin-bottom: 6px;
+    }
+
+    /* RAG legend in factor header */
+    .rag-legend {
+      display: flex; gap: 6px; margin-bottom: 1px;
+    }
+    .rag-pip {
+      display: flex; align-items: center; gap: 3px;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 9px; color: #bbb;
+    }
+    .rag-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .rag-dot.r { background: #ef4444; }
+    .rag-dot.a { background: #f59e0b; }
+    .rag-dot.g { background: #22c55e; }
+
+    /* Option rows */
+    .options-list { padding: 2px 0; }
+
+    .option-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 5px 12px; cursor: pointer; width: 100%;
+      border: none; background: none; text-align: left;
+      transition: background 0.1s;
+    }
+    .option-row:hover { background: #fafaf8; }
+
+    .rag-pill {
+      flex-shrink: 0;
+      min-width: 46px; padding: 2px 8px;
+      border-radius: 20px; text-align: center;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 10px; font-weight: 700;
+      margin-top: 1px;
+      transition: background 0.15s, color 0.15s;
+    }
+    /* Unselected: soft tint */
+    .rag-pill-1 { background: #fee2e2; color: #dc2626; }
+    .rag-pill-2 { background: #fef3c7; color: #b45309; }
+    .rag-pill-3 { background: #dcfce7; color: #16a34a; }
+
+    .option-text {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; color: #666; line-height: 1.35;
+    }
+
+    /* RAG selected states */
+    .option-row.sel-1 { background: #fef2f2; }
+    .option-row.sel-1 .rag-pill-1 { background: #dc2626; color: #fff; }
+    .option-row.sel-1 .option-text { color: #7f1d1d; font-weight: 500; }
+
+    .option-row.sel-2 { background: #fffbeb; }
+    .option-row.sel-2 .rag-pill-2 { background: #d97706; color: #fff; }
+    .option-row.sel-2 .option-text { color: #78350f; font-weight: 500; }
+
+    .option-row.sel-3 { background: #f0fdf4; }
+    .option-row.sel-3 .rag-pill-3 { background: #16a34a; color: #fff; }
+    .option-row.sel-3 .option-text { color: #14532d; font-weight: 500; }
+
+    /* Adoption metrics drawer */
+    .metrics-drawer { border-top: 1px solid #e8f0fe; background: #f8faff; }
+    .metrics-toggle {
+      width: 100%; padding: 6px 12px;
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: none; cursor: pointer;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; font-weight: 600; color: #3b6ef5; text-align: left;
+      transition: background 0.12s;
+    }
+    .metrics-toggle:hover { background: #eef2ff; }
+    .metrics-toggle-icon {
+      width: 15px; height: 15px; border-radius: 50%;
+      border: 1.5px solid #3b6ef5;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #3b6ef5;
+      flex-shrink: 0; line-height: 1; transition: transform 0.2s;
+    }
+    .metrics-toggle-icon.open { transform: rotate(45deg); }
+    .metrics-list { display: none; padding: 3px 12px 10px; }
+    .metrics-list.open { display: block; }
+    .metrics-list-title {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #93b4f5; margin-bottom: 6px;
+    }
+    .metric-item {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; color: #3b6ef5;
+      padding: 3px 0; border-bottom: 1px solid #e8f0fe;
+      line-height: 1.35;
+      display: flex; align-items: flex-start; gap: 6px;
+    }
+    .metric-item:last-child { border-bottom: none; }
+    .metric-dot { width: 4px; height: 4px; border-radius: 50%; background: #93b4f5; flex-shrink: 0; margin-top: 4px; }
+
+    /* ── Right column: score panel ── */
+    .score-col { position: sticky; top: 16px; }
+
+    .score-panel {
+      background: #1a1a1a; color: #fff;
+      border-radius: 12px; padding: 18px 18px 16px;
+      margin-bottom: 10px;
+      transition: background 0.4s;
+    }
+    .score-panel.critical { background: #7f1d1d; }
+
+    .score-panel-label {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35); margin-bottom: 12px;
+    }
+    .score-display { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+
+    .rag-badge {
+      flex-shrink: 0;
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; font-weight: 800;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: #fff;
+      background: rgba(255,255,255,0.1);
+      transition: background 0.3s;
+    }
+    .rag-badge.rag-green    { background: #16a34a; }
+    .rag-badge.rag-amber    { background: #d97706; }
+    .rag-badge.rag-red      { background: #dc2626; }
+    .rag-badge.rag-critical { background: #7f1d1d; border: 2px solid #fca5a5; }
+
+    .score-tier { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .score-tier.healthy  { color: #4ade80; }
+    .score-tier.moderate { color: #fbbf24; }
+    .score-tier.at-risk  { color: #f87171; }
+    .score-tier.critical { color: #fca5a5; }
+    .score-tier.neutral  { color: rgba(255,255,255,0.35); font-size: 13px; }
+
+    .score-desc { font-family: 'Helvetica Neue', sans-serif; font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+
+    /* Override callouts */
+    .override-callout {
+      display: none;
+      margin-top: 10px; padding: 8px 10px;
+      background: rgba(255,255,255,0.1); border-radius: 6px;
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 11px; color: rgba(255,255,255,0.75); line-height: 1.4;
+      border-left: 3px solid #fca5a5;
+    }
+    .override-callout.champion-warn { border-left-color: #fcd34d; }
+    .override-callout.visible { display: block; }
+
+    /* Breakdown */
+    .breakdown-panel {
+      background: #fff; border-radius: 10px;
+      padding: 14px; border: 1.5px solid #e8e4df;
+      margin-bottom: 10px;
+    }
+    .breakdown-panel h3 {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #aaa; margin-bottom: 10px;
+    }
+    .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-label-col { width: 108px; flex-shrink: 0; }
+    .bar-factor-name { font-family: 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 600; color: #333; }
+    .bar-weight-note { font-family: 'Helvetica Neue', sans-serif; font-size: 10px; color: #ccc; }
+    .bar-track { flex: 1; height: 7px; background: #f0ede8; border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease, background 0.3s; }
+    .bar-val { font-family: 'Helvetica Neue', sans-serif; font-size: 11px; font-weight: 700; width: 14px; text-align: right; flex-shrink: 0; }
+    .bar-val.rag-r { color: #dc2626; }
+    .bar-val.rag-a { color: #d97706; }
+    .bar-val.rag-g { color: #16a34a; }
+    .bar-val.rag-none { color: #ccc; }
+    .bar-contrib { font-family: 'Helvetica Neue', sans-serif; font-size: 10px; color: #bbb; width: 36px; text-align: right; flex-shrink: 0; }
+
+    .btn-reset {
+      font-family: 'Helvetica Neue', sans-serif; font-size: 12px;
+      color: #aaa; background: none;
+      border: 1.5px solid #e0dbd5; border-radius: 6px;
+      padding: 7px 14px; cursor: pointer; width: 100%;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-reset:hover { color: #555; border-color: #aaa; }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      body { padding: 16px 14px 48px; }
+      .layout { grid-template-columns: 1fr; }
+      .factors { grid-template-columns: 1fr; }
+      .how-it-works { flex-direction: column; }
+      .hiw-divider { width: auto; height: 1px; margin: 0; }
+      .hiw-section { min-width: 0; }
+      .page-header h1 { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Likelihood to Renew <span class="ltr-tag">(LTR)</span></h1>
+  <p>Early Warning System</p>
+  <div class="how-it-works">
+
+    <div class="hiw-section">
+      <div class="hiw-label">How it's calculated</div>
+      <div class="hiw-formula">
+        Each factor is rated <span class="pill pill-r">Red = 1</span> <span class="pill pill-a">Amber = 2</span> <span class="pill pill-g">Green = 3</span> and multiplied by its weight. The weighted values are summed and normalized to a 0–100 scale, where 100 = all Green and 33 = all Red.
+      </div>
+    </div>
+
+    <div class="hiw-divider"></div>
+
+    <div class="hiw-section">
+      <div class="hiw-label">Thresholds</div>
+      <div class="hiw-thresholds">
+        <div class="hiw-threshold">
+          <span class="th-dot th-green"></span>
+          <span class="th-name">Green — Likely to Renew</span>
+          <span class="th-val">Score ≥ 78</span>
+          <span class="th-desc">Broadly strong across all factors. At least mostly Green with no more than one Red.</span>
+        </div>
+        <div class="hiw-threshold">
+          <span class="th-dot th-amber"></span>
+          <span class="th-name">Amber — Moderate Risk</span>
+          <span class="th-val">Score 60–77</span>
+          <span class="th-desc">Mix of Green and Amber. Some gaps but not broadly at risk. Requires at least one Green to offset.</span>
+        </div>
+        <div class="hiw-threshold">
+          <span class="th-dot th-red"></span>
+          <span class="th-name">Red — At Risk</span>
+          <span class="th-val">Score &lt; 60</span>
+          <span class="th-desc">Multiple Red scores, including in weighted factors. Middling EB/Champion scores cannot offset Red scores elsewhere.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hiw-divider"></div>
+
+    <div class="hiw-section">
+      <div class="hiw-label">Overrides</div>
+      <div class="hiw-overrides">
+        <div class="hiw-override hiw-override-critical">
+          <div class="override-icon">!</div>
+          <div>
+            <div class="override-title">EB Engagement = Red → Critical (regardless of all other scores)</div>
+            <div class="override-body">No executive sponsor means no deal. If budget authority is disengaged, the renewal cannot be defended internally and must be escalated immediately.</div>
+          </div>
+        </div>
+        <div class="hiw-override hiw-override-amber">
+          <div class="override-icon">⚠</div>
+          <div>
+            <div class="override-title">Champion Health = Red → capped at Amber minimum</div>
+            <div class="override-body">Without an internal seller, no other factor can compensate. The account cannot be rated Green until a champion is identified and confirmed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="layout">
+  <div class="factors" id="factorsContainer"></div>
+
+  <div class="score-col">
+    <div class="score-panel" id="scorePanel">
+      <div class="score-panel-label">Likelihood to Renew</div>
+      <div class="score-display">
+        <div class="rag-badge" id="ragBadge">—</div>
+        <div>
+          <div class="score-tier neutral" id="scoreTier">Score all 5 factors</div>
+          <div class="score-desc" id="scoreDesc">Select Red, Amber, or Green for each factor.</div>
+        </div>
+      </div>
+      <div class="override-callout" id="overrideCallout">
+        <strong>EB Override active.</strong> No matter what other factors score, a Red EB rating signals critical renewal risk and requires immediate escalation.
+      </div>
+      <div class="override-callout champion-warn" id="championCallout">
+        <strong>Champion warning.</strong> No internal seller identified — score is capped at Moderate Risk until a champion is confirmed.
+      </div>
+    </div>
+
+    <div class="breakdown-panel">
+      <h3>Factor Breakdown</h3>
+      <div id="barsContainer"></div>
+    </div>
+
+    <button class="btn-reset" onclick="resetAll()">↺ Reset scores</button>
+  </div>
+</div>
+
+<script>
+const ADOPTION_METRICS = [
+  '# of Active users on the platform (MAU) — Consumer of the app',
+  'Adoption rate (# of users / # of seats purchased)',
+  'Time-to-First-Value (TTFV) — # of days from contract sign to first AI solution deployed in production',
+  'Avg Developer MAU — users with development activity in last 30 days',
+  'Avg Feature Breadth — unique features used in last 30 days',
+  'GPU Inference Growth — GPU compute hours or inference volume consumed by customers hosting and inferencing LLMs on DataRobot',
+  'Cloud consumption (LLM USAGE + GPU USAGE)',
+  'OnPrem (# of Tokens)',
+  'Weekly Average Users VRI',
+  'Projects Created VRI',
+  'Predictions VRI',
+  '% of JSP items completed on time',
+  'Active deployments (# of models in production)'
+];
+
+const FACTORS = [
+  {
+    id: 'eb', name: 'EB Engagement', weight: 0.25, type: 'Manual',
+    question: 'Is someone with budget authority invested in the outcome?',
+    options: [
+      'No executive contact. Deal is managed entirely below the line with no sponsor awareness or engagement.',
+      'Executive is aware of the product but not actively invested. Some visibility but no personal stake in the renewal outcome.',
+      'Regular meetings with executive sponsor. Fully aligned on value realization impacting strategically important objectives. Executive is a vocal advocate.'
+    ]
+  },
+  {
+    id: 'champion', name: 'Champion Health', weight: 0.25, type: 'Manual',
+    question: 'Is there an internal seller for the renewal?',
+    options: [
+      'No champion identified. No one internally is advocating for the product or the renewal.',
+      'A champion exists but is passive, uncertain, or recently changed roles. Not actively selling the renewal internally.',
+      'Champion is influential, vocal, and actively driving the renewal. Will defend the budget if challenged.'
+    ]
+  },
+  {
+    id: 'roi', name: 'Perceived Value / ROI Clarity', weight: 0.20, type: 'Manual',
+    question: 'Does the customer have a defensible reason to renew?',
+    options: [
+      'No value articulated. The customer cannot explain what the product has delivered or why they should renew.',
+      'Some value recognized but not well documented or compelling. Metrics exist but are not widely shared or tied to business outcomes.',
+      'ROI clearly proven and tied to strategic business outcomes. Customer can defend the spend with confidence. Case study–ready.'
+    ]
+  },
+  {
+    id: 'adoption', name: 'Adoption Health', weight: 0.15, type: 'Auto',
+    question: 'Are they building, deploying, and fully utilizing what they bought?',
+    options: [
+      'Minimal model development activity, few or no production deployments, low license utilization.',
+      'Some model development and partial deployment into business processes. License utilization is moderate with many seats and deployment entitlements unused.',
+      'Active model development, strong deployment and business process integration, and high utilization of seat and deployment entitlements.'
+    ],
+    metrics: ADOPTION_METRICS
+  },
+  {
+    id: 'budget', name: 'Budget / Consolidation Pressure', weight: 0.15, type: 'Manual',
+    question: 'Is financial or vendor consolidation pressure threatening the renewal?',
+    options: [
+      'Active budget cuts or vendor consolidation underway. Procurement / IT is driving spend reduction that directly threatens renewal.',
+      'Budget scrutiny present. Renewal will require justification but no active elimination effort is targeting this product.',
+      'Budget is stable. No consolidation pressure or financial headwinds expected for this renewal.'
+    ]
+  }
+];
+
+const RAG = ['R', 'A', 'G'];
+const RAG_LABEL = { 1: 'Red', 2: 'Amber', 3: 'Green' };
+const scores = {};
+
+function buildFactors() {
+  const container = document.getElementById('factorsContainer');
+  FACTORS.forEach(f => {
+    const isAuto = f.type === 'Auto';
+    const card = document.createElement('div');
+    card.className = 'factor-card';
+    card.id = `card-${f.id}`;
+
+    const ragLabels = ['Red', 'Amber', 'Green'];
+    const optionRows = f.options.map((text, i) => {
+      const v = i + 1;
+      return `<button class="option-row" id="btn-${f.id}-${v}" onclick="setScore('${f.id}', ${v})">
+        <span class="rag-pill rag-pill-${v}">${ragLabels[i]}</span>
+        <span class="option-text">${text}</span>
+      </button>`;
+    }).join('');
+
+    const metricsHtml = f.metrics ? `
+      <div class="metrics-drawer">
+        <button class="metrics-toggle" onclick="toggleMetrics('${f.id}')">
+          <span class="metrics-toggle-icon" id="metrics-icon-${f.id}">+</span>
+          What comprises this score (${f.metrics.length} metrics)
+        </button>
+        <div class="metrics-list" id="metrics-list-${f.id}">
+          <div class="metrics-list-title">Adoption &amp; Engagement Signals</div>
+          ${f.metrics.map(m => `<div class="metric-item"><span class="metric-dot"></span><span>${m}</span></div>`).join('')}
+        </div>
+      </div>` : '';
+
+    card.innerHTML = `
+      <div class="factor-top">
+        <div class="factor-title-row">
+          <span class="factor-name">${f.name}</span>
+          <div class="factor-right">
+            <span class="factor-weight">${Math.round(f.weight * 100)}% wt</span>
+            <span class="factor-badge ${isAuto ? 'badge-auto' : 'badge-manual'}">${f.type}</span>
+          </div>
+        </div>
+        <div class="factor-question">${f.question}</div>
+      </div>
+      <div class="options-list">${optionRows}</div>
+      ${metricsHtml}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function toggleMetrics(id) {
+  const list = document.getElementById(`metrics-list-${id}`);
+  const icon = document.getElementById(`metrics-icon-${id}`);
+  const open = list.classList.toggle('open');
+  icon.classList.toggle('open', open);
+}
+
+function setScore(factorId, val) {
+  scores[factorId] = val;
+  for (let i = 1; i <= 3; i++) {
+    const btn = document.getElementById(`btn-${factorId}-${i}`);
+    btn.className = 'option-row' + (i === val ? ` sel-${val}` : '');
+  }
+  // Card border highlights
+  if (factorId === 'eb') document.getElementById('card-eb').classList.toggle('eb-critical', val === 1);
+  if (factorId === 'champion') document.getElementById('card-champion').classList.toggle('champion-warn', val === 1);
+  updateScore();
+}
+
+function updateScore() {
+  const rated = Object.keys(scores);
+  if (!rated.length) return;
+
+  const ebCritical    = scores['eb'] === 1;
+  const championWarn  = scores['champion'] === 1;
+
+  let weightedSum = 0, weightUsed = 0;
+  rated.forEach(k => {
+    const f = FACTORS.find(f => f.id === k);
+    weightedSum += scores[k] * f.weight;
+    weightUsed += f.weight;
+  });
+  const scaledScore = Math.round((weightedSum / (weightUsed * 3)) * 100);
+  const allScored = rated.length === FACTORS.length;
+
+  let tier, tierClass, desc;
+
+  if (ebCritical) {
+    tier = '🚨 Critical Risk';
+    tierClass = 'critical';
+    desc = 'EB override triggered. Escalate immediately regardless of other scores.';
+  } else if (!allScored) {
+    tier = `Partial: ${scaledScore}/100`;
+    tierClass = 'neutral';
+    desc = `${FACTORS.length - rated.length} factor${FACTORS.length - rated.length > 1 ? 's' : ''} still unscored.`;
+  } else if (scaledScore >= 78 && !championWarn) {
+    tier = '✓ Likely to Renew';
+    tierClass = 'healthy';
+    desc = 'Strong renewal signal. Maintain momentum and confirm timeline with your champion.';
+  } else if (scaledScore >= 60 || championWarn) {
+    tier = '⚠ Moderate Risk';
+    tierClass = 'moderate';
+    desc = championWarn
+      ? 'No champion identified — capped at Moderate Risk. Identify an internal advocate before advancing the renewal.'
+      : 'Gaps present. Prioritize the weakest factors before the renewal window opens.';
+  } else {
+    tier = '✗ At Risk';
+    tierClass = 'at-risk';
+    desc = 'Significant risk. Escalate now — address EB and champion gaps immediately.';
+  }
+
+  // Set RAG badge
+  const badge = document.getElementById('ragBadge');
+  if (ebCritical) {
+    badge.className = 'rag-badge rag-critical'; badge.textContent = '!';
+  } else if (!allScored) {
+    badge.className = 'rag-badge'; badge.textContent = '—';
+  } else if (scaledScore >= 78 && !championWarn) {
+    badge.className = 'rag-badge rag-green'; badge.textContent = 'Green';
+  } else if (scaledScore >= 60 || championWarn) {
+    badge.className = 'rag-badge rag-amber'; badge.textContent = 'Amber';
+  } else {
+    badge.className = 'rag-badge rag-red'; badge.textContent = 'Red';
+  }
+
+  const tierEl = document.getElementById('scoreTier');
+  tierEl.textContent = tier;
+  tierEl.className = `score-tier ${tierClass}`;
+  document.getElementById('scoreDesc').textContent = desc;
+
+  // Override callouts + panel color
+  document.getElementById('overrideCallout').classList.toggle('visible', ebCritical);
+  document.getElementById('championCallout').classList.toggle('visible', championWarn && !ebCritical);
+  document.getElementById('scorePanel').classList.toggle('critical', ebCritical);
+
+  updateBars();
+}
+
+function updateBars() {
+  const container = document.getElementById('barsContainer');
+  container.innerHTML = '';
+  FACTORS.forEach(f => {
+    const val = scores[f.id] || 0;
+    const pct = val > 0 ? ((val - 1) / 2) * 100 : 0; // map 1-3 → 0-100%
+    let color = '#e5e7eb', ragClass = 'rag-none', label = '—';
+    if (val === 1) { color = '#ef4444'; ragClass = 'rag-r'; label = 'R'; }
+    if (val === 2) { color = '#f59e0b'; ragClass = 'rag-a'; label = 'A'; }
+    if (val === 3) { color = '#22c55e'; ragClass = 'rag-g'; label = 'G'; }
+    const contrib = val > 0 ? ((val * f.weight) / 3 * 100).toFixed(1) : null;
+
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label-col">
+        <div class="bar-factor-name">${f.name}</div>
+        <div class="bar-weight-note">${Math.round(f.weight * 100)}% wt</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div>
+      <span class="bar-val ${ragClass}">${label}</span>
+      <span class="bar-contrib">${contrib ? '+'+contrib : ''}</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function resetAll() {
+  Object.keys(scores).forEach(k => delete scores[k]);
+  for (let i = 1; i <= 3; i++) {
+    FACTORS.forEach(f => {
+      const btn = document.getElementById(`btn-${f.id}-${i}`);
+      if (btn) btn.className = 'option-row';
+    });
+  }
+  document.getElementById('card-eb').classList.remove('eb-critical');
+  document.getElementById('card-champion').classList.remove('champion-warn');
+  const b = document.getElementById('ragBadge'); b.className = 'rag-badge'; b.textContent = '—';
+  document.getElementById('scoreTier').textContent = 'Score all 5 factors';
+  document.getElementById('scoreTier').className = 'score-tier neutral';
+  document.getElementById('scoreDesc').textContent = 'Select Red, Amber, or Green for each factor.';
+  document.getElementById('overrideCallout').classList.remove('visible');
+  document.getElementById('championCallout').classList.remove('visible');
+  document.getElementById('scorePanel').classList.remove('critical');
+  updateBars();
+}
+
+buildFactors();
+updateBars();
+</script>
+</body>
+</html>
