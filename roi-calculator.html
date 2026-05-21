@@ -926,7 +926,7 @@ function QueriesTab() {
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
-    if (!apiKey.trim()) { setError('Enter your Anthropic API key below to start chatting.'); return; }
+    if (!apiKey.trim()) { setError('Chat is not available in demo mode.'); return; }
     if (!aeNotes.trim() && !rdNotes.trim()) { setError('Paste some AE or RD notes on the left first.'); return; }
     setError('');
 
@@ -1014,16 +1014,6 @@ function QueriesTab() {
             <textarea value={rdNotes} onChange={e => setRdNotes(e.target.value)} rows={8}
               placeholder="Paste regional director notes, executive sponsor context, or strategic observations from RD calls…"
               style={ta} />
-          </div>
-          <div>
-            <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748B', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '6px' }}>
-              Anthropic API Key
-            </div>
-            <input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)}
-              placeholder="sk-ant-..."
-              style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1.5px solid #E2E8F0', fontSize: '13px', fontFamily: 'ui-monospace, monospace' }}
-            />
-            <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>Stays in memory — never stored or sent anywhere except Anthropic.</div>
           </div>
         </div>
 
