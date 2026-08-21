@@ -334,6 +334,15 @@ body.cs-page nav { max-width: 1080px; padding: 24px 48px 0; }
 }
 .cs-impact-stat-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 24px; line-height: 1.4; }
 .cs-impact-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.cs-sub-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
 .cs-page-footer {
   max-width: 1080px;
   margin: 0 auto;
