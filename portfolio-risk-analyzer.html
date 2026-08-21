@@ -1,1478 +1,1173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio Risk Analysis</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #f0f2f5;
-      --surface: #ffffff;
-      --surface2: #f8f9fb;
-      --border: #e2e6ea;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --success: #16a34a;
-      --success-light: #f0fdf4;
-      --warning: #d97706;
-      --warning-light: #fffbeb;
-      --danger: #dc2626;
-      --danger-light: #fef2f2;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --text-light: #94a3b8;
-      --radius: 10px;
-      --shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
-    }
-    html, body { height: 100%; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--text); background: var(--bg); }
-
-    /* ── Layout ── */
-    .app-layout { display: flex; height: 100vh; overflow: hidden; }
-    .sidebar { width: 268px; flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-    .sidebar-top { padding: 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-y: auto; }
-    .sidebar-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
-    .main-panel { flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg); display: flex; flex-direction: column; gap: 20px; }
-
-    /* ── Forms ── */
-    .field { margin-bottom: 9px; }
-    label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 3px; }
-    .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-    .label-row label { margin-bottom: 0; }
-    .detected { font-size: 10px; color: var(--success); font-weight: 600; }
-    input[type="text"], input[type="password"], select {
-      width: 100%; padding: 6px 9px; border: 1px solid var(--border);
-      border-radius: 6px; font-size: 12px; color: var(--text);
-      background: var(--surface2); outline: none; transition: border-color 0.15s;
-    }
-    input:focus, select:focus { border-color: var(--primary); background: white; }
-    .api-row { display: flex; gap: 5px; }
-    .key-saved { font-size: 10px; color: var(--success); margin-top: 2px; display: none; }
-
-    /* ── Buttons ── */
-    .btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s, opacity 0.15s; white-space: nowrap; }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
-    .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
-    .btn-secondary:hover:not(:disabled) { background: var(--border); }
-    .btn-ghost { background: none; color: var(--text-muted); border: none; padding: 4px 6px; font-size: 11px; }
-    .btn-ghost:hover { color: var(--primary); }
-    .btn-full { width: 100%; justify-content: center; }
-    .btn-sm { padding: 4px 9px; font-size: 11px; }
-
-    /* ── Dropzone ── */
-    .dropzone { border: 2px dashed var(--border); border-radius: 7px; padding: 14px 10px; text-align: center; cursor: pointer; background: var(--surface2); transition: border-color 0.2s, background 0.2s; margin-bottom: 9px; }
-    .dropzone:hover, .dropzone.dragover { border-color: var(--primary); background: var(--primary-light); }
-    .dropzone p { font-size: 11px; color: var(--text-muted); }
-    .dropzone strong { color: var(--primary); }
-    #fileInput { display: none; }
-    .file-loaded { display: flex; align-items: center; gap: 5px; padding: 6px 9px; background: var(--success-light); border: 1px solid #bbf7d0; border-radius: 6px; font-size: 11px; color: var(--success); margin-bottom: 9px; }
-
-    /* ── Progress ── */
-    .progress-wrap { background: var(--border); border-radius: 99px; height: 4px; overflow: hidden; margin: 6px 0 3px; }
-    .progress-fill { height: 100%; background: var(--primary); border-radius: 99px; transition: width 0.3s ease; }
-    .progress-label { font-size: 10px; color: var(--text-muted); }
-
-    /* ── Account list ── */
-    .account-list { flex: 1; overflow-y: auto; padding: 4px 0; }
-    .account-item { display: flex; align-items: center; gap: 8px; padding: 7px 14px; cursor: pointer; transition: background 0.12s; border-left: 3px solid transparent; }
-    .account-item:hover { background: var(--surface2); }
-    .account-item.selected { background: var(--primary-light); border-left-color: var(--primary); }
-    .account-item-info { flex: 1; min-width: 0; }
-    .account-item-name { font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .account-item.selected .account-item-name { color: var(--primary); font-weight: 600; }
-    .account-item-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
-    .risk-flag { font-size: 10px; font-weight: 700; padding: 2px 5px; border-radius: 4px; flex-shrink: 0; }
-    .risk-stuck { background: var(--warning-light); color: var(--warning); }
-    .risk-high { background: var(--danger-light); color: var(--danger); }
-
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .dot-pending { background: var(--text-light); }
-    .dot-processing { background: var(--warning); animation: pulse 1s infinite; }
-    .dot-done { background: var(--success); }
-    .dot-error { background: var(--danger); }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    /* ── Sidebar footer ── */
-    .sidebar-footer { border-top: 1px solid var(--border); padding: 8px 12px; display: flex; gap: 5px; flex-shrink: 0; }
-
-    /* ── Main panel tabs ── */
-    .tab-bar { display: flex; gap: 0; border-bottom: 2px solid var(--border); flex-shrink: 0; }
-    .tab { padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.15s; }
-    .tab:hover { color: var(--text); }
-    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-
-    /* ── Chat / Queries ── */
-    .chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 120px); max-width: 860px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-    .chat-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-muted); padding: 32px; }
-    .chat-msg { display: flex; flex-direction: column; gap: 4px; }
-    .chat-msg.user { align-items: flex-end; }
-    .chat-msg.assistant { align-items: flex-start; }
-    .chat-bubble { max-width: 78%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
-    .chat-msg.user .chat-bubble { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
-    .chat-msg.assistant .chat-bubble { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; white-space: pre-wrap; }
-    .chat-msg.assistant .chat-bubble strong { font-weight: 700; }
-    .chat-bubble.thinking { color: var(--text-muted); font-style: italic; }
-    .chat-input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); align-items: flex-end; }
-    .chat-input { flex: 1; resize: none; padding: 8px 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface2); outline: none; line-height: 1.5; max-height: 120px; overflow-y: auto; transition: border-color 0.15s; }
-    .chat-input:focus { border-color: var(--primary); background: white; }
-
-    /* ── Placeholder ── */
-    .placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); text-align: center; gap: 8px; min-height: 300px; }
-    .placeholder svg { width: 44px; height: 44px; opacity: 0.25; }
-    .placeholder p { font-size: 14px; }
-    .placeholder small { font-size: 12px; }
-
-    /* ── Account card ── */
-    .account-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; max-width: 760px; }
-    .account-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 18px; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; gap: 12px; }
-    .account-header-left { flex: 1; min-width: 0; }
-    .account-name { font-size: 16px; font-weight: 700; }
-    .account-chips { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
-    .chip { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; background: rgba(255,255,255,0.18); border-radius: 99px; font-size: 11px; font-weight: 600; }
-    .account-actions { display: flex; gap: 6px; flex-shrink: 0; }
-    .btn-card { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border: 1px solid rgba(255,255,255,0.35); border-radius: 5px; background: rgba(255,255,255,0.12); color: white; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-    .btn-card:hover { background: rgba(255,255,255,0.25); }
-
-    .account-body { padding: 16px 18px 18px; }
-    .ref-bar { margin-bottom: 10px; padding: 10px 12px; border-radius: 7px; border: 1px solid var(--border); }
-    .ref-bar.ae-bar  { background: #f0fdf4; border-color: #bbf7d0; }
-    .ref-bar.rd-bar  { background: var(--surface2); border-color: var(--border); }
-    .ref-bar-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .ae-bar  .ref-bar-label { color: var(--success); }
-    .rd-bar  .ref-bar-label { color: var(--text-muted); }
-    .ref-bar-text { font-size: 12px; color: var(--text-muted); line-height: 1.5; max-height: 72px; overflow: hidden; }
-    .ref-bar-expand { font-size: 11px; color: var(--primary); cursor: pointer; margin-top: 3px; display: inline-block; }
-
-    .summary-textarea { width: 100%; min-height: 80px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 7px; font-family: inherit; font-size: 13px; line-height: 1.7; color: var(--text); background: var(--surface2); resize: none; overflow: hidden; outline: none; transition: border-color 0.15s, background 0.15s; }
-    .summary-textarea:focus { border-color: var(--primary); background: white; }
-
-    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-    .raw-notes-toggle { font-size: 11px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 3px; user-select: none; }
-    .raw-notes-toggle:hover { color: var(--primary); }
-    .raw-notes { margin-top: 8px; }
-    .raw-note-row { font-size: 11px; color: var(--text-muted); padding: 6px 9px; background: var(--surface2); border-radius: 5px; margin-bottom: 3px; border: 1px solid var(--border); line-height: 1.5; }
-
-    .skeleton-textarea { width: 100%; height: 140px; border-radius: 7px; background: linear-gradient(90deg, #e2e6ea 25%, #f0f2f5 50%, #e2e6ea 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-    /* ── Portfolio Analysis ── */
-    .analysis-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; max-width: 1100px; }
-    .analysis-header { padding: 14px 18px; background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color: white; }
-    .analysis-header h2 { font-size: 15px; font-weight: 700; }
-    .analysis-header p { font-size: 11px; opacity: 0.75; margin-top: 3px; }
-    .analysis-body { padding: 18px; }
-
-    .risk-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
-    .risk-table th { text-align: left; padding: 7px 10px; background: var(--surface2); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 2px solid var(--border); }
-    .risk-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.45; }
-    .risk-table tr:last-child td { border-bottom: none; }
-    .risk-table tr:hover td { background: var(--surface2); }
-    .risk-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: 700; }
-    .badge-high { background: var(--danger-light); color: var(--danger); }
-    .badge-stuck { background: var(--warning-light); color: var(--warning); }
-    .badge-ok { background: var(--success-light); color: var(--success); }
-    .badge-watch { background: #fef3c7; color: #92400e; }
-
-    .analysis-section { margin-bottom: 20px; }
-    .analysis-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
-    .theme-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 14px 16px; font-size: 13px; line-height: 1.65; color: var(--text); }
-
-    .run-analysis-wrap { text-align: center; padding: 32px; }
-    .run-analysis-wrap p { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
-
-    /* ── Toast ── */
-    .toast-wrap { position: fixed; bottom: 18px; right: 18px; display: flex; flex-direction: column; gap: 5px; z-index: 999; }
-    .toast { padding: 8px 14px; border-radius: 7px; font-size: 12px; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.15); animation: slideIn 0.2s ease; }
-    .toast.success { background: #166534; color: white; }
-    .toast.error { background: #7f1d1d; color: white; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    .hidden { display: none !important; }
-    /* ── Demo mode ── */
-    .demo-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 7px; padding: 9px 11px; margin-bottom: 9px; }
-    .demo-banner p { font-size: 11px; color: #1d4ed8; line-height: 1.5; }
-    .demo-banner strong { font-weight: 700; }
-    .demo-clear { font-size: 10px; color: #1d4ed8; cursor: pointer; text-decoration: underline; margin-top: 4px; display: inline-block; }
-    .demo-clear:hover { color: #1e40af; }
-    .api-hidden { display: none !important; }
-    hr.divider { border: none; border-top: 1px solid var(--border); margin: 9px 0; }
-    .optional-label { font-size: 10px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-light); }
-
-    /* ── Mobile ── */
-    @media (max-width: 768px) {
-      .app-layout { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
-      .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
-      .sidebar-top { max-height: none; overflow: visible; }
-      .account-list { max-height: 220px; overflow-y: auto; }
-      .sidebar-footer { flex-wrap: wrap; }
-      .main-panel { padding: 16px; overflow: visible; height: auto; }
-      .chat-wrap { height: 480px; }
-      .account-card, .analysis-card { max-width: 100%; }
-      .account-header { flex-direction: column; gap: 8px; }
-      .account-actions { flex-wrap: wrap; }
-      .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .tab { white-space: nowrap; padding: 8px 12px; font-size: 12px; }
-      .risk-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .analysis-body { padding: 12px; }
-      .chat-input-row { padding: 8px 10px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>SPY/DIA Pattern Trader — Live Demo</title>
+<meta name="description" content="Interactive demo of a technical pattern-based trading alert system for SPY, using DIA as a confirming signal.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/gridjs.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@5.0.2/dist/theme/mermaid.min.css">
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #fafbfc; color: #1a1a1a; font-size: 13px; line-height: 1.45; }
+header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #fff; border-bottom: 1px solid #e4e7eb; flex-wrap: wrap; gap: 8px; }
+header h1 { font-size: 14px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+header h1 .sub { color: #6b7280; font-weight: 400; margin-left: 6px; }
+.status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: #f3f4f6; border-radius: 999px; font-size: 11px; color: #374151; font-weight: 500; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; }
+.status-dot.on { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
+.status-dot.warn { background: #f59e0b; }
+.status-dot.err { background: #ef4444; }
+nav.tabs { display: flex; background: #fff; border-bottom: 1px solid #e4e7eb; padding: 0 8px; gap: 2px; overflow-x: auto; }
+nav.tabs button { background: none; border: none; padding: 9px 14px; font-size: 12px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+nav.tabs button:hover { color: #1a1a1a; }
+nav.tabs button.active { color: #2563eb; border-bottom-color: #2563eb; }
+main { padding: 12px; max-width: 1280px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row > * { min-width: 0; }
+.col { flex: 1 1 0; }
+.card { background: #fff; border: 1px solid #e4e7eb; border-radius: 8px; padding: 12px; }
+.card h3 { margin: 0 0 8px 0; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+.metric { display: flex; flex-direction: column; gap: 2px; }
+.metric .value { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.metric .label { font-size: 10px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; }
+.metric.pos .value { color: #059669; }
+.metric.neg .value { color: #dc2626; }
+.chart-card { background: #fff; border: 1px solid #e4e7eb; border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
+.chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.chart-title { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.symbol-badge { font-size: 10px; font-weight: 700; padding: 2px 6px; background: #1a1a1a; color: #fff; border-radius: 3px; letter-spacing: 0.03em; }
+.state-badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; }
+.state-badge.normal { background: #f3f4f6; color: #6b7280; }
+.state-badge.down   { background: #fef2f2; color: #dc2626; }
+.state-badge.flat   { background: #fffbeb; color: #b45309; }
+.state-badge.up     { background: #f0fdf4; color: #059669; }
+.chart-wrap { position: relative; height: 200px; }
+.price-now { font-size: 11px; color: #6b7280; font-variant-numeric: tabular-nums; }
+.price-now b { color: #1a1a1a; font-weight: 600; }
+.pattern-strip { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: #fff; border: 1px solid #e4e7eb; border-radius: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.stage { display: flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 6px; background: #f9fafb; border: 1px solid #e5e7eb; font-size: 11px; color: #6b7280; font-weight: 500; }
+.stage.active { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+.stage.done { background: #f0fdf4; border-color: #86efac; color: #047857; }
+.stage .num { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: #e5e7eb; color: #6b7280; font-size: 9px; font-weight: 700; }
+.stage.active .num { background: #2563eb; color: #fff; }
+.stage.done .num { background: #059669; color: #fff; }
+.stage-arrow { color: #d1d5db; font-size: 12px; }
+.alert-log { background: #fff; border: 1px solid #e4e7eb; border-top: none; border-radius: 0 0 8px 8px; max-height: 260px; overflow-y: auto; }
+.alert-log .alert-item { display: flex; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #f3f4f6; align-items: flex-start; }
+.alert-log .alert-item:last-child { border-bottom: none; }
+.alert-log .alert-time { font-size: 10px; color: #9ca3af; font-variant-numeric: tabular-nums; min-width: 64px; padding-top: 2px; }
+.alert-log .alert-icon { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.alert-log .alert-icon.info { background: #6b7280; }
+.alert-log .alert-icon.warn { background: #f59e0b; }
+.alert-log .alert-icon.buy { background: #2563eb; }
+.alert-log .alert-icon.win { background: #059669; }
+.alert-log .alert-icon.loss { background: #dc2626; }
+.alert-log .alert-icon.sys { background: #8b5cf6; }
+.alert-log .alert-msg { font-size: 12px; color: #1f2937; flex: 1; word-break: break-word; }
+.alert-log .empty { padding: 24px; text-align: center; color: #9ca3af; font-size: 12px; }
+.controls-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.btn { background: #1a1a1a; color: #fff; border: none; padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; }
+.btn:hover { background: #333; }
+.btn.primary { background: #2563eb; }
+.btn.primary:hover { background: #1d4ed8; }
+.btn.secondary { background: #fff; color: #1a1a1a; border: 1px solid #d1d5db; }
+.btn.secondary:hover { background: #f9fafb; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.toggle-group { display: inline-flex; background: #f3f4f6; border-radius: 6px; padding: 2px; }
+.toggle-group button { background: none; border: none; padding: 5px 12px; font-size: 11px; font-weight: 500; color: #6b7280; cursor: pointer; border-radius: 4px; }
+.toggle-group button.active { background: #fff; color: #1a1a1a; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.input { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: inherit; }
+.input:focus { outline: none; border-color: #2563eb; }
+label.field { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #6b7280; font-weight: 500; }
+label.field input[type="range"] { width: 100%; }
+.range-row { display: flex; align-items: center; gap: 8px; }
+.range-row input[type="range"] { flex: 1; }
+.range-row .range-value { font-size: 11px; font-variant-numeric: tabular-nums; font-weight: 600; color: #1a1a1a; min-width: 56px; text-align: right; }
+.tx-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.heatmap-grid { display: grid; gap: 2px; }
+.heatmap-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; border-radius: 3px; color: #1a1a1a; background: #f3f4f6; }
+.heatmap-cell.empty { color: #d1d5db; }
+.heatmap-col-label { font-size: 9px; color: #6b7280; font-weight: 500; display: flex; align-items: center; justify-content: center; }
+.note { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 10px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 10px; }
+.note.info { background: #eff6ff; border-color: #bfdbfe; color: #1e3a8a; }
+.note.err { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.note.ok { background: #f0fdf4; border-color: #86efac; color: #14532d; }
+.note b { font-weight: 600; }
+.gridjs-table { font-size: 12px; }
+.gridjs-th { font-size: 10px !important; }
+.gridjs-wrapper { box-shadow: none !important; }
+.sliders-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.kbd { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 11px; background: #f3f4f6; padding: 1px 5px; border-radius: 3px; border: 1px solid #e5e7eb; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.live-pulse { animation: pulse 1.4s infinite; }
+.conn-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 10px 12px; background: #fff; border: 1px solid #e4e7eb; border-radius: 8px; margin-bottom: 10px; }
+.conn-panel .key-input { flex: 1; min-width: 220px; max-width: 380px; }
+.feed-meta { font-size: 10px; color: #9ca3af; font-variant-numeric: tabular-nums; }
+</style>
 </head>
 <body>
-<div class="app-layout">
 
-  <!-- ══ SIDEBAR ══ -->
-  <div class="sidebar">
-    <div class="sidebar-top">
-      <div class="sidebar-title">📋 Portfolio Risk Analysis</div>
+<header>
+  <h1>SPY/DIA Pattern Trader<span class="sub">interactive demo · synthetic market data</span></h1>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="status-pill"><span class="status-dot" id="status-dot"></span><span id="status-text">stopped</span></span>
+    <span class="status-pill" id="clock-pill" style="display:none;"><span id="clock"></span></span>
+  </div>
+</header>
 
-      <!-- Demo banner (shown when sample data is loaded) -->
-      <div class="demo-banner hidden" id="demoBanner">
-        <p><strong>✦ Demo mode</strong> — Sample data loaded. Summaries and portfolio analysis are pre-generated.</p>
-        <span class="demo-clear" onclick="clearDemo()">← Clear</span>
+<nav class="tabs">
+  <button data-tab="live" class="active">Live</button>
+  <button data-tab="transactions">Transactions</button>
+  <button data-tab="analytics">Analytics</button>
+  <button data-tab="backtest">Backtest</button>
+  <button data-tab="settings">Settings</button>
+</nav>
+
+<main>
+
+<section id="tab-live" class="tab-panel active">
+
+  <div class="note info" style="margin-bottom:12px;">
+    <b>What you're looking at.</b> A live simulation of a multi-stage technical trading strategy.
+    It watches SPY and DIA at 1-second resolution and fires a BUY alert when: (1) SPY is trending
+    down, (2) SPY levels off ("flat-bounces"), (3) DIA is also down at the same time, and (4) DIA
+    starts trending up. It then holds the position until SPY recovers to its pre-downtrend high
+    (SELL). All price data on this page is <b>synthetic</b> — patterns are injected periodically
+    so you can watch the whole detection flow in action. Click the tabs to see the trade ledger,
+    time-of-day analytics, and adjustable pattern thresholds.
+  </div>
+
+  <div class="controls-bar">
+    <button class="btn" id="start-btn">Start</button>
+    <button class="btn secondary" id="stop-btn" disabled>Pause</button>
+    <button class="btn secondary" id="reset-btn">Reset demo</button>
+    <span style="font-size:11px;color:#6b7280;">
+      Chart bars:
+      <select class="input" id="tf-select" style="padding:3px 6px;font-size:11px;">
+        <option value="1">1 second</option>
+        <option value="15" selected>15 seconds</option>
+        <option value="60">1 minute</option>
+        <option value="300">5 minutes</option>
+      </select>
+    </span>
+    <span style="margin-left:auto;font-size:11px;color:#6b7280;">
+      Sim speed:
+      <select class="input" id="speed-select" style="padding:3px 6px;font-size:11px;">
+        <option value="30">30× (30ms)</option>
+        <option value="50" selected>20× (50ms)</option>
+        <option value="100">10× (100ms)</option>
+        <option value="200">5× (200ms)</option>
+      </select>
+    </span>
+  </div>
+
+  <div id="conn-msg"></div>
+
+  <div class="pattern-strip" id="pattern-strip">
+    <div class="stage" data-stage="0"><span class="num">1</span>SPY downtrend</div>
+    <span class="stage-arrow">→</span>
+    <div class="stage" data-stage="1"><span class="num">2</span>SPY flat-bounce</div>
+    <span class="stage-arrow">→</span>
+    <div class="stage" data-stage="2"><span class="num">3</span>DJ also down</div>
+    <span class="stage-arrow">→</span>
+    <div class="stage" data-stage="3"><span class="num">4</span>DJ trending up</div>
+    <span class="stage-arrow">→</span>
+    <div class="stage" data-stage="4"><span class="num">B</span>In position</div>
+    <span class="stage-arrow">→</span>
+    <div class="stage" data-stage="5"><span class="num">S</span>Target reached</div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header" style="flex-wrap:wrap;gap:12px;">
+      <div class="chart-title" style="gap:14px;flex-wrap:wrap;">
+        <span style="display:inline-flex;gap:6px;align-items:center;">
+          <span class="symbol-badge">SPY</span>
+          <span class="state-badge normal" id="spy-state">normal</span>
+          <span class="price-now"><b id="spy-price">—</b> · slope60 <b id="spy-slope">—</b></span>
+        </span>
+        <span style="display:inline-flex;gap:6px;align-items:center;">
+          <span class="symbol-badge" style="background:#7c3aed;">DIA</span>
+          <span class="state-badge normal" id="dia-state">normal</span>
+          <span class="price-now"><b id="dia-price">—</b> · slope60 <b id="dia-slope">—</b></span>
+        </span>
       </div>
-
-
-      <!-- API Key (hidden — demo mode only) -->
-      <div id="apiKeyField" class="field" style="display:none">
-        <label>Claude API Key</label>
-        <div class="api-row">
-          <input type="password" id="apiKeyInput" placeholder="sk-ant-…" autocomplete="off" oninput="saveApiKey()" />
-          <button class="btn btn-secondary btn-sm" onclick="toggleKey(this)">Show</button>
-        </div>
-        <div class="key-saved" id="keySaved">✓ Saved</div>
-      </div>
-
-      <!-- File upload (hidden — demo mode only) -->
-      <div class="dropzone hidden" id="dropzone" style="display:none" onclick="document.getElementById('fileInput').click()">
-        <p><strong>Click to upload</strong> or drag & drop</p>
-        <p style="margin-top:2px;font-size:10px">.xlsx · .xls · .csv</p>
-      </div>
-      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFile(event)" />
-      <div style="margin-bottom:9px">
-        <p style="font-size:11px;color:var(--text-muted);margin-bottom:6px;text-align:center">No setup needed — try it now</p>
-        <button class="btn btn-primary btn-full" style="padding:9px 12px;font-size:13px" onclick="loadSampleData()">
-          ✦ Load Sample Data
-        </button>
-      </div>
-      <div id="fileLoaded" class="file-loaded hidden">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
-        <span id="fileLoadedText" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-        <button class="btn-ghost" onclick="clearFile()" style="padding:0;font-size:10px">✕</button>
-      </div>
-
-      <!-- Column mapping -->
-      <div id="mappingSection" class="hidden">
-        <!-- Collapsible column config -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted)">Column config</span>
-          <span id="mappingToggleLabel" style="font-size:11px;color:var(--primary);cursor:pointer;font-weight:600" onclick="toggleMappingDetails()">Edit columns ▸</span>
-        </div>
-        <div id="mappingDetails" class="hidden">
-          <div class="field">
-            <label>Account name <span style="color:var(--danger)">*</span></label>
-            <select id="colAccount"></select>
-          </div>
-          <div class="field">
-            <label>AE notes <span style="color:var(--danger)">*</span></label>
-            <select id="colNotes"></select>
-          </div>
-          <div class="field">
-            <div class="label-row"><label>ARR / Deal size <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_arr">✓</span></div>
-            <select id="colARR"><option value="">— not mapped —</option></select>
-          </div>
-          <div class="field">
-            <div class="label-row"><label>Renewal date <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_date">✓</span></div>
-            <select id="colDate"><option value="">— not mapped —</option></select>
-          </div>
-          <div class="field">
-            <div class="label-row"><label>Previous RD notes <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_prevrd">✓</span></div>
-            <select id="colPrevRD"><option value="">— not mapped —</option></select>
-          </div>
-          <div class="field">
-            <div class="label-row"><label>AE / Owner <span class="optional-label">(optional)</span></label><span class="detected hidden" id="det_ae">✓</span></div>
-            <select id="colAE"><option value="">— not mapped —</option></select>
-          </div>
-          <hr class="divider" />
-        </div>
-
-        <div class="field">
-          <label>Additional instructions <span class="optional-label">(optional)</span></label>
-          <input type="text" id="customInstructions" placeholder="e.g. flag at-risk deals" />
-        </div>
-        <button class="btn btn-primary btn-full" id="generateBtn" onclick="startGeneration()">Generate Summaries</button>
-      </div>
-
-      <!-- Progress -->
-      <div id="progressSection" class="hidden" style="margin-top:8px">
-        <div class="progress-wrap"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-        <div class="progress-label" id="progressLabel">Starting…</div>
-      </div>
+      <span class="price-now" id="spy-target" style="display:none;">target <b></b></span>
     </div>
-
-    <!-- Account list -->
-    <div class="account-list" id="accountList"></div>
-
-    <!-- Footer -->
-    <div class="sidebar-footer hidden" id="sidebarFooter">
-      <button class="btn btn-secondary btn-sm" onclick="copyAll()" style="flex:1">📋 Copy All</button>
-      <button class="btn btn-secondary btn-sm" onclick="exportTxt()" style="flex:1">⬇ Export</button>
+    <div class="chart-wrap" style="height:340px;"><canvas id="chart-combined"></canvas></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;padding:4px 4px 0 4px;">
+      <span>y-axis: % change from leftmost visible bar (rebases as bars scroll)</span>
+      <span>hover for price + %</span>
     </div>
   </div>
 
-  <!-- ══ MAIN PANEL ══ -->
-  <div class="main-panel" id="mainPanel">
-    <div class="placeholder" id="placeholder">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg>
-      <p>Load sample data to explore the app</p>
-      <small>Click "Load Sample Data" in the panel on the left</small>
-    </div>
-
-    <div id="tabSection" class="hidden" style="display:flex;flex-direction:column;gap:16px">
-      <div class="tab-bar">
-        <div class="tab active" id="tabAccount" onclick="switchTab('account')">Account View</div>
-        <div class="tab" id="tabPortfolio" onclick="switchTab('portfolio')">Portfolio Analysis</div>
-        <div class="tab" id="tabQueries" onclick="switchTab('queries')">💬 Queries</div>
-      </div>
-      <div id="viewAccount"><div id="activeCard"></div></div>
-      <div id="viewPortfolio" class="hidden"><div id="portfolioContent"></div></div>
-      <div id="viewQueries" class="hidden">
-        <div class="chat-wrap">
-          <div class="chat-messages" id="chatMessages">
-            <div class="chat-empty">
-              <div style="font-size:28px;margin-bottom:8px">💬</div>
-              <div style="font-weight:600;margin-bottom:4px">Ask anything about your accounts</div>
-              <div style="font-size:12px;color:var(--text-muted)">Query across all loaded AE and RD notes. Try: "Which accounts have incomplete legal?" or "Summarize Veem's situation."</div>
-            </div>
-          </div>
-          <div class="chat-input-row">
-            <textarea id="chatInput" class="chat-input" placeholder="Ask a question about your accounts…" rows="1" oninput="autoResize(this)" onkeydown="chatKeydown(event)"></textarea>
-            <button class="btn btn-primary" id="chatSendBtn" onclick="sendChat()">Send</button>
-          </div>
-        </div>
-      </div>
+  <div class="card" style="padding:0;">
+    <h3 style="padding:10px 12px 4px 12px;margin:0;border-bottom:1px solid #f3f4f6;">Alert log</h3>
+    <div class="alert-log" id="alert-log">
+      <div class="empty">No alerts yet — connect a feed and start the engine.</div>
     </div>
   </div>
-</div>
-<div class="toast-wrap" id="toastWrap"></div>
+</section>
+
+<section id="tab-transactions" class="tab-panel">
+  <div class="tx-summary" id="tx-summary"></div>
+  <div class="card">
+    <h3>Trade ledger</h3>
+    <div id="tx-table-mount"></div>
+  </div>
+</section>
+
+<section id="tab-analytics" class="tab-panel">
+  <div class="row" style="margin-bottom:10px;">
+    <div class="col card">
+      <h3>Win rate by hour-of-day (local time)</h3>
+      <div id="heatmap-hour"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col card">
+      <h3>Win rate by day-of-week</h3>
+      <div id="heatmap-dow"></div>
+    </div>
+    <div class="col card">
+      <h3>Avg return % by hour</h3>
+      <div id="heatmap-hour-ret"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:10px;">
+    <h3>Cumulative P&L</h3>
+    <div class="chart-wrap" style="height:200px;"><canvas id="chart-pnl"></canvas></div>
+  </div>
+</section>
+
+<section id="tab-backtest" class="tab-panel">
+  <div class="note info">
+    <b>Backtest.</b> Replays a long synthetic session (many hours of 1-second bars with periodic
+    injected patterns) through the same state machine to sample how the strategy behaves over more
+    data than a single live demo produces. The full production version replays real Polygon 1-second
+    aggregates for any historical date range.
+  </div>
+  <div class="controls-bar">
+    <label class="field">Simulated minutes
+      <input type="number" class="input" id="bt-minutes" value="480" min="60" max="2400" step="60" style="width:100px;">
+    </label>
+    <button class="btn primary" id="bt-run-demo">Run backtest</button>
+    <button class="btn secondary" id="bt-clear">Clear</button>
+    <span id="bt-progress" style="font-size:11px;color:#6b7280;margin-left:auto;"></span>
+  </div>
+  <div class="tx-summary" id="bt-summary"></div>
+  <div class="card">
+    <h3>Backtest trades</h3>
+    <div id="bt-table-mount"></div>
+  </div>
+</section>
+
+<section id="tab-settings" class="tab-panel">
+  <div class="note info">
+    Tune the pattern thresholds. Tighter = fewer, higher-conviction trades. Looser = more trades
+    with more noise. Saved to localStorage.
+  </div>
+  <div class="card">
+    <h3>Pattern thresholds</h3>
+    <div class="sliders-grid">
+      <label class="field">Downtrend threshold (% over 60s)
+        <div class="range-row"><input type="range" id="s-down" min="-0.40" max="-0.03" step="0.01" value="-0.10"><span class="range-value" id="s-down-v"></span></div>
+      </label>
+      <label class="field">Flat range (% over 30s)
+        <div class="range-row"><input type="range" id="s-flat" min="0.02" max="0.25" step="0.01" value="0.05"><span class="range-value" id="s-flat-v"></span></div>
+      </label>
+      <label class="field">Uptrend threshold (% over 30s)
+        <div class="range-row"><input type="range" id="s-up" min="0.03" max="0.40" step="0.01" value="0.08"><span class="range-value" id="s-up-v"></span></div>
+      </label>
+      <label class="field">DJ-SPY concurrency window (seconds)
+        <div class="range-row"><input type="range" id="s-concur" min="30" max="300" step="10" value="120"><span class="range-value" id="s-concur-v"></span></div>
+      </label>
+      <label class="field">Pattern timeout (seconds, after SPY hits flat)
+        <div class="range-row"><input type="range" id="s-timeout" min="60" max="900" step="30" value="300"><span class="range-value" id="s-timeout-v"></span></div>
+      </label>
+      <label class="field">Max hold time (seconds, after BUY)
+        <div class="range-row"><input type="range" id="s-hold" min="120" max="3600" step="60" value="1800"><span class="range-value" id="s-hold-v"></span></div>
+      </label>
+      <label class="field">Stop loss (% below entry)
+        <div class="range-row"><input type="range" id="s-stop" min="0.05" max="2.00" step="0.05" value="0.40"><span class="range-value" id="s-stop-v"></span></div>
+      </label>
+      <label class="field">Pre-downtrend lookback (seconds)
+        <div class="range-row"><input type="range" id="s-look" min="30" max="600" step="30" value="120"><span class="range-value" id="s-look-v"></span></div>
+      </label>
+      <label class="field">Position size (shares per trade)
+        <div class="range-row"><input type="range" id="s-shares" min="1" max="1000" step="1" value="100"><span class="range-value" id="s-shares-v"></span></div>
+      </label>
+    </div>
+    <p style="font-size:11px;color:#6b7280;margin:10px 0 0 0;">
+      Position size is the share count assumed for each simulated trade. P&L = (sell − buy) × shares.
+      Invested ≈ shares × entry price. New trades use the current setting; existing trades keep the
+      size they were recorded with.
+    </p>
+    <div style="margin-top:14px;display:flex;gap:8px;">
+      <button class="btn secondary" id="reset-thresholds">Restore defaults</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:10px;">
+    <h3>About this demo</h3>
+    <p style="font-size:12px;color:#374151;line-height:1.6;margin:0 0 8px 0;">
+      This is an interactive demo of a technical-pattern trading system. The full version connects
+      to a live 1-second market data feed (Polygon.io) for real-time SPY and DIA aggregates and
+      supports historical backtests over any date range.
+    </p>
+    <p style="font-size:12px;color:#374151;line-height:1.6;margin:0 0 8px 0;">
+      Everything on this page runs entirely in your browser — no server, no cookies, no network
+      calls beyond the initial page load. Refresh to start over.
+    </p>
+    <p style="font-size:12px;color:#9ca3af;line-height:1.6;margin:0;">
+      Not financial advice. All prices, trades, and returns shown are synthetic simulations.
+    </p>
+  </div>
+</section>
+
+</main>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────────
-let parsedData = [], columns = [], accountGroups = {};
-let summaryResults = {};   // { acct: { update, checks, nextSteps, raw, arr, date, ae, prevRD, lastPrevRD } }
-let riskResults = {};      // { acct: { level, reason } } — from portfolio analysis
-let selectedAccount = null;
-let totalAccounts = 0, doneCount = 0;
-let currentTab = 'account';
-let demoMode = false;
+/* ============================================================
+   SPY/DIA Pattern Trader — Local edition with Polygon adapter
+   ============================================================ */
 
-// ── API Key ────────────────────────────────────────────────────────────────────
-(function loadKey() {
-  const saved = localStorage.getItem('ae_summarizer_api_key');
-  if (saved) { document.getElementById('apiKeyInput').value = saved; document.getElementById('keySaved').style.display = 'block'; }
-})();
-function saveApiKey() {
-  const v = document.getElementById('apiKeyInput').value.trim();
-  if (v) { localStorage.setItem('ae_summarizer_api_key', v); document.getElementById('keySaved').style.display = 'block'; }
-  else { localStorage.removeItem('ae_summarizer_api_key'); document.getElementById('keySaved').style.display = 'none'; }
-}
-function toggleKey(btn) {
-  const i = document.getElementById('apiKeyInput');
-  i.type = i.type === 'password' ? 'text' : 'password';
-  btn.textContent = i.type === 'password' ? 'Show' : 'Hide';
-}
-
-// ── File handling ──────────────────────────────────────────────────────────────
-const dropzone = document.getElementById('dropzone');
-dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
-function handleFile(e) { if (e.target.files[0]) processFile(e.target.files[0]); }
-
-function processFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-      const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-      if (!json.length) { showToast('Spreadsheet appears empty.', 'error'); return; }
-      parsedData = json; columns = Object.keys(json[0]);
-      dropzone.classList.add('hidden');
-      document.getElementById('fileLoaded').classList.remove('hidden');
-      document.getElementById('fileLoadedText').textContent = `${file.name} (${json.length} rows)`;
-      populateMappingSelects();
-      document.getElementById('mappingSection').classList.remove('hidden');
-    } catch (err) { showToast('Could not read file: ' + err.message, 'error'); }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-// ── Sample pre-baked data ─────────────────────────────────────────────────────
-const SAMPLE_SUMMARIES = {
-  "Apex Semiconductor Corp": {
-    update: "Technical risk resolved via Python notebook workaround delivered 3/19, currently being tested by Priya Patel's team. JP confirmed renewal price and routed procurement to ProcureNet portal; admin swap and ALARA ticket to finalize custom rate language are the only remaining process steps.",
-    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
-    nextSteps: "1. Swap portal admins in ProcureNet, Dana Chen, AR\n2. Submit ALARA ticket to finalize custom rate language, Rachel, Deal Desk"
-  },
-  "Meridian Analytics LLC": {
-    update: "Customer is actively evaluating Snowflake as an alternative, citing real-time prediction latency as a critical gap we cannot currently match. Meeting with Mike (CTO) and Nathan has been rescheduled with no confirmation — zero positive momentum this week.",
-    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
-    nextSteps: "1. Deliver ML package demo addressing latency concerns, Mike, CTO\n2. Escalate Snowflake competitive risk to leadership"
-  },
-  "Summit Partners Group LLC": {
-    update: "Order form resent to partner on 4/8 with a 4/17 expiration date. Kevin (partner) confirmed customer commitment to sign by 4/17; only outstanding items are sell-through evidence and PO processing.",
-    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
-    nextSteps: "1. Follow up with Kevin on PO status and sell-through evidence, Kevin, Partner\n2. Confirm 4/17 signature window remains valid with customer"
-  },
-  "Copal Foods S.A.": {
-    update: "Special pricing sent to partner on 4/8 to pass discounted renewal offer including GenAI SKU to Davido (EB). New DS leader Catalina is being cultivated, but no confirmed budget commitment and the outgoing team's preference for Google remains a structural risk.",
-    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
-    nextSteps: "1. Partner to present discounted pricing to Davido, EB\n2. Schedule tool exploration session with Catalina, DS Leader"
-  },
-  "Clearfield Finance LLC": {
-    update: "Pre-PTO bridge email sent to Marcus (champion) securing meeting holds for renewal discussions. Deal Desk approval in progress for 3-year Success Bundle at $74k ARR; CEO Derek's 2026 roadmap spend approval remains the critical gate before renewal can advance.",
-    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
-    nextSteps: "1. Secure CEO roadmap approval, Derek, CEO\n2. Complete Deal Desk approval for 3-year Success Bundle, Rachel, Deal Desk\n3. Schedule renewal meeting upon return from PTO, Marcus, Champion"
-  },
-  "Palatine Auto Finance NA LLC": {
-    update: "Customer confirmed intent to downscope MLOps to AWS; executive alignment call scheduled for 4/14 to present a 'better together' story with AWS and the agentic roadmap. Technical win on MLBuild and Citizen Data Science is confirmed but at risk if the exec narrative isn't compelling.",
-    checks: "3 incomplete / 5 — Legal Complete, EB Signoff, Timeline Understood",
-    nextSteps: "1. Deliver AWS 'better together' story and agentic roadmap, 4/14 exec call\n2. Confirm revised commercial terms after scope reduction\n3. Secure EB formal commitment on remaining MLBuild ARR"
-  },
-  "Whitmore Insurance Group Inc.": {
-    update: "Production launch of Private Flood Pricing models strengthens the technical value story. Parent-level MSA request filed (LR0089234) to address consolidation risk from Nationwide Group acquisition; new procurement lead Kelly Turner and business lead Sarah Lawson are now directly engaged.",
-    checks: "2 incomplete / 5 — Legal Complete, EB Signoff",
-    nextSteps: "1. Advance parent-level MSA review, Kelly Turner, Procurement Lead\n2. Confirm renewal intent with Sarah Lawson, Business Lead"
-  },
-  "Dalton Equipment Co": {
-    update: "Claire Henderson (EB) verbally confirmed renewal intent last week. Contract evaluation on April 28th will determine flat renewal vs. renewal plus Training Services; legal review confirmed not required for the predictive renewal component.",
-    checks: "2 incomplete / 5 — Timeline Understood, Pricing Agreed",
-    nextSteps: "1. Confirm approval timeline and signature window, Claire Henderson, EB\n2. Prepare Training Services expansion proposal for April 28th review"
-  },
-  "Verdant Health Inc.": {
-    update: "No engagement since Outreach Framework sent to Jordan Miller (CTO) on March 12th. Zero response to all outreach attempts; opportunity has moved to Omitted due to total communication blackout with no path forward currently visible.",
-    checks: "0/5 complete — customer churning",
-    nextSteps: "1. Final escalation attempt above Jordan Miller, CTO\n2. Document churn for forecasting and close the opportunity"
-  },
-  "Crestline Industrial Systems Inc.": {
-    update: "Customer pivoted from definitive non-renewal to reviewing a right-sized $15k ARR proposal following 8 months of zero engagement. SOC 2 provided as requested; Mark (EB) is now reviewing the proposal but has not committed — this is a fragile re-open.",
-    checks: "4 incomplete / 5 — Tech Win, EB Signoff, Timeline Understood, Pricing Agreed",
-    nextSteps: "1. Follow up on SOC 2 review and $15k proposal decision, Mark, EB\n2. Schedule enablement session to demonstrate ROI and reverse the value gap narrative"
-  },
-  "Northgate Capital Management LLC": {
-    update: "Renewal proposal sent to David on March 26th for the Q2 renewal with no feedback received. Zero modeling hours logged in the last 6 months following the champion's retirement; agentic demo tentatively scheduled for week of April 13th or 22nd to reignite engagement.",
-    checks: "3 incomplete / 5 — EB Signoff, Timeline Understood, Pricing Agreed",
-    nextSteps: "1. Follow up with David on proposal feedback, David, Portfolio Manager\n2. Coordinate agentic demo for week of April 13th or 22nd\n3. Engage CRO and other team members to multi-thread"
-  },
-  "Summit Community Bank": {
-    update: "Customer explicitly confirmed non-renewal for 5/31; moving to an internally built tool developed by Danny that eliminates last-mile feature engineering friction. No path to reversal has been identified.",
-    checks: "0/5 complete — customer churning",
-    nextSteps: "1. Document confirmed churn in system, 5/31 non-renewal date\n2. Explore any residual services opportunity before off-boarding"
-  },
-  "Meridian Online University Inc.": {
-    update: "Official transition to Ana Rodriguez complete; MSA and Order Form are now with MOU Purchasing. Holding the line on the 5-user minimum and $3k standard YoY increase despite customer's request to reduce to 3 seats.",
-    checks: "2 incomplete / 5 — Legal Complete, Timeline Understood",
-    nextSteps: "1. Push Lisa Chen to finalize MSA in April, Lisa Chen, Purchasing\n2. Confirm seat minimum stance with customer before final paperwork"
-  },
-  "Northern Territory Safety Authority": {
-    update: "Mark confirmed they are 'likely not to renew' the $84k on-prem instance on the alignment call with partner Paul Martinez. IT's Microsoft-only policy is blocking the Kubernetes upgrade required for v11, preventing the Jupyter Notebooks and GenAI/NLP capabilities FIU needs to justify renewal.",
-    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
-    nextSteps: "1. Explore Microsoft-compatible migration path with IT and architect, Mark, EB\n2. Engage FIU business leads to create internal pressure for upgrade\n3. Align with partner Paul Martinez on joint response strategy"
-  },
-  "Prestige Live Events": {
-    update: "EB has been radio silent for three consecutive weeks following an initial email about scheduling. Account came in already Omitted; multiple outreach attempts have yielded zero response and no meaningful progress has been made toward a renewal conversation.",
-    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Timeline Understood",
-    nextSteps: "1. Final outreach attempt to EB before escalation decision\n2. Explore alternate contacts within the organization to break the silence"
-  },
-  "DriveNow Marketplace": {
-    update: "Customer sentiment shifted to 'slash-and-burn' — explicitly targeting a $20k renewal vs. the current $65k. The primary Highest Bid project failed in production and the key success contact is now refusing meetings; the commercial and technical case for full renewal value has effectively collapsed.",
-    checks: "4 incomplete / 5 — Tech Win, Legal Complete, EB Signoff, Pricing Agreed",
-    nextSteps: "1. Accept downscoped renewal at $20k to preserve the relationship\n2. Audit Highest Bid project to determine if any salvage is possible\n3. Engage Tony to identify alternative stakeholder with platform success"
-  },
+const DEFAULTS = {
+  downThreshPct: -0.10,
+  flatRangePct: 0.05,
+  upThreshPct: 0.08,
+  concurrencySec: 120,
+  patternTimeoutSec: 300,
+  maxHoldSec: 1800,
+  stopLossPct: 0.40,
+  preDownLookbackSec: 120,
+  downWindowSec: 60,
+  flatWindowSec: 30,
+  upWindowSec: 30,
+  positionShares: 100,
+  chartTimeframeSec: 60
 };
+let CFG = loadCfg();
 
-const SAMPLE_RISK = {
-  "Verdant Health Inc.": { level: "HIGH RISK", reason: "CTO unresponsive since March 12th; zero engagement, moved to Omitted" },
-  "Summit Community Bank": { level: "HIGH RISK", reason: "Confirmed non-renewal for 5/31; customer building internal tool" },
-  "Meridian Analytics LLC": { level: "HIGH RISK", reason: "Actively evaluating Snowflake for real-time predictions; CTO unreachable for rescheduled meeting" },
-  "DriveNow Marketplace": { level: "HIGH RISK", reason: "Primary project failed in production; customer targeting $20k vs. $65k renewal" },
-  "Verdant Health Inc.": { level: "HIGH RISK", reason: "CTO unresponsive since March 12th; zero engagement, moved to Omitted" },
-  "Summit Community Bank": { level: "HIGH RISK", reason: "Confirmed non-renewal for 5/31; customer building internal tool" },
-  "Prestige Live Events": { level: "STUCK", reason: "EB radio silent for 3+ consecutive weeks; zero progress despite multiple outreach attempts" },
-  "Northgate Capital Management LLC": { level: "STUCK", reason: "Proposal sent 3/26 with zero feedback; zero modeling hours in past 6 months" },
-  "Copal Foods S.A.": { level: "WATCH", reason: "Previous team preferred Google; new DS leader being cultivated with discounted offer" },
-  "Clearfield Finance LLC": { level: "WATCH", reason: "CEO approval is the gate; champion engaged but no formal commitment to 3-year deal" },
-  "Palatine Auto Finance NA LLC": { level: "WATCH", reason: "Customer downscoping MLOps to AWS; exec call 4/14 to defend remaining ARR" },
-  "Northern Territory Safety Authority": { level: "WATCH", reason: "IT blocking Kubernetes upgrade; business unit cannot access v11 capabilities needed for value" },
-  "Crestline Industrial Systems Inc.": { level: "WATCH", reason: "Fragile re-open after 8 months of zero engagement; $15k proposal under review with no commitment" },
-  "Apex Semiconductor Corp": { level: "ON TRACK", reason: "Technical risk resolved; champion aligned; only procurement admin steps remain" },
-  "Summit Partners Group LLC": { level: "ON TRACK", reason: "Partner-led; order form with 4/17 expiry; customer PO confirmed by partner" },
-  "Whitmore Insurance Group Inc.": { level: "ON TRACK", reason: "Production models launched; new stakeholders engaged; legal in progress" },
-  "Dalton Equipment Co": { level: "ON TRACK", reason: "EB verbally confirmed; 4/28 contract evaluation; only timeline and pricing to finalize" },
-  "Meridian Online University Inc.": { level: "ON TRACK", reason: "Paperwork with purchasing; holding on seat minimum and standard YoY increase" }
-};
-
-const SAMPLE_PORTFOLIO_TEXT = `THEMES
-1. **Champion & Stakeholder Turnover** — Northgate Capital lost its primary champion mid-quarter with zero modeling hours in the past six months, creating a relationship gap that has stalled the renewal entirely.
-2. **Technical Gaps Driving Competitive Displacement** — Two accounts (Meridian Analytics, DriveNow Marketplace) face active displacement from Snowflake and internal build alternatives, while Northern Territory Safety Authority is blocked by IT architecture limitations preventing access to core v11 capabilities.
-3. **Engagement Breakdown in the STUCK Tier** — Prestige Live Events and Northgate Capital Management both show zero response to active outreach, suggesting the accounts have mentally moved on while remaining open in the forecast.
-
-RISK TABLE
-Verdant Health Inc. | HIGH RISK | CTO unresponsive since March 12th; zero engagement, moved to Omitted | Make one final leadership escalation above Jordan Miller or formally close the opportunity — do not keep it open as false pipeline
-Summit Community Bank | HIGH RISK | Confirmed non-renewal for 5/31; customer building internal tool that eliminates last-mile friction | Focus on documenting the churn driver for product feedback; protect any services relationship before off-boarding
-Meridian Analytics LLC | HIGH RISK | Actively evaluating Snowflake for real-time predictions; CTO unreachable for rescheduled meeting | Require a live latency benchmark meeting before Snowflake evaluation closes — if you cannot get Mike on a call this week, escalate to your leadership
-DriveNow Marketplace | HIGH RISK | Primary production project failed; customer targeting $20k vs. $65k renewal; success contact refusing meetings | Accept the $20k downscoped renewal to preserve the relationship and stop the bleeding; treat this as a rebuild quarter not a retention fight
-Prestige Live Events | STUCK | EB radio silent for 3+ consecutive weeks; zero progress despite multiple outreach attempts | Pause direct outreach, pivot to a different stakeholder or executive sponsor — continued cold emails are not breaking the silence
-Northgate Capital Management LLC | STUCK | Proposal sent March 26th with zero feedback; zero modeling hours in past 6 months | Make the agentic demo contingent on a decision call — do not deliver value without getting a commitment conversation in return
-Copal Foods S.A. | WATCH | Previous team preferred Google; new DS leader being cultivated with discounted offer | Hold Davido (EB) to a decision within the week on the discounted offer — do not let the pricing conversation drag past the partner handoff
-Clearfield Finance LLC | WATCH | CEO approval is the gate; champion engaged but no formal commitment to 3-year deal | Get in the room with Derek directly — do not let this close exclusively through Marcus, as it adds a layer of risk to a deal that should already be committed
-Palatine Auto Finance NA LLC | WATCH | Customer downscoping MLOps to AWS; exec call 4/14 to defend remaining ARR | Walk into the 4/14 call with a specific dollar case for the agentic differentiation vs. AWS — a generic platform pitch will not survive an exec scrutiny call
-Northern Territory Safety Authority | WATCH | IT blocking Kubernetes upgrade; business unit cannot access capabilities needed for value | Build a Microsoft-compatible migration path before the next meeting or formally model what a right-sized on-prem contract looks like at reduced ARR
-Crestline Industrial Systems Inc. | WATCH | Fragile re-open after 8 months of zero engagement; $15k proposal under review | Follow up on the SOC 2 review within 48 hours — Mark reviewing the proposal is the only positive signal in months; don't let it cool
-Apex Semiconductor Corp | ON TRACK | Technical risk resolved; champion aligned; only procurement admin steps remain | Hold Dana and Rachel to admin swap and ALARA ticket closure by end of week — don't let a process step delay a committed deal
-Summit Partners Group LLC | ON TRACK | Partner-led; order form with 4/17 expiry; customer PO confirmed by partner | Push Kevin for an early commitment before 4/17 — a hard expiry with no buffer is a last-minute risk you can remove now
-Whitmore Insurance Group Inc. | ON TRACK | Production models launched; new stakeholders engaged; legal in progress | Accelerate legal review — M&A consolidation risk can overtake a deal that is technically committed but legally unresolved
-Dalton Equipment Co | ON TRACK | EB verbally confirmed; 4/28 contract evaluation; timeline and pricing to finalize | Bring a Training Services expansion scenario to the 4/28 meeting — a committed customer evaluating contract scope is the ideal upsell moment
-Meridian Online University Inc. | ON TRACK | Paperwork with purchasing; holding on seat minimum and standard YoY increase | Hold the 5-user minimum without exceptions — any reduction now signals flexibility that will be exploited in every future renewal
-
-WoW DELTA
-1. **DriveNow Marketplace** — worsened: Customer sentiment moved to slash-and-burn this week and the primary production project is now considered dead in the water, collapsing a $65k renewal to a $20k target with the key success contact refusing meetings.
-2. **Meridian Analytics LLC** — worsened: CTO Mike has gone unreachable while the Snowflake evaluation is actively progressing — the window to run a live benchmark is closing fast.
-3. **Crestline Industrial Systems Inc.** — improved: After 8 months of zero engagement, Mark is now actively reviewing the $15k proposal — the first positive signal in the account this quarter.`;
-
-async function loadSampleData() {
-  try {
-    const res = await fetch('sample-data.csv');
-    if (!res.ok) throw new Error('Could not load sample file.');
-    const buffer = await res.arrayBuffer();
-    const wb = XLSX.read(new Uint8Array(buffer), { type: 'array' });
-    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-    if (!json.length) { showToast('Sample file appears empty.', 'error'); return; }
-    parsedData = json; columns = Object.keys(json[0]);
-    dropzone.classList.add('hidden');
-    document.getElementById('fileLoaded').classList.remove('hidden');
-    document.getElementById('fileLoadedText').textContent = `Sample data (${json.length} accounts)`;
-
-    // Enter demo mode — pre-populate all outputs
-    enterDemoMode(json);
-  } catch (err) { showToast('Error loading sample: ' + err.message, 'error'); }
+function loadCfg() {
+  try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem('spdia_cfg') || '{}') }; }
+  catch { return { ...DEFAULTS }; }
 }
+function saveCfg() { try { localStorage.setItem('spdia_cfg', JSON.stringify(CFG)); } catch {} }
+// Demo mode: trades are session-only (not persisted); each visitor gets a fresh ledger.
+function loadTrades() { return []; }
+function saveTrades(_) {}
 
-function enterDemoMode(json) {
-  demoMode = true;
-  const notesCol = 'AE Forecast Notes';
-  const accountCol = 'Account Name';
-
-  // Group data
-  accountGroups = {};
-  json.forEach(row => {
-    const acct = String(row[accountCol] || '').trim();
-    if (!acct) return;
-    if (!accountGroups[acct]) accountGroups[acct] = [];
-    accountGroups[acct].push(row);
-  });
-  const accounts = Object.keys(accountGroups);
-
-  // Pre-populate summaryResults
-  summaryResults = {};
-  accounts.forEach(acct => {
-    const s = SAMPLE_SUMMARIES[acct] || { update: '—', checks: '—', nextSteps: '—' };
-    summaryResults[acct] = { ...s, raw: accountGroups[acct], notesCol, arr: '', date: '', ae: '', prevRD: '', lastPrevRD: '' };
-  });
-
-  // Pre-populate riskResults
-  riskResults = {};
-  accounts.forEach(acct => {
-    if (SAMPLE_RISK[acct]) riskResults[acct] = SAMPLE_RISK[acct];
-  });
-
-  totalAccounts = accounts.length; doneCount = accounts.length; selectedAccount = null;
-
-  // Show demo banner, hide API key
-  document.getElementById('demoBanner').classList.remove('hidden');
-  document.getElementById('apiKeyField').classList.add('api-hidden');
-  document.getElementById('mappingSection').classList.add('hidden');
-  document.getElementById('progressSection').classList.add('hidden');
-
-  // Build account list
-  const listEl = document.getElementById('accountList');
-  listEl.innerHTML = '';
-  accounts.forEach(acct => {
-    const risk = riskResults[acct];
-    const item = document.createElement('div');
-    item.className = 'account-item';
-    item.id = 'item_' + safeId(acct);
-    item.onclick = () => selectAccount(acct);
-    let flagHtml = '';
-    if (risk) {
-      if (risk.level.includes('HIGH')) flagHtml = '<span class="risk-flag risk-high">⚠ High</span>';
-      else if (risk.level === 'STUCK') flagHtml = '<span class="risk-flag risk-stuck">⏸ Stuck</span>';
+class TickBuffer {
+  constructor(maxSec = 14400) { this.max = maxSec; this.data = []; }
+  push(t, c) {
+    this.data.push({ t, c });
+    const cutoff = t - this.max * 1000;
+    while (this.data.length && this.data[0].t < cutoff) this.data.shift();
+  }
+  lastN(seconds, nowT) {
+    if (!this.data.length) return [];
+    const cutoff = (nowT ?? this.data[this.data.length - 1].t) - seconds * 1000;
+    let i = this.data.length - 1;
+    while (i > 0 && this.data[i - 1].t >= cutoff) i--;
+    return this.data.slice(i);
+  }
+  last() { return this.data[this.data.length - 1]; }
+  maxIn(seconds, nowT) {
+    return this.lastN(seconds, nowT).reduce((m, p) => Math.max(m, p.c), -Infinity);
+  }
+  rangePct(seconds, nowT) {
+    const slice = this.lastN(seconds, nowT);
+    if (slice.length < 2) return 0;
+    let lo = Infinity, hi = -Infinity, mean = 0;
+    for (const p of slice) { if (p.c < lo) lo = p.c; if (p.c > hi) hi = p.c; mean += p.c; }
+    mean /= slice.length;
+    return (hi - lo) / mean * 100;
+  }
+  slopePctOver(seconds, nowT) {
+    const slice = this.lastN(seconds, nowT);
+    if (slice.length < 5) return 0;
+    let sx = 0, sy = 0;
+    for (const p of slice) { sx += p.t; sy += p.c; }
+    const mx = sx / slice.length, my = sy / slice.length;
+    let num = 0, den = 0;
+    for (const p of slice) {
+      const dx = p.t - mx;
+      num += dx * (p.c - my);
+      den += dx * dx;
     }
-    item.innerHTML = `
-      <span class="status-dot dot-done" id="dot_${safeId(acct)}"></span>
-      <div class="account-item-info"><div class="account-item-name">${escHtml(acct)}</div></div>
-      ${flagHtml}`;
-    listEl.appendChild(item);
-  });
-
-  // Show main panel
-  document.getElementById('placeholder').classList.add('hidden');
-  const tabSec = document.getElementById('tabSection');
-  tabSec.classList.remove('hidden');
-  tabSec.style.display = 'flex';
-  document.getElementById('sidebarFooter').classList.remove('hidden');
-
-  // Render pre-baked portfolio analysis
-  renderPortfolioAnalysis(SAMPLE_PORTFOLIO_TEXT, accounts);
-
-  // Select first account
-  if (accounts.length) selectAccount(accounts[0]);
-
-  showToast('Sample loaded — demo mode active.', 'success');
+    if (den === 0) return 0;
+    const slopePerMs = num / den;
+    const winMs = slice[slice.length - 1].t - slice[0].t;
+    if (winMs === 0) return 0;
+    return slopePerMs * winMs / my * 100;
+  }
 }
 
-function clearDemo() {
-  demoMode = false;
-  document.getElementById('demoBanner').classList.add('hidden');
-  document.getElementById('apiKeyField').classList.remove('api-hidden');
-  clearFile();
-}
+class PatternEngine {
+  constructor(opts = {}) {
+    this.bufs = { SPY: new TickBuffer(14400), DIA: new TickBuffer(14400) };
+    this.symStates = { SPY: 'normal', DIA: 'normal' };
+    this.patternState = 'IDLE';
+    this.diaDownStartedAt = null;
+    this.spyDownStartedAt = null;
+    this.spyFlatStartedAt = null;
+    this.spyPreDownPeak = null;
+    this.entry = null;
+    this.lastT = 0;
+    this.alerts = [];
+    this.trades = [];
+    this.onAlert = opts.onAlert || (() => {});
+    this.onStateChange = opts.onStateChange || (() => {});
+    this.onTrade = opts.onTrade || (() => {});
+  }
+  classify(sym) {
+    const buf = this.bufs[sym];
+    const t = buf.last()?.t;
+    if (!t) return 'normal';
+    const slopeDown = buf.slopePctOver(CFG.downWindowSec, t);
+    const slopeUp = buf.slopePctOver(CFG.upWindowSec, t);
+    const range = buf.rangePct(CFG.flatWindowSec, t);
+    if (slopeUp >= CFG.upThreshPct) return 'up';
+    if (slopeDown <= CFG.downThreshPct) return 'down';
+    if (range <= CFG.flatRangePct) return 'flat';
+    return 'normal';
+  }
+  feedTick({ sym, t, c }) {
+    if (!this.bufs[sym]) return;
+    this.bufs[sym].push(t, c);
+    this.lastT = Math.max(this.lastT, t);
+    const prevState = this.symStates[sym];
+    const newState = this.classify(sym);
+    this.symStates[sym] = newState;
 
-async function UNUSED_loadSampleData_REPLACED() {
-  try {
-    const res = await fetch('sample-data.csv');
-    if (!res.ok) throw new Error('Could not load sample file.');
-    const buffer = await res.arrayBuffer();
-    const wb = XLSX.read(new Uint8Array(buffer), { type: 'array' });
-    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-    if (!json.length) { showToast('Sample file appears empty.', 'error'); return; }
-    parsedData = json; columns = Object.keys(json[0]);
-    dropzone.classList.add('hidden');
-    document.getElementById('fileLoaded').classList.remove('hidden');
-    document.getElementById('fileLoadedText').textContent = `Sample data (${json.length} accounts)`;
-    populateMappingSelects();
-    document.getElementById('mappingSection').classList.remove('hidden');
-    showToast('Sample data loaded.', 'success');
-  } catch (err) { showToast('Error loading sample: ' + err.message, 'error'); }
-}
+    if (sym === 'DIA' && prevState !== 'down' && newState === 'down') this.diaDownStartedAt = t;
 
-function clearFile() {
-  demoMode = false; summaryResults = {}; riskResults = {}; accountGroups = {}; selectedAccount = null;
-  parsedData = []; columns = [];
-  document.getElementById('fileInput').value = '';
-  dropzone.classList.remove('hidden');
-  ['fileLoaded','mappingSection','progressSection','sidebarFooter','tabSection'].forEach(id => document.getElementById(id).classList.add('hidden'));
-  document.getElementById('accountList').innerHTML = '';
-  document.getElementById('placeholder').classList.remove('hidden');
-}
-
-const COL_IDS = ['colAccount','colNotes','colARR','colDate','colPrevRD','colAE'];
-const OPTIONAL_IDS = ['colARR','colDate','colPrevRD','colAE'];
-
-function saveColConfig() {
-  const cfg = {};
-  COL_IDS.forEach(id => { cfg[id] = document.getElementById(id).value; });
-  localStorage.setItem('ae_col_config', JSON.stringify(cfg));
-}
-
-function loadColConfig() {
-  try { return JSON.parse(localStorage.getItem('ae_col_config') || 'null'); } catch { return null; }
-}
-
-function populateMappingSelects() {
-  const saved = loadColConfig();
-  const lower = columns.map(c => c.toLowerCase());
-
-  COL_IDS.forEach(id => {
-    const sel = document.getElementById(id);
-    sel.innerHTML = OPTIONAL_IDS.includes(id) ? '<option value="">— not mapped —</option>' : '';
-    columns.forEach(col => { const o = document.createElement('option'); o.value = col; o.textContent = col; sel.appendChild(o); });
-  });
-
-  if (saved) {
-    // Restore saved config if columns still exist in the new file
-    COL_IDS.forEach(id => {
-      if (saved[id] && columns.includes(saved[id])) {
-        document.getElementById(id).value = saved[id];
-        const detId = { colARR:'det_arr', colDate:'det_date', colPrevRD:'det_prevrd', colAE:'det_ae' }[id];
-        if (detId) document.getElementById(detId).classList.remove('hidden');
+    if (sym === 'SPY') {
+      if (prevState !== 'down' && newState === 'down') {
+        this.spyDownStartedAt = t;
+        this.spyPreDownPeak = this.bufs.SPY.maxIn(CFG.preDownLookbackSec, t);
+        if (this.patternState === 'IDLE') {
+          this.patternState = 'SPY_DOWN';
+          this.fire('warn', `SPY downtrend — pre-down peak ${this.fmt(this.spyPreDownPeak)}`, 0);
+        }
       }
-    });
-    // Show mapping section collapsed by default when config is already saved
-    showMappingCollapsed();
-  } else {
-    // Auto-detect on first use
-    const trySet = (id, detId, kws) => {
-      const m = columns.find((_,i) => kws.some(k => lower[i].includes(k)));
-      if (m) { document.getElementById(id).value = m; if (detId) document.getElementById(detId).classList.remove('hidden'); }
+      if (prevState === 'down' && newState === 'flat' && this.patternState === 'SPY_DOWN') {
+        this.spyFlatStartedAt = t;
+        const djConcurrent = this.symStates.DIA === 'down' ||
+          (this.diaDownStartedAt && (t - this.diaDownStartedAt) <= CFG.concurrencySec * 1000);
+        if (djConcurrent) {
+          this.patternState = 'AWAITING_DJ_UP';
+          this.fire('info', `SPY flat-bounce confirmed — awaiting DJ uptrend`, 1);
+          this.fire('info', `DJ concurrent downtrend confirmed`, 2);
+        } else {
+          this.fire('info', `SPY flat but DJ not in concurrent downtrend — pattern aborted`, null);
+          this.resetPattern();
+        }
+      }
+      if (this.patternState === 'IN_POSITION') {
+        const last = this.bufs.SPY.last().c;
+        const target = this.entry.target;
+        if (!this.entry.approachWarned && last >= target * 0.9995) {
+          this.entry.approachWarned = true;
+          this.fire('warn', `SELL approach: SPY ${this.fmt(last)} nearing target ${this.fmt(target)}`, null);
+        }
+        if (last >= target) this.exitTrade(t, last, 'target');
+        else if (last <= this.entry.price * (1 - CFG.stopLossPct / 100)) this.exitTrade(t, last, 'stop');
+        else if ((t - this.entry.t) > CFG.maxHoldSec * 1000) this.exitTrade(t, last, 'timeout');
+      }
+    }
+
+    if (sym === 'DIA' && newState === 'up' && this.patternState === 'AWAITING_DJ_UP') {
+      const spyLast = this.bufs.SPY.last().c;
+      this.entry = { t, price: spyLast, target: this.spyPreDownPeak, approachWarned: false };
+      this.patternState = 'IN_POSITION';
+      this.fire('buy', `BUY SPY @ ${this.fmt(spyLast)} — target ${this.fmt(this.spyPreDownPeak)}`, 3);
+      this.fire('info', `Position opened`, 4);
+    }
+
+    if (this.patternState === 'AWAITING_DJ_UP' && this.spyFlatStartedAt &&
+        (t - this.spyFlatStartedAt) > CFG.patternTimeoutSec * 1000) {
+      this.fire('info', `Pattern timed out — DJ never confirmed up. Resetting.`, null);
+      this.resetPattern();
+    }
+    if (this.patternState === 'SPY_DOWN' && this.spyDownStartedAt &&
+        (t - this.spyDownStartedAt) > (CFG.patternTimeoutSec + 120) * 1000) {
+      this.resetPattern();
+    }
+
+    this.onStateChange(this.snapshot());
+  }
+  exitTrade(t, price, reason) {
+    const tr = {
+      id: 't_' + (this.trades.length + 1).toString().padStart(4, '0'),
+      buyT: this.entry.t, sellT: t,
+      buy: this.entry.price, sell: price,
+      target: this.entry.target,
+      reason, sharesNominal: CFG.positionShares,
+      invested: this.entry.price * CFG.positionShares,
+      gross: (price - this.entry.price) * CFG.positionShares,
+      pct: (price - this.entry.price) / this.entry.price * 100,
+      holdSec: Math.round((t - this.entry.t) / 1000),
+      hour: new Date(this.entry.t).getHours(),
+      dow: new Date(this.entry.t).getDay()
     };
-    trySet('colAccount', null,       ['account name','account','company','customer']);
-    trySet('colNotes',   null,       ['ae forecast','ae notes','ae note','forecast notes','notes']);
-    trySet('colARR',    'det_arr',   ['renewal subscription','original renewal','arr','revenue','amount']);
-    trySet('colDate',   'det_date',  ['financial reporting','renewal date','close date','financial']);
-    trySet('colPrevRD', 'det_prevrd',['rd forecast','rd notes','rd note','regional director','rd ']);
-    trySet('colAE',     'det_ae',    ['owner','ae name','account executive','rep name']);
-    showMappingExpanded();
+    this.trades.push(tr);
+    const isWin = tr.gross > 0;
+    this.fire(isWin ? 'win' : 'loss',
+      `SELL SPY @ ${this.fmt(price)} (${reason}) — ${tr.gross >= 0 ? '+' : ''}$${tr.gross.toFixed(2)} (${tr.pct >= 0 ? '+' : ''}${tr.pct.toFixed(2)}%)`,
+      5);
+    this.onTrade(tr);
+    this.resetPattern();
+  }
+  resetPattern() {
+    this.patternState = 'IDLE';
+    this.spyDownStartedAt = null;
+    this.spyFlatStartedAt = null;
+    this.spyPreDownPeak = null;
+    this.entry = null;
+  }
+  fire(level, message, stage) {
+    const a = { t: this.lastT || Date.now(), level, message, stage };
+    this.alerts.push(a);
+    this.onAlert(a);
+  }
+  fmt(v) { return v == null ? '—' : '$' + v.toFixed(2); }
+  snapshot() { return { symStates: { ...this.symStates }, patternState: this.patternState, entry: this.entry, lastT: this.lastT }; }
+}
+
+function randn() {
+  const u = Math.random() || 1e-9, v = Math.random() || 1e-9;
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+class DemoFeed {
+  constructor(startT) {
+    this.spy = 580.00; this.dia = 410.00;
+    this.t = startT || Date.now();
+    this.phase = 'normal'; this.step = 0;
+  }
+  next() {
+    this.t += 1000;
+    let spyDrift = 0, diaDrift = 0;
+    if (this.phase === 'normal') {
+      spyDrift = randn() * 0.018;
+      diaDrift = randn() * 0.014 + 0.5 * spyDrift * (this.dia / this.spy);
+      if (Math.random() < 0.005) { this.phase = 'spy_down'; this.step = 0; }
+    } else if (this.phase === 'spy_down') {
+      spyDrift = -0.0030 * 580 / 70 + randn() * 0.012;
+      const diaLag = this.step < 10 ? 0 : 1;
+      diaDrift = -diaLag * 0.0022 * 410 / 60 + randn() * 0.010;
+      this.step++;
+      if (this.step > 70) { this.phase = 'spy_flat'; this.step = 0; }
+    } else if (this.phase === 'spy_flat') {
+      spyDrift = randn() * 0.006;
+      diaDrift = -0.0006 * 410 / 35 + randn() * 0.009;
+      this.step++;
+      if (this.step > 35) { this.phase = Math.random() < 0.7 ? 'dia_up' : 'normal'; this.step = 0; }
+    } else if (this.phase === 'dia_up') {
+      diaDrift = 0.0018 * 410 / 40 + randn() * 0.010;
+      spyDrift = 0.0035 * 580 / 100 + randn() * 0.011;
+      this.step++;
+      if (this.step > 110) { this.phase = 'normal'; this.step = 0; }
+    }
+    this.spy += spyDrift; this.dia += diaDrift;
+    return [
+      { sym: 'SPY', t: this.t, c: this.spy },
+      { sym: 'DIA', t: this.t, c: this.dia }
+    ];
   }
 }
 
-function showMappingCollapsed() {
-  document.getElementById('mappingDetails').classList.add('hidden');
-  document.getElementById('mappingToggleLabel').textContent = 'Edit columns ▸';
-}
-function showMappingExpanded() {
-  document.getElementById('mappingDetails').classList.remove('hidden');
-  document.getElementById('mappingToggleLabel').textContent = 'Hide columns ▾';
-}
-function toggleMappingDetails() {
-  const hidden = document.getElementById('mappingDetails').classList.toggle('hidden');
-  document.getElementById('mappingToggleLabel').textContent = hidden ? 'Edit columns ▸' : 'Hide columns ▾';
-}
+// (Polygon live/historical adapters removed for public demo — this build is synthetic-only.)
 
-// ── Extract most-recent entry from multi-entry notes field ─────────────────────
-function extractMostRecent(text) {
-  if (!text || !String(text).trim()) return '';
-  const str = String(text).trim();
-  // Split before each dated entry (e.g. "Apr 02, 2026")
-  const parts = str.split(/(?=(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4})/);
-  // Return the first part with substantial content — skips empty strings or
-  // short fragments like bare timestamps ("11:54 AM") that precede the first entry
-  const meaningful = parts.find(p => p.trim().length > 30);
-  return meaningful ? meaningful.trim() : str.trim();
-}
+/* ============================================================
+   UI WIRING
+   ============================================================ */
 
-// ── Generation ─────────────────────────────────────────────────────────────────
-async function startGeneration() {
-  const apiKey = document.getElementById('apiKeyInput').value.trim();
-  if (!apiKey) { showToast('Enter your Claude API key first.', 'error'); return; }
-  if (!apiKey.startsWith('sk-ant-')) { showToast('Key should start with sk-ant-', 'error'); return; }
+let engine = null;
+let demoFeed = null;
+let demoHandle = null;
+const mode = 'demo';
+let liveTrades = loadTrades();
 
-  const accountCol = document.getElementById('colAccount').value;
-  const notesCol   = document.getElementById('colNotes').value;
-  if (!accountCol || !notesCol) { showToast('Select required columns.', 'error'); return; }
+const els = {};
+[
+  'start-btn','stop-btn','reset-btn','speed-select','tf-select','status-dot','status-text',
+  'clock-pill','clock','spy-state','dia-state','spy-price',
+  'dia-price','spy-slope','dia-slope','spy-target','alert-log','pattern-strip',
+  'conn-msg','tx-summary','tx-table-mount','bt-summary','bt-table-mount','bt-progress',
+  'bt-run-demo','bt-clear','bt-minutes','heatmap-hour','heatmap-dow',
+  'heatmap-hour-ret','chart-pnl'
+].forEach(id => { els[id.replace(/-([a-z])/g, (_,c) => c.toUpperCase())] = document.getElementById(id); });
 
-  const arrCol    = document.getElementById('colARR').value;
-  const dateCol   = document.getElementById('colDate').value;
-  const prevRDCol = document.getElementById('colPrevRD').value;
-  const aeCol     = document.getElementById('colAE').value;
-  const custom    = document.getElementById('customInstructions').value.trim();
-
-  // Persist column config so it auto-loads next time
-  saveColConfig();
-  showMappingCollapsed();
-
-  // Group by account
-  accountGroups = {};
-  parsedData.forEach(row => {
-    const acct = String(row[accountCol] || '').trim();
-    if (!acct) return;
-    if (!accountGroups[acct]) accountGroups[acct] = [];
-    accountGroups[acct].push(row);
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'transactions') renderTransactions();
+    if (btn.dataset.tab === 'analytics') renderAnalytics();
   });
-  const accounts = Object.keys(accountGroups);
-  if (!accounts.length) { showToast('No accounts found.', 'error'); return; }
+});
 
-  summaryResults = {}; riskResults = {};
-  selectedAccount = null; totalAccounts = accounts.length; doneCount = 0;
-
-  document.getElementById('generateBtn').disabled = true;
-  document.getElementById('progressSection').classList.remove('hidden');
-  document.getElementById('placeholder').classList.add('hidden');
-  document.getElementById('tabSection').classList.remove('hidden');
-  document.getElementById('tabSection').style.display = 'flex';
-  document.getElementById('activeCard').innerHTML = '';
-  document.getElementById('portfolioContent').innerHTML = portfolioPlaceholderHTML();
-
-  // Build account list
-  const listEl = document.getElementById('accountList');
-  listEl.innerHTML = '';
-  accounts.forEach(acct => {
-    const row0 = accountGroups[acct][0];
-    const arr  = arrCol  ? fmtARR(row0[arrCol])  : '';
-    const date = dateCol ? fmtDate(row0[dateCol]) : '';
-    const item = document.createElement('div');
-    item.className = 'account-item';
-    item.id = 'item_' + safeId(acct);
-    item.onclick = () => selectAccount(acct);
-    item.innerHTML = `
-      <span class="status-dot dot-pending" id="dot_${safeId(acct)}"></span>
-      <div class="account-item-info">
-        <div class="account-item-name">${escHtml(acct)}</div>
-        ${arr || date ? `<div class="account-item-sub">${[arr,date].filter(Boolean).join(' · ')}</div>` : ''}
-      </div>
-      <span id="flag_${safeId(acct)}"></span>`;
-    listEl.appendChild(item);
-  });
-
-  // Process each account
-  for (const acct of accounts) {
-    setDot(acct, 'processing');
-    updateProgress(doneCount, totalAccounts, `Processing ${acct}…`);
-
-    const rows = accountGroups[acct];
-    const row0 = rows[0];
-    const arr     = arrCol    ? String(row0[arrCol]    || '') : '';
-    const date    = dateCol   ? String(row0[dateCol]   || '') : '';
-    const ae      = aeCol     ? String(row0[aeCol]     || '') : '';
-    const prevRD  = prevRDCol ? String(row0[prevRDCol] || '') : '';
-    const lastPrevRD = extractMostRecent(prevRD);
-
-    let context = `Account: ${acct}\n`;
-    if (ae)   context += `AE/Owner: ${ae}\n`;
-    if (arr)  context += `ARR: $${arr}\n`;
-    if (date) context += `Renewal Date: ${date}\n`;
-    if (lastPrevRD) context += `\nMost Recent Previous RD Note:\n${lastPrevRD}\n`;
-    context += `\nNew AE Notes:\n`;
-    rows.forEach((row, i) => { context += `[Note ${i+1}]\n${row[notesCol] || '(empty)'}\n\n`; });
-
-    const prompt = `You are summarizing AE notes for an RD at a B2B SaaS company. Signal only — no filler, no activity reporting.
-
-${context}
-The 5 checks are exactly these, in this order:
-1. Tech Win — technical stakeholders have formally validated the solution as the preferred technical choice
-2. Legal Complete — all legal docs (MSA, SOW, DPA) finalized and approved by both parties
-3. EB Signoff — Economic Buyer has been met, reviewed the business case, and provided formal or informal sign-off
-4. Timeline Understood — a documented, validated timeline aligning the customer's Go-Live date with our Close date
-5. Pricing Agreed — final commercial terms including net pricing and payment terms formally accepted; no further negotiation needed
-
-Evaluate ONLY these 5 checks based on evidence in the notes. Do not invent or substitute other checks.
-
-Reply in EXACTLY this format (no extra text, no headers):
-
-WoW Update: [2-3 crisp sentences on what actually PROGRESSED vs last week — decisions made, deals moved, new risks surfaced. Compare to the previous RD note if provided. Never say "had a call" or "discussed." Say what changed or what's at stake.]
-
-5 checks: [X incomplete / 5 — name ONLY the checks that are NOT yet complete, comma-separated. Do NOT list checks that are complete. Example: if Tech Win and Pricing Agreed are done but the other three are not, write "3 incomplete / 5 — Legal Complete, EB Signoff, Timeline Understood". If all 5 are complete, write "0 incomplete / 5". If a check cannot be determined from the notes, count it as incomplete. If the customer is not renewing or churning, write "0/5 complete — customer churning".]
-CRITICAL: The line above MUST begin with the literal text "5 checks:" — never omit this label.
-
-Next steps (to commit):
-1. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]
-2. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]
-
-Important formatting rules:
-- Never print placeholder text like "[no date specified]", "[unknown]", "[owner]", or any bracketed placeholder. If a value is unknown, simply omit it.
-- Never include email addresses anywhere in the output.
-- Never use "AE" or "Account Executive" in the output. Use "AM" (Account Manager) instead.
-${custom ? `\nAdditional guidance: ${custom}` : ''}`;
-
-    try {
-      const text = await callClaude(apiKey, prompt);
-      summaryResults[acct] = { ...parseSummary(text), raw: rows, notesCol, arr, date, ae, prevRD, lastPrevRD };
-      setDot(acct, 'done');
-    } catch (err) {
-      summaryResults[acct] = { update: 'Error: ' + err.message, checks: '—', nextSteps: '—', raw: rows, notesCol, arr, date, ae, prevRD, lastPrevRD, error: true };
-      setDot(acct, 'error');
-    }
-
-    doneCount++;
-    updateProgress(doneCount, totalAccounts, doneCount < totalAccounts ? 'Processing…' : 'Done!');
-    if (doneCount === 1) selectAccount(acct);
-    document.getElementById('sidebarFooter').classList.remove('hidden');
-  }
-
-  document.getElementById('generateBtn').disabled = false;
-  updateProgress(totalAccounts, totalAccounts, `${totalAccounts} accounts done — run Portfolio Analysis →`);
-  showToast('All summaries done!', 'success');
-
-  // Automatically kick off portfolio analysis
-  runPortfolioAnalysis(apiKey);
-}
-
-function updateProgress(done, total, label) {
-  document.getElementById('progressFill').style.width = Math.round((done / Math.max(total,1)) * 100) + '%';
-  document.getElementById('progressLabel').textContent = label;
-}
-function setDot(acct, state) {
-  const d = document.getElementById('dot_' + safeId(acct));
-  if (d) d.className = `status-dot dot-${state}`;
-}
-
-// ── Portfolio Analysis ─────────────────────────────────────────────────────────
-async function runPortfolioAnalysis(apiKey) {
-  if (!apiKey) apiKey = document.getElementById('apiKeyInput').value.trim();
-  if (!apiKey && demoMode) { showToast('Add your API key to re-run portfolio analysis live.', 'error'); return; }
-  if (!apiKey) { showToast('No API key for analysis.', 'error'); return; }
-
-  document.getElementById('portfolioContent').innerHTML = `
-    <div class="analysis-card">
-      <div class="analysis-header"><h2>🔍 Portfolio Analysis</h2><p>Analyzing themes and risk signals…</p></div>
-      <div class="analysis-body"><div class="skeleton-textarea"></div></div>
-    </div>`;
-
-  // Build concise summary of all accounts
-  const accounts = Object.keys(summaryResults);
-  let portfolio = '';
-  accounts.forEach(acct => {
-    const s = summaryResults[acct];
-    portfolio += `\n---\nAccount: ${acct}`;
-    if (s.arr)  portfolio += ` | ARR: $${s.arr}`;
-    if (s.date) portfolio += ` | Renewal: ${s.date}`;
-    if (s.ae)   portfolio += ` | AM: ${s.ae}`;
-    portfolio += `\n`;
-    portfolio += `Previous RD Note (last entry): ${s.lastPrevRD || 'none'}\n`;
-    portfolio += `New WoW Update: ${s.update || '—'}\n`;
-    portfolio += `5 checks: ${s.checks || '—'}\n`;
-    portfolio += `Next steps: ${s.nextSteps || '—'}\n`;
-  });
-
-  const prompt = `You are an RD (Regional Director) analyzing your entire book of business at a B2B SaaS company. Below is a summary of all accounts from this week's AE notes.
-
-${portfolio}
-
-Produce a portfolio-level analysis with EXACTLY these sections:
-
-THEMES
-List 2-3 themes as numbered points. Each point must start with a short bold label (3-5 words) followed by a dash and 1-2 sentences of explanation. Use this exact format:
-1. **Label here** — Explanation sentence(s).
-2. **Label here** — Explanation sentence(s).
-
-RISK TABLE
-For each account, assign one of: HIGH RISK, STUCK, WATCH, or ON TRACK.
-- HIGH RISK: renewal is in genuine jeopardy — lost economic buyer, customer actively evaluating alternatives or churn, critical unresolved blocker with no clear path forward, or health severely declining with no mitigation plan. Technical challenges with a committed customer and a reasonable delivery timeline do NOT qualify as HIGH RISK.
-- STUCK: WoW updates show no meaningful change for 2+ consecutive weeks — same blockers, same next steps, no movement on checks, no new stakeholder engagement. A single week without updates is NOT stuck.
-- WATCH: some concern but still moving; situation needs monitoring
-- ON TRACK: progressing normally toward commit; no significant blockers
-You MUST include every single account in the table — do not skip or omit any account, including those that are ON TRACK.
-
-For the Recommended Action column: you are coaching the RD on what to do next to move the deal forward or protect the renewal. Draw on challenger sale and qualified sales leader principles — e.g. reframe the problem, get to the economic buyer, establish a mutual action plan, pressure-test the timeline, multi-thread the relationship, challenge the status quo, or quantify the cost of inaction. Be specific and directive. One crisp sentence.
-
-Format as a simple list, one account per line (four pipe-separated fields):
-[Account Name] | [LEVEL] | [one-sentence reason] | [recommended action for RD]
-
-WoW DELTA
-List 2-3 accounts where the situation materially improved or worsened since last week. Use this exact format:
-1. **Account Name** — [improved/worsened]: one sentence explaining what changed and why.
-2. **Account Name** — [improved/worsened]: one sentence explaining what changed and why.`;
-
-  try {
-    const text = await callClaude(apiKey, prompt, 2048);
-    renderPortfolioAnalysis(text, accounts);
-  } catch (err) {
-    document.getElementById('portfolioContent').innerHTML = `<div style="color:var(--danger);font-size:13px;padding:16px">Portfolio analysis failed: ${escHtml(err.message)}</div>`;
-  }
-}
-
-function portfolioPlaceholderHTML() {
-  return `<div class="run-analysis-wrap">
-    <p>Portfolio analysis will run automatically after all accounts are summarized.<br>You can also trigger it manually below.</p>
-    <button class="btn btn-primary" onclick="runPortfolioAnalysis()">Run Portfolio Analysis</button>
-  </div>`;
-}
-
-function renderPortfolioAnalysis(text, accounts) {
-  // Parse sections
-  const themesMatch = text.match(/THEMES\s*([\s\S]*?)(?=RISK TABLE|$)/i);
-  const riskMatch   = text.match(/RISK TABLE\s*([\s\S]*?)(?=WoW DELTA|$)/i);
-  const deltaMatch  = text.match(/WoW DELTA\s*([\s\S]*?)$/i);
-
-  const themes = themesMatch ? themesMatch[1].trim() : '';
-  const riskBlock = riskMatch ? riskMatch[1].trim() : '';
-  const delta = deltaMatch ? deltaMatch[1].trim() : '';
-
-  // Parse risk table lines and update sidebar flags
-  const riskRows = [];
-  riskBlock.split('\n').forEach(line => {
-    const m = line.match(/^(.+?)\s*\|\s*(HIGH RISK|STUCK|WATCH|ON TRACK)\s*\|\s*(.+?)(?:\s*\|\s*(.+))?$/i);
-    if (!m) return;
-    let [, name, level, reason, action] = m;
-    // Strip leading dash/hyphen and whitespace from name
-    name = name.trim().replace(/^[-–—]\s*/, '');
-    level = level.trim().toUpperCase();
-    reason = (reason || '').trim();
-    action = (action || '').trim();
-
-    // Enrich with ARR, renewal date, and AM from summaryResults
-    const acct = accounts.find(a => a.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(a.toLowerCase()));
-    const meta = acct ? summaryResults[acct] : null;
-    const arr    = meta ? meta.arr  : '';
-    const am     = meta ? (meta.ae || '') : '';
-    const rawDate = meta ? (meta.date || '') : '';
-    // Format for display (handles Excel serial numbers via fmtDate)
-    const dateStr = fmtDate(rawDate);
-
-    // Parse renewal date for sorting (handle Excel serial number or string)
-    let dateMs = Infinity;
-    if (rawDate) {
-      const rawStr = String(rawDate).trim();
-      const n = Number(rawStr.replace(/,/g,''));
-      if (!isNaN(n) && n > 1000 && rawStr === String(Math.floor(n))) {
-        // Excel serial number
-        dateMs = (n - 25569) * 86400 * 1000;
-      } else {
-        const parsed = new Date(rawStr);
-        if (!isNaN(parsed.getTime())) dateMs = parsed.getTime();
-      }
-    }
-
-    riskRows.push({ name, level, reason, action, arr, am, dateStr, dateMs });
-
-    // Update sidebar flag
-    if (acct) {
-      riskResults[acct] = { level, reason };
-      const flagEl = document.getElementById('flag_' + safeId(acct));
-      if (flagEl) {
-        if (level.includes('HIGH'))  flagEl.innerHTML = '<span class="risk-flag risk-high">⚠ High</span>';
-        else if (level === 'STUCK')  flagEl.innerHTML = '<span class="risk-flag risk-stuck">⏸ Stuck</span>';
-      }
-    }
-  });
-
-  // Sort: at-risk first (HIGH RISK, STUCK, WATCH) then ON TRACK; within each group, sort by renewal date ascending
-  const levelOrder = { 'HIGH RISK': 0, 'STUCK': 1, 'WATCH': 2, 'ON TRACK': 3 };
-  riskRows.sort((a, b) => {
-    const lo = (levelOrder[a.level] ?? 4) - (levelOrder[b.level] ?? 4);
-    if (lo !== 0) return lo;
-    return a.dateMs - b.dateMs;
-  });
-
-  const tableRows = riskRows.map(r => {
-    const badgeClass = r.level === 'HIGH RISK' ? 'badge-high' : r.level === 'STUCK' ? 'badge-stuck' : r.level === 'WATCH' ? 'badge-watch' : 'badge-ok';
-    const arrLine = r.arr ? `$${escHtml(r.arr)}` : '';
-    const amLine  = r.am  ? escHtml(r.am) : '';
-    const subHtml = [arrLine, amLine].filter(Boolean).map(s => `<span style="display:block;font-size:11px;font-weight:400;color:var(--text-muted)">${s}</span>`).join('');
-    const accountCell = `<td style="font-weight:600">${escHtml(r.name)}${subHtml}</td>`;
-    return `<tr>${accountCell}
-      <td><span class="risk-badge ${badgeClass}">${escHtml(r.level)}</span></td>
-      <td style="font-size:12px;color:var(--text-muted);white-space:nowrap">${escHtml(r.dateStr)}</td>
-      <td style="font-size:12px">${escHtml(r.reason)}</td>
-      <td style="font-size:12px;color:var(--primary)">${escHtml(r.action)}</td></tr>`;
-  }).join('');
-
-  document.getElementById('portfolioContent').innerHTML = `
-    <div class="analysis-card">
-      <div class="analysis-header">
-        <h2>🔍 Portfolio Analysis</h2>
-        <p>${accounts.length} accounts · ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</p>
-      </div>
-      <div class="analysis-body">
-        ${themes ? `<div class="analysis-section">
-          <div class="analysis-section-title">📊 Themes This Week</div>
-          <div class="theme-block">${formatAnalysisText(themes)}</div>
-        </div>` : ''}
-
-        ${riskRows.length ? `<div class="analysis-section">
-          <div class="analysis-section-title">🚦 Account Risk Assessment</div>
-          <div class="risk-table-wrap"><table class="risk-table">
-            <thead><tr><th>Account</th><th>Status</th><th>Renewal</th><th>Reason</th><th>Recommended Action</th></tr></thead>
-            <tbody>${tableRows}</tbody>
-          </table></div>
-        </div>` : ''}
-
-        ${delta ? `<div class="analysis-section">
-          <div class="analysis-section-title">📈 WoW Delta — Notable Changes</div>
-          <div class="theme-block">${formatAnalysisText(delta)}</div>
-        </div>` : ''}
-
-        <div style="margin-top:12px">
-          <button class="btn btn-secondary btn-sm" onclick="runPortfolioAnalysis()">↺ Re-run Analysis</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-// ── Tab switching ──────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  currentTab = tab;
-  document.getElementById('tabAccount').classList.toggle('active', tab === 'account');
-  document.getElementById('tabPortfolio').classList.toggle('active', tab === 'portfolio');
-  document.getElementById('tabQueries').classList.toggle('active', tab === 'queries');
-  document.getElementById('viewAccount').classList.toggle('hidden', tab !== 'account');
-  document.getElementById('viewPortfolio').classList.toggle('hidden', tab !== 'portfolio');
-  document.getElementById('viewQueries').classList.toggle('hidden', tab !== 'queries');
-  if (tab === 'queries') setTimeout(() => document.getElementById('chatInput')?.focus(), 50);
-}
-
-// ── Chat / Queries ─────────────────────────────────────────────────────────────
-const chatHistory = []; // { role: 'user'|'assistant', content: string }
-
-function buildChatContext() {
-  const accounts = Object.keys(summaryResults);
-  if (!accounts.length) return 'No account data loaded yet.';
-  let ctx = `You are an expert assistant helping an RD (Regional Director) at a B2B SaaS company query their book of business. Answer concisely and precisely based ONLY on the data below. If information isn't available, say so.\n\n`;
-  accounts.forEach(acct => {
-    const s = summaryResults[acct];
-    ctx += `---\nAccount: ${acct}`;
-    if (s.arr)  ctx += ` | ARR: $${s.arr}`;
-    if (s.date) ctx += ` | Renewal: ${fmtDate(s.date)}`;
-    if (s.ae)   ctx += ` | AM: ${s.ae}`;
-    ctx += '\n';
-    if (s.lastPrevRD) ctx += `Previous RD Note: ${s.lastPrevRD}\n`;
-    const latestNote = s.raw && s.notesCol ? extractMostRecent(s.raw.map(r => String(r[s.notesCol]||'')).join('\n\n')) : '';
-    if (latestNote) ctx += `Current AM Note (latest): ${latestNote}\n`;
-    ctx += `WoW Update: ${s.update || '—'}\n`;
-    ctx += `5 Checks: ${s.checks || '—'}\n`;
-    ctx += `Next Steps: ${s.nextSteps || '—'}\n`;
-  });
-  return ctx;
-}
-
-function chatKeydown(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-}
-
-function appendChatMsg(role, content, id) {
-  const box = document.getElementById('chatMessages');
-  // Clear empty state on first message
-  const empty = box.querySelector('.chat-empty');
-  if (empty) empty.remove();
-
-  const div = document.createElement('div');
-  div.className = `chat-msg ${role}`;
-  if (id) div.id = id;
-  div.innerHTML = `<div class="chat-bubble${content === '…' ? ' thinking' : ''}">${escHtml(content)}</div>`;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-  return div;
-}
-
-function updateChatMsg(id, content) {
-  const div = document.getElementById(id);
-  if (div) div.querySelector('.chat-bubble').textContent = content;
-  document.getElementById('chatMessages').scrollTop = 99999;
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const question = input.value.trim();
-  if (!question) return;
-  const apiKey = document.getElementById('apiKeyInput').value.trim();
-  if (!apiKey && demoMode) { showToast('Add your API key to enable live chat queries.', 'error'); return; }
-  if (!apiKey) { showToast('No API key set.', 'error'); return; }
-  if (!Object.keys(summaryResults).length) { showToast('No accounts loaded yet.', 'error'); return; }
-
-  input.value = '';
-  input.style.height = 'auto';
-  document.getElementById('chatSendBtn').disabled = true;
-
-  appendChatMsg('user', question);
-  const thinkingId = 'chat_thinking_' + Date.now();
-  appendChatMsg('assistant', '…', thinkingId);
-
-  chatHistory.push({ role: 'user', content: question });
-
-  try {
-    const systemPrompt = buildChatContext();
-    const messages = chatHistory.map(m => ({ role: m.role, content: m.content }));
-
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages
-      })
+// Plugin: draw current-price label at the right edge of each price line
+const endLabelPlugin = {
+  id: 'endLabel',
+  afterDatasetsDraw(chart) {
+    const ctx = chart.ctx;
+    chart.data.datasets.forEach((ds, i) => {
+      if (!ds._endLabel) return;
+      const meta = chart.getDatasetMeta(i);
+      if (!meta.data || !meta.data.length) return;
+      const last = meta.data[meta.data.length - 1];
+      const point = ds.data[ds.data.length - 1];
+      if (!last || !point) return;
+      const text = ds._endLabel(point);
+      ctx.save();
+      ctx.font = '600 11px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textBaseline = 'middle';
+      const padX = 5, padY = 2;
+      const m = ctx.measureText(text);
+      const w = m.width + padX * 2;
+      const h = 16;
+      const x = Math.min(last.x + 6, chart.chartArea.right - w - 2);
+      const y = last.y;
+      ctx.fillStyle = ds.borderColor;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x, y - h/2, w, h, 3);
+      else ctx.rect(x, y - h/2, w, h);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.fillText(text, x + padX, y);
+      ctx.restore();
     });
-    if (!res.ok) throw new Error((await res.json()).error?.message || res.statusText);
-    const reply = (await res.json()).content[0].text;
-
-    chatHistory.push({ role: 'assistant', content: reply });
-    updateChatMsg(thinkingId, reply);
-  } catch (err) {
-    updateChatMsg(thinkingId, 'Error: ' + err.message);
-  } finally {
-    document.getElementById('chatSendBtn').disabled = false;
-    document.getElementById('chatInput').focus();
   }
-}
+};
 
-// ── Account selection ──────────────────────────────────────────────────────────
-function selectAccount(acct) {
-  if (selectedAccount) document.getElementById('item_' + safeId(selectedAccount))?.classList.remove('selected');
-  selectedAccount = acct;
-  document.getElementById('item_' + safeId(acct))?.classList.add('selected');
-  switchTab('account');
-
-  const s = summaryResults[acct];
-  const card = document.getElementById('activeCard');
-  if (!s) { card.innerHTML = skeletonCard(acct); return; }
-  renderCard(acct, s);
-  requestAnimationFrame(() => { const ta = document.getElementById('activeSummary'); if (ta) autoResize(ta); });
-}
-
-function skeletonCard(acct) {
-  return `<div class="account-card"><div class="account-header"><div class="account-header-left"><div class="account-name">${escHtml(acct)}</div></div></div><div class="account-body"><div class="skeleton-textarea"></div></div></div>`;
-}
-
-function renderCard(acct, s) {
-  const rows = s.raw || [];
-  const chips = [];
-  if (s.arr)  chips.push(`💰 $${s.arr}`);
-  if (s.date) chips.push(`📅 ${fmtDate(s.date)}`);
-  if (s.ae)   chips.push(`👤 ${s.ae}`);
-  const riskBadge = riskResults[acct] ? riskBadgeHTML(riskResults[acct].level) : '';
-
-  // Most recent AE note entry
-  const latestAE = extractMostRecent(rows.map(r => String(r[s.notesCol]||'')).join('\n\n'));
-  const aeNoteHtml = latestAE ? `
-    <div class="ref-bar ae-bar">
-      <div class="ref-bar-label">Current AE Note</div>
-      <div class="ref-bar-text" id="aeNoteText">${escHtml(latestAE)}</div>
-      ${latestAE.length > 200 ? `<span class="ref-bar-expand" onclick="expandRefBar('aeNoteText', this)">Show more ↓</span>` : ''}
-    </div>` : '';
-
-  const prevRDHtml = s.lastPrevRD ? `
-    <div class="ref-bar rd-bar">
-      <div class="ref-bar-label">Previous RD Note</div>
-      <div class="ref-bar-text" id="prevRdText">${escHtml(s.lastPrevRD)}</div>
-      ${s.lastPrevRD.length > 200 ? `<span class="ref-bar-expand" onclick="expandRefBar('prevRdText', this)">Show more ↓</span>` : ''}
-    </div>` : '';
-
-  document.getElementById('activeCard').innerHTML = `
-    <div class="account-card">
-      <div class="account-header">
-        <div class="account-header-left">
-          <div class="account-name">${escHtml(acct)} ${riskBadge}</div>
-          ${chips.length ? `<div class="account-chips">${chips.map(c=>`<span class="chip">${c}</span>`).join('')}</div>` : ''}
-        </div>
-        <div class="account-actions">
-          <button class="btn-card" onclick="selectSummary()">Select all</button>
-          <button class="btn-card" onclick="regenSelected()">↺ Re-run</button>
-        </div>
-      </div>
-      <div class="account-body">
-        ${aeNoteHtml}
-        ${prevRDHtml}
-        <textarea class="summary-textarea" id="activeSummary" oninput="autoResize(this)">${escHtml(buildSummaryText(s))}</textarea>
-        <div class="card-footer">
-          <div class="raw-notes-toggle" onclick="toggleRaw()">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-            View all AE notes (${rows.length})
-          </div>
-        </div>
-        <div class="raw-notes hidden" id="rawNotesPanel">
-          ${rows.map(r=>`<div class="raw-note-row">${escHtml(String(r[s.notesCol]||''))}</div>`).join('')}
-        </div>
-      </div>
-    </div>`;
-}
-
-function riskBadgeHTML(level) {
-  if (!level) return '';
-  const l = level.toUpperCase();
-  if (l.includes('HIGH')) return `<span style="font-size:11px;font-weight:700;padding:2px 7px;background:rgba(220,38,38,0.25);border-radius:5px;margin-left:6px">⚠ HIGH RISK</span>`;
-  if (l === 'STUCK')      return `<span style="font-size:11px;font-weight:700;padding:2px 7px;background:rgba(217,119,6,0.25);border-radius:5px;margin-left:6px">⏸ STUCK</span>`;
-  return '';
-}
-
-function expandRefBar(id, btn) {
-  const el = document.getElementById(id);
-  if (el) { el.style.maxHeight = 'none'; el.style.overflow = 'visible'; }
-  if (btn) btn.style.display = 'none';
-}
-
-function autoResize(ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
-function selectSummary() { const ta = document.getElementById('activeSummary'); if (ta) { ta.focus(); ta.select(); } }
-function toggleRaw() { document.getElementById('rawNotesPanel')?.classList.toggle('hidden'); }
-
-async function regenSelected() {
-  if (!selectedAccount) return;
-  const apiKey = document.getElementById('apiKeyInput').value.trim();
-  if (!apiKey && demoMode) { showToast('Add your API key to re-generate live summaries.', 'error'); return; }
-  if (!apiKey) { showToast('No API key.', 'error'); return; }
-  const acct = selectedAccount;
-  const s = summaryResults[acct];
-  const custom = document.getElementById('customInstructions').value.trim();
-
-  let context = `Account: ${acct}\n`;
-  if (s.ae)   context += `AE/Owner: ${s.ae}\n`;
-  if (s.arr)  context += `ARR: $${s.arr}\n`;
-  if (s.date) context += `Renewal Date: ${s.date}\n`;
-  if (s.lastPrevRD) context += `\nMost Recent Previous RD Note:\n${s.lastPrevRD}\n`;
-  context += `\nNew AE Notes:\n`;
-  (s.raw||[]).forEach((row,i) => { context += `[Note ${i+1}]\n${row[s.notesCol]||'(empty)'}\n\n`; });
-
-  const prompt = `You are summarizing AE notes for an RD at a B2B SaaS company. Signal only, no filler.\n\n${context}\nThe 5 checks are exactly: 1. Tech Win, 2. Legal Complete, 3. EB Signoff, 4. Timeline Understood, 5. Pricing Agreed. Evaluate ONLY these — do not invent or substitute others.\n\nReply in EXACTLY this format:\n\nWoW Update: [2-3 crisp sentences on what PROGRESSED vs prior note. No "had a call."]\n\n5 checks: [X incomplete / 5 — name ONLY the checks NOT yet complete. Do NOT list complete ones. E.g. if 1 remains: "1 incomplete / 5 — Legal Complete". If all done: "0 incomplete / 5". If churning: "0/5 complete — customer churning".]\n\nNext steps (to commit):\n1. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]\n2. [action], [date or omit if unknown], [First Name, Title/Role — no email addresses]\n\nImportant: never print bracketed placeholders like [no date specified] or [unknown]. If a value is unknown, omit it entirely. Never include email addresses.${custom?`\n\nAdditional guidance: ${custom}`:''}`;
-
-  showToast('Re-generating…', 'success'); setDot(acct, 'processing');
-  try {
-    const text = await callClaude(apiKey, prompt);
-    const parsed = parseSummary(text);
-    summaryResults[acct] = { ...s, ...parsed };
-    const ta = document.getElementById('activeSummary');
-    if (ta) { ta.value = buildSummaryText(parsed); autoResize(ta); }
-    setDot(acct, 'done'); showToast('Re-generated!', 'success');
-  } catch (err) { setDot(acct, 'error'); showToast('Error: ' + err.message, 'error'); }
-}
-
-// ── Claude API ─────────────────────────────────────────────────────────────────
-async function callClaude(apiKey, prompt, maxTokens = 512) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
-  });
-  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `API error ${res.status}`); }
-  return (await res.json()).content[0].text;
-}
-
-// ── Parse / build text ─────────────────────────────────────────────────────────
-function parseSummary(text) {
-  // State-machine parser — robust against Claude omitting the "5 checks:" label
-  const lines = text.split('\n');
-  let state = 'pre';
-  const update = [], checks = [], nextSteps = [];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // Detect section headers and transition state
-    if (/^WoW Update:/i.test(trimmed)) {
-      state = 'update';
-      const val = trimmed.replace(/^WoW Update:\s*/i, '');
-      if (val) update.push(val);
-      continue;
-    }
-    if (/^5 checks:/i.test(trimmed)) {
-      state = 'checks';
-      const val = trimmed.replace(/^5 checks:\s*/i, '');
-      if (val) checks.push(val);
-      continue;
-    }
-    // Handle case where Claude writes the checks value without the "5 checks:" label
-    if (state === 'update' && /^\d+\s*(incomplete|complete)\s*\/\s*5/i.test(trimmed)) {
-      state = 'checks';
-      checks.push(trimmed);
-      continue;
-    }
-    if (/^Next steps/i.test(trimmed)) {
-      state = 'nextsteps';
-      // Don't add the "Next steps (to commit):" header line itself
-      continue;
-    }
-
-    if (state === 'update') update.push(line);
-    else if (state === 'checks') checks.push(line);
-    else if (state === 'nextsteps') nextSteps.push(line);
-    // 'pre' lines (e.g. leading date) are skipped
+const combinedChart = new Chart(document.getElementById('chart-combined'), {
+  type: 'line',
+  data: { datasets: [
+    { label: 'SPY', data: [], borderColor: '#1a1a1a', borderWidth: 1.6, tension: 0.05, fill: false,
+      _endLabel: p => `SPY $${p.price.toFixed(2)} ${p.y >= 0 ? '+' : ''}${p.y.toFixed(2)}%` },
+    { label: 'DIA', data: [], borderColor: '#7c3aed', borderWidth: 1.6, tension: 0.05, fill: false,
+      _endLabel: p => `DIA $${p.price.toFixed(2)} ${p.y >= 0 ? '+' : ''}${p.y.toFixed(2)}%` },
+    { label: 'target', data: [], borderColor: '#059669', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false },
+    { label: 'Buys', data: [], showLine: false, pointStyle: 'triangle',
+      pointRadius: 8, pointHoverRadius: 10, pointBorderColor: '#fff', pointBorderWidth: 2,
+      pointBackgroundColor: '#2563eb' },
+    { label: 'Sells', data: [], showLine: false, pointStyle: 'triangle', pointRotation: 180,
+      pointRadius: 8, pointHoverRadius: 10, pointBorderColor: '#fff', pointBorderWidth: 2,
+      pointBackgroundColor: ctx => {
+        const v = ctx.raw; return v && v.pnl != null && v.pnl < 0 ? '#dc2626' : '#059669';
+      } }
+  ]},
+  options: {
+    responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+    interaction: { mode: 'index', intersect: false, axis: 'x' },
+    layout: { padding: { right: 110 } },
+    scales: {
+      x: { type: 'linear', ticks: { maxTicksLimit: 8, color: '#9ca3af', font: { size: 9 },
+        callback: v => new Date(v).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'})
+      }, grid: { color: '#f3f4f6' } },
+      y: { ticks: { color: '#9ca3af', font: { size: 9 }, maxTicksLimit: 6,
+        callback: v => (v >= 0 ? '+' : '') + v.toFixed(2) + '%' }, grid: { color: '#f3f4f6' } }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        enabled: true, backgroundColor: 'rgba(26,26,26,0.92)', padding: 8, titleFont: { size: 10 },
+        bodyFont: { size: 11 }, displayColors: true, caretSize: 4,
+        callbacks: {
+          title: items => items.length ? new Date(items[0].parsed.x).toLocaleTimeString() : '',
+          label: ctx => {
+            const p = ctx.raw;
+            if (!p) return '';
+            if (ctx.dataset.label === 'target') return `target $${p.price.toFixed(2)}`;
+            if (ctx.dataset.label === 'Buys') return `BUY $${p.price.toFixed(2)} · target $${p.target.toFixed(2)}`;
+            if (ctx.dataset.label === 'Sells') {
+              const sign = p.pnl >= 0 ? '+' : '';
+              return `SELL $${p.price.toFixed(2)} · ${sign}$${p.pnl.toFixed(2)} (${sign}${p.pct.toFixed(2)}%) · ${p.reason}`;
+            }
+            return `${ctx.dataset.label}: $${p.price.toFixed(2)}  (${p.y >= 0 ? '+' : ''}${p.y.toFixed(3)}%)`;
+          }
+        }
+      }
+    },
+    elements: { point: { radius: 0, hoverRadius: 4, hitRadius: 12 } }
+  },
+  plugins: [endLabelPlugin]
+});
+const pnlChart = new Chart(els.chartPnl, {
+  type: 'line',
+  data: { datasets: [
+    { label: 'cum P&L', data: [], borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.08)', borderWidth: 1.5, tension: 0.1, fill: true, pointRadius: 0 }
+  ]},
+  options: {
+    responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+    scales: {
+      x: { type: 'linear', ticks: { maxTicksLimit: 8, font: {size: 9}, color: '#9ca3af', callback: v => new Date(v).toLocaleDateString() }, grid: { color: '#f3f4f6' } },
+      y: { ticks: { font: {size: 9}, color: '#9ca3af', callback: v => '$' + v.toFixed(0) }, grid: { color: '#f3f4f6' } }
+    },
+    plugins: { legend: { display: false }, tooltip: { enabled: false } }
   }
+});
 
+// Chart-side aggregator: bins 1-second ticks into candle closes for display.
+// Engine still runs at 1-second resolution; this only smooths the chart.
+const CHART_BARS_VISIBLE = 480; // up to 480 bars on screen (e.g. 8h at 1m, 2h at 15s, 8m at 1s, 40h at 5m)
+class CandleAggregator {
+  constructor() { this.intervalMs = (CFG.chartTimeframeSec || 60) * 1000; this.bars = []; this.current = null; }
+  setInterval(sec) {
+    this.intervalMs = sec * 1000;
+    this.bars = []; this.current = null;
+  }
+  feed(t, c) {
+    const bucket = Math.floor(t / this.intervalMs) * this.intervalMs;
+    if (!this.current || this.current.t !== bucket) {
+      if (this.current) this.bars.push(this.current);
+      this.current = { t: bucket, c };
+      while (this.bars.length > CHART_BARS_VISIBLE) this.bars.shift();
+    } else {
+      this.current.c = c;
+    }
+  }
+  // Replay the engine's TickBuffer to rebuild bars when timeframe changes
+  rebuildFrom(tickBuffer) {
+    this.bars = []; this.current = null;
+    for (const p of tickBuffer.data) this.feed(p.t, p.c);
+  }
+  series() { return this.current ? [...this.bars, this.current] : this.bars; }
+}
+const aggSpy = new CandleAggregator();
+const aggDia = new CandleAggregator();
+// Build a normalized chart series: % change of each bar's close from the first bar
+function normalizedSeries(agg) {
+  const bars = agg.series();
+  if (!bars.length) return { data: [], base: null };
+  const base = bars[0].c;
+  if (!base) return { data: [], base };
   return {
-    update: update.join('\n').trim(),
-    checks: checks.join('\n').trim(),
-    nextSteps: nextSteps.join('\n').trim()
+    base,
+    data: bars.map(b => ({ x: b.t, y: (b.c - base) / base * 100, price: b.c }))
   };
 }
-function buildSummaryText(s) {
-  const today = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-  return [
-    today,
-    `WoW Update: ${s.update||'—'}`,
-    '',
-    `5 checks: ${s.checks||'—'}`,
-    '',
-    `Next steps (to commit):`,
-    s.nextSteps||'—'
-  ].join('\n');
-}
-
-// ── Copy / Export ──────────────────────────────────────────────────────────────
-function accountToText(acct) {
-  const s = summaryResults[acct]; if (!s) return '';
-  const header = [`━━━ ${acct} ━━━`, s.arr?`ARR: $${s.arr}`:'', s.date?`Renewal: ${fmtDate(s.date)}`:''].filter(Boolean).join('\n');
-  const body = acct === selectedAccount && document.getElementById('activeSummary') ? document.getElementById('activeSummary').value : buildSummaryText(s);
-  return `${header}\n${body}\n`;
-}
-function copyAll() { fallbackCopy(Object.keys(summaryResults).map(accountToText).filter(Boolean).join('\n')); showToast('Copied!', 'success'); }
-function exportTxt() {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([Object.keys(summaryResults).map(accountToText).filter(Boolean).join('\n')], { type: 'text/plain' }));
-  a.download = `RD_Summaries_${new Date().toISOString().slice(0,10)}.txt`; a.click();
-}
-function fallbackCopy(text) {
-  if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).catch(()=>execCopy(text)); return; }
-  execCopy(text);
-}
-function execCopy(text) {
-  const ta = document.createElement('textarea'); ta.value = text;
-  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
-  document.body.appendChild(ta); ta.focus(); ta.select();
-  try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(ta);
-}
-
-// ── Analysis text formatter ────────────────────────────────────────────────────
-function formatAnalysisText(raw) {
-  if (!raw) return '';
-  const lines = raw.split('\n');
-  const items = [];
-  let current = null;
-  lines.forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) return;
-    // Match numbered item: "1. **Label** — text" or "1. **Label**: text"
-    const m = trimmed.match(/^\d+\.\s+\*\*(.+?)\*\*\s*[—–:\-]\s*(.*)$/);
-    if (m) {
-      if (current) items.push(current);
-      current = { label: m[1].trim(), body: m[2].trim() };
-    } else if (current) {
-      // continuation line
-      current.body += ' ' + trimmed;
-    } else {
-      // plain text fallback — wrap as a label-less item
-      items.push({ label: '', body: trimmed });
-    }
-  });
-  if (current) items.push(current);
-
-  if (items.length === 0) return `<p style="font-size:13px;line-height:1.6;color:var(--text)">${escHtml(raw)}</p>`;
-
-  return items.map(item => {
-    // Colour tag for improved/worsened in WoW Delta
-    let bodyHtml = escHtml(item.body);
-    bodyHtml = bodyHtml.replace(/\b(improved)\b/gi, '<span style="color:var(--success);font-weight:600">$1</span>');
-    bodyHtml = bodyHtml.replace(/\b(worsened|declined|at risk|deteriorated)\b/gi, '<span style="color:var(--danger);font-weight:600">$1</span>');
-    return `<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
-      <div style="flex-shrink:0;width:20px;height:20px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px">
-        <span style="font-size:10px;font-weight:700;color:var(--primary)">${items.indexOf(item)+1}</span>
-      </div>
-      <div style="font-size:13px;line-height:1.6;color:var(--text)">
-        ${item.label ? `<span style="font-weight:700;color:var(--text)">${escHtml(item.label)}</span> — ` : ''}${bodyHtml}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── Formatters ─────────────────────────────────────────────────────────────────
-function fmtARR(v) {
-  if (!v) return '';
-  const n = parseFloat(String(v).replace(/[$,]/g,''));
-  if (isNaN(n)) return String(v);
-  if (n >= 1000000) return `${(n/1000000).toFixed(1)}M`;
-  if (n >= 1000)    return `${(n/1000).toFixed(0)}K`;
-  return String(v);
-}
-function fmtDate(v) {
-  if (!v) return '';
-  const str = String(v).trim();
-  // Excel stores dates as serial numbers (days since Jan 1 1900)
-  const n = Number(str.replace(/,/g,''));
-  if (!isNaN(n) && n > 1000 && str === String(Math.floor(n))) {
-    const d = new Date((n - 25569) * 86400 * 1000);
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+function rebuildCombinedChart(entry) {
+  const spy = normalizedSeries(aggSpy);
+  const dia = normalizedSeries(aggDia);
+  combinedChart.data.datasets[0].data = spy.data;
+  combinedChart.data.datasets[1].data = dia.data;
+  // Target line: horizontal line at the SPY-normalized target value
+  if (entry && spy.base && spy.data.length) {
+    const targetPct = (entry.target - spy.base) / spy.base * 100;
+    combinedChart.data.datasets[2].data = [
+      { x: spy.data[0].x, y: targetPct, price: entry.target },
+      { x: spy.data[spy.data.length - 1].x, y: targetPct, price: entry.target }
+    ];
+  } else {
+    combinedChart.data.datasets[2].data = [];
   }
-  const d = new Date(str);
-  if (isNaN(d.getTime())) return str;
-  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  // Trade markers — show buys/sells that fall in the visible window
+  if (spy.base && spy.data.length) {
+    const xMin = spy.data[0].x;
+    const xMax = spy.data[spy.data.length - 1].x;
+    const buys = [], sells = [];
+    for (const tr of liveTrades) {
+      if (tr.buyT >= xMin && tr.buyT <= xMax) {
+        buys.push({ x: tr.buyT, y: (tr.buy - spy.base) / spy.base * 100, price: tr.buy, target: tr.target });
+      }
+      if (tr.sellT >= xMin && tr.sellT <= xMax) {
+        sells.push({ x: tr.sellT, y: (tr.sell - spy.base) / spy.base * 100, price: tr.sell,
+          pnl: tr.gross, pct: tr.pct, reason: tr.reason });
+      }
+    }
+    combinedChart.data.datasets[3].data = buys;
+    combinedChart.data.datasets[4].data = sells;
+  } else {
+    combinedChart.data.datasets[3].data = [];
+    combinedChart.data.datasets[4].data = [];
+  }
+  combinedChart.update('none');
 }
-function safeId(str) { return btoa(unescape(encodeURIComponent(str))).replace(/[^a-z0-9]/gi,''); }
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function showToast(msg, type='success') {
-  const w = document.getElementById('toastWrap'), t = document.createElement('div');
-  t.className = `toast ${type}`; t.textContent = msg; w.appendChild(t);
-  setTimeout(()=>t.remove(), 3000);
+function setChartTimeframe(sec) {
+  CFG.chartTimeframeSec = sec; saveCfg();
+  aggSpy.setInterval(sec); aggDia.setInterval(sec);
+  if (engine) {
+    aggSpy.rebuildFrom(engine.bufs.SPY);
+    aggDia.rebuildFrom(engine.bufs.DIA);
+    rebuildCombinedChart(engine.snapshot().entry);
+  }
 }
+
+function newEngine() {
+  return new PatternEngine({
+    onAlert: onLiveAlert, onStateChange: onLiveState, onTrade: onLiveTrade
+  });
+}
+function onLiveAlert(a) {
+  renderAlertItem(a);
+  if (a.stage != null) markStage(a.stage);
+  if (['win','loss'].includes(a.level)) setTimeout(clearStages, 3000);
+}
+function onLiveState(s) {
+  els.spyState.className = 'state-badge ' + s.symStates.SPY;
+  els.spyState.textContent = s.symStates.SPY;
+  els.diaState.className = 'state-badge ' + s.symStates.DIA;
+  els.diaState.textContent = s.symStates.DIA;
+  if (!engine) return;
+  const spyLast = engine.bufs.SPY.last();
+  const diaLast = engine.bufs.DIA.last();
+  if (spyLast) {
+    els.spyPrice.textContent = '$' + spyLast.c.toFixed(2);
+    els.spySlope.textContent = engine.bufs.SPY.slopePctOver(CFG.downWindowSec, spyLast.t).toFixed(3) + '%';
+    aggSpy.feed(spyLast.t, spyLast.c);
+    if (s.entry) {
+      els.spyTarget.style.display = '';
+      els.spyTarget.querySelector('b').textContent = '$' + s.entry.target.toFixed(2);
+    } else {
+      els.spyTarget.style.display = 'none';
+    }
+  }
+  if (diaLast) {
+    els.diaPrice.textContent = '$' + diaLast.c.toFixed(2);
+    els.diaSlope.textContent = engine.bufs.DIA.slopePctOver(CFG.downWindowSec, diaLast.t).toFixed(3) + '%';
+    aggDia.feed(diaLast.t, diaLast.c);
+  }
+  if (spyLast || diaLast) rebuildCombinedChart(s.entry);
+}
+function onLiveTrade(tr) {
+  liveTrades.push(tr);
+  saveTrades(liveTrades);
+  if (document.getElementById('tab-transactions').classList.contains('active')) renderTransactions();
+}
+function renderAlertItem(a) {
+  const log = els.alertLog;
+  if (log.querySelector('.empty')) log.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'alert-item';
+  const time = new Date(a.t).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  div.innerHTML = `<span class="alert-time">${time}</span><span class="alert-icon ${a.level}">${iconChar(a.level)}</span><span class="alert-msg">${escapeHtml(a.message)}</span>`;
+  log.insertBefore(div, log.firstChild);
+  while (log.childNodes.length > 100) log.removeChild(log.lastChild);
+}
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function iconChar(l) { return ({info:'i', warn:'!', buy:'B', win:'↑', loss:'↓', sys:'⚙'}[l]) || '·'; }
+function markStage(idx) {
+  els.patternStrip.querySelectorAll('.stage').forEach((s, i) => {
+    s.classList.remove('active');
+    if (i < idx) s.classList.add('done');
+    else if (i === idx) s.classList.add('active');
+    else s.classList.remove('done');
+  });
+}
+function clearStages() {
+  els.patternStrip.querySelectorAll('.stage').forEach(s => s.classList.remove('active','done'));
+}
+
+function showConnMsg(o) {
+  if (!o) { els.connMsg.innerHTML = ''; return; }
+  const cls = ({err:'err', ok:'ok', info:'info', warn:''}[o.kind]) || '';
+  els.connMsg.innerHTML = `<div class="note ${cls}">${o.html}</div>`;
+}
+
+/* ---------- Engine start / stop (demo-only build) ---------- */
+function engineStart() {
+  if (!engine) engine = newEngine();
+  if (!demoFeed) demoFeed = new DemoFeed();
+  els.startBtn.disabled = true;
+  els.stopBtn.disabled = false;
+  els.statusDot.className = 'status-dot on live-pulse';
+  els.statusText.textContent = 'demo running';
+  els.clockPill.style.display = '';
+  const interval = parseInt(els.speedSelect.value, 10);
+  demoHandle = setInterval(() => {
+    const ticks = demoFeed.next();
+    ticks.forEach(t => engine.feedTick(t));
+    els.clock.textContent = new Date(demoFeed.t).toLocaleTimeString();
+  }, interval);
+}
+function engineStop() {
+  if (demoHandle) { clearInterval(demoHandle); demoHandle = null; }
+  els.startBtn.disabled = false;
+  els.stopBtn.disabled = true;
+  els.statusDot.className = 'status-dot';
+  els.statusText.textContent = 'stopped';
+}
+function resetSession() {
+  engineStop();
+  engine = null;
+  demoFeed = null;
+  liveTrades = [];
+  combinedChart.data.datasets.forEach(d => d.data = []);
+  aggSpy.setInterval(CFG.chartTimeframeSec || 60);
+  aggDia.setInterval(CFG.chartTimeframeSec || 60);
+  combinedChart.update('none');
+  els.alertLog.innerHTML = '<div class="empty">Restarting demo…</div>';
+  clearStages();
+  els.spyPrice.textContent = '—'; els.diaPrice.textContent = '—';
+  els.spySlope.textContent = '—'; els.diaSlope.textContent = '—';
+  els.spyTarget.style.display = 'none';
+  renderTransactions(); renderAnalytics();
+  engineStart();
+}
+els.startBtn.addEventListener('click', engineStart);
+els.stopBtn.addEventListener('click', engineStop);
+els.resetBtn.addEventListener('click', resetSession);
+els.speedSelect.addEventListener('change', () => {
+  if (demoHandle) { engineStop(); engineStart(); }
+});
+els.tfSelect.value = String(CFG.chartTimeframeSec || 60);
+els.tfSelect.addEventListener('change', () => {
+  setChartTimeframe(parseInt(els.tfSelect.value, 10));
+});
+
+/* ---------- Transactions ---------- */
+function renderTransactions() {
+  const trades = liveTrades;
+  const wins = trades.filter(t => t.gross > 0);
+  const totalPnL = trades.reduce((s, t) => s + t.gross, 0);
+  const totalInvested = trades.reduce((s, t) => s + (t.invested ?? t.buy * (t.sharesNominal ?? 100)), 0);
+  const avgInvested = trades.length ? totalInvested / trades.length : 0;
+  const roi = totalInvested ? (totalPnL / totalInvested * 100) : 0;
+  const avgPct = trades.length ? trades.reduce((s, t) => s + t.pct, 0) / trades.length : 0;
+  const winRate = trades.length ? (wins.length / trades.length * 100) : 0;
+  const best = trades.reduce((m, t) => !m || t.pct > m.pct ? t : m, null);
+  const worst = trades.reduce((m, t) => !m || t.pct < m.pct ? t : m, null);
+  els.txSummary.innerHTML = '';
+  const cards = [
+    { label: 'Trades', value: trades.length },
+    { label: 'Win rate', value: trades.length ? winRate.toFixed(1) + '%' : '—', cls: winRate >= 50 ? 'pos' : 'neg' },
+    { label: 'Avg invested / trade', value: trades.length ? '$' + Math.round(avgInvested).toLocaleString() : '—' },
+    { label: 'Total P&L', value: '$' + totalPnL.toFixed(2), cls: totalPnL >= 0 ? 'pos' : 'neg' },
+    { label: 'ROI on capital', value: trades.length ? (roi >= 0 ? '+' : '') + roi.toFixed(2) + '%' : '—', cls: roi >= 0 ? 'pos' : 'neg' },
+    { label: 'Avg return / trade', value: avgPct.toFixed(2) + '%', cls: avgPct >= 0 ? 'pos' : 'neg' },
+    { label: 'Best', value: best ? best.pct.toFixed(2) + '%' : '—', cls: 'pos' },
+    { label: 'Worst', value: worst ? worst.pct.toFixed(2) + '%' : '—', cls: 'neg' }
+  ];
+  cards.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'card metric ' + (c.cls || '');
+    div.innerHTML = `<span class="label">${c.label}</span><span class="value">${c.value}</span>`;
+    els.txSummary.appendChild(div);
+  });
+  els.txTableMount.innerHTML = '';
+  if (!trades.length) {
+    els.txTableMount.innerHTML = '<div style="padding:24px;text-align:center;color:#9ca3af;font-size:12px;">No trades yet.</div>';
+    return;
+  }
+  const rows = trades.slice().reverse().map(t => [
+    t.id,
+    new Date(t.buyT).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    new Date(t.sellT).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    '$' + t.buy.toFixed(2), '$' + t.sell.toFixed(2), '$' + t.target.toFixed(2),
+    t.holdSec + 's', t.reason,
+    (t.gross >= 0 ? '+' : '') + '$' + t.gross.toFixed(2),
+    (t.pct >= 0 ? '+' : '') + t.pct.toFixed(2) + '%'
+  ]);
+  new gridjs.Grid({
+    columns: ['#', 'Buy time', 'Sell time', 'Buy', 'Sell', 'Target', 'Held', 'Exit', 'Gross', 'Return'],
+    data: rows, sort: true, pagination: { limit: 25 },
+    style: { table: { 'font-size': '11px' }, th: { 'padding': '6px 8px' }, td: { 'padding': '5px 8px' } }
+  }).render(els.txTableMount);
+}
+
+/* ---------- Analytics ---------- */
+function renderAnalytics() {
+  const trades = liveTrades;
+  const byHour = {}, byDow = {};
+  for (let h = 9; h <= 16; h++) byHour[h] = { wins: 0, n: 0, retSum: 0 };
+  for (let d = 1; d <= 5; d++) byDow[d] = { wins: 0, n: 0, retSum: 0 };
+  trades.forEach(t => {
+    if (byHour[t.hour]) { byHour[t.hour].n++; byHour[t.hour].retSum += t.pct; if (t.gross > 0) byHour[t.hour].wins++; }
+    if (byDow[t.dow]) { byDow[t.dow].n++; byDow[t.dow].retSum += t.pct; if (t.gross > 0) byDow[t.dow].wins++; }
+  });
+
+  function buildHourGrid(target, valueFn, fmt, lo, hi, loColor, hiColor) {
+    target.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'heatmap-grid';
+    grid.style.gridTemplateColumns = 'repeat(8, 1fr)';
+    for (let h = 9; h <= 16; h++) {
+      const cell = document.createElement('div');
+      cell.className = 'heatmap-cell' + (byHour[h].n === 0 ? ' empty' : '');
+      cell.title = `${h}:00 — ${byHour[h].n} trades`;
+      if (byHour[h].n > 0) {
+        const v = valueFn(byHour[h]);
+        cell.style.background = colorFor(v, lo, hi, loColor, hiColor);
+        cell.textContent = fmt(v);
+      } else cell.textContent = '—';
+      grid.appendChild(cell);
+    }
+    const labels = document.createElement('div');
+    labels.className = 'heatmap-grid';
+    labels.style.gridTemplateColumns = 'repeat(8, 1fr)';
+    labels.style.marginTop = '4px';
+    for (let h = 9; h <= 16; h++) {
+      const lbl = document.createElement('div');
+      lbl.className = 'heatmap-col-label';
+      lbl.textContent = h + ':00';
+      labels.appendChild(lbl);
+    }
+    target.appendChild(grid); target.appendChild(labels);
+  }
+  buildHourGrid(els.heatmapHour, b => b.wins / b.n, v => (v*100).toFixed(0)+'%', 0, 1, '#fef2f2', '#f0fdf4');
+  buildHourGrid(els.heatmapHourRet, b => b.retSum / b.n, v => (v>=0?'+':'')+v.toFixed(2), -0.5, 0.5, '#fee2e2', '#dcfce7');
+
+  els.heatmapDow.innerHTML = '';
+  const dowNames = { 1:'Mon', 2:'Tue', 3:'Wed', 4:'Thu', 5:'Fri' };
+  const dgrid = document.createElement('div');
+  dgrid.className = 'heatmap-grid';
+  dgrid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+  for (let d = 1; d <= 5; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell' + (byDow[d].n === 0 ? ' empty' : '');
+    cell.title = `${dowNames[d]} — ${byDow[d].n} trades`;
+    if (byDow[d].n > 0) {
+      const wr = byDow[d].wins / byDow[d].n;
+      cell.style.background = colorFor(wr, 0, 1, '#fef2f2', '#f0fdf4');
+      cell.textContent = (wr * 100).toFixed(0) + '%';
+    } else cell.textContent = '—';
+    dgrid.appendChild(cell);
+  }
+  const dlabels = document.createElement('div');
+  dlabels.className = 'heatmap-grid';
+  dlabels.style.gridTemplateColumns = 'repeat(5, 1fr)';
+  dlabels.style.marginTop = '4px';
+  for (let d = 1; d <= 5; d++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'heatmap-col-label';
+    lbl.textContent = dowNames[d];
+    dlabels.appendChild(lbl);
+  }
+  els.heatmapDow.appendChild(dgrid); els.heatmapDow.appendChild(dlabels);
+
+  let cum = 0;
+  const sorted = trades.slice().sort((a, b) => a.sellT - b.sellT);
+  pnlChart.data.datasets[0].data = sorted.map(t => { cum += t.gross; return { x: t.sellT, y: cum }; });
+  pnlChart.update('none');
+}
+function colorFor(v, lo, hi, loColor, hiColor) {
+  const t = Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
+  const lerp = (a, b, tt) => {
+    const ah = parseInt(a.slice(1), 16), bh = parseInt(b.slice(1), 16);
+    const ar=(ah>>16)&255, ag=(ah>>8)&255, ab=ah&255;
+    const br=(bh>>16)&255, bg=(bh>>8)&255, bb=bh&255;
+    return `rgb(${Math.round(ar+(br-ar)*tt)},${Math.round(ag+(bg-ag)*tt)},${Math.round(ab+(bb-ab)*tt)})`;
+  };
+  return lerp(loColor, hiColor, t);
+}
+
+/* ---------- Backtest (synthetic-only in this demo build) ---------- */
+let btTrades = [];
+function runSyntheticBacktest() {
+  const minutes = parseInt(els.btMinutes.value, 10) || 480;
+  const totalSec = minutes * 60;
+  els.btProgress.textContent = `running backtest…`;
+  els.btRunDemo.disabled = true;
+  const btEngine = new PatternEngine({ onTrade: () => {} });
+  const f = new DemoFeed(new Date().setHours(9, 30, 0, 0));
+  let i = 0;
+  function chunk() {
+    const end = Math.min(i + 1200, totalSec);
+    for (; i < end; i++) f.next().forEach(t => btEngine.feedTick(t));
+    els.btProgress.textContent = `simulating… ${i}/${totalSec}s (${(i/totalSec*100).toFixed(0)}%)`;
+    if (i < totalSec) requestAnimationFrame(chunk);
+    else {
+      btTrades = btEngine.trades.slice();
+      els.btProgress.textContent = `complete — ${btTrades.length} trades over ${minutes} simulated minutes`;
+      els.btRunDemo.disabled = false;
+      renderBacktest();
+    }
+  }
+  requestAnimationFrame(chunk);
+}
+function renderBacktest() {
+  const trades = btTrades;
+  const wins = trades.filter(t => t.gross > 0);
+  const totalPnL = trades.reduce((s, t) => s + t.gross, 0);
+  const totalInvested = trades.reduce((s, t) => s + (t.invested ?? t.buy * (t.sharesNominal ?? 100)), 0);
+  const avgInvested = trades.length ? totalInvested / trades.length : 0;
+  const roi = totalInvested ? (totalPnL / totalInvested * 100) : 0;
+  const avgPct = trades.length ? trades.reduce((s, t) => s + t.pct, 0) / trades.length : 0;
+  const winRate = trades.length ? (wins.length / trades.length * 100) : 0;
+  els.btSummary.innerHTML = '';
+  const cards = [
+    { label: 'BT trades', value: trades.length },
+    { label: 'Win rate', value: trades.length ? winRate.toFixed(1) + '%' : '—', cls: winRate >= 50 ? 'pos' : 'neg' },
+    { label: 'Avg invested / trade', value: trades.length ? '$' + Math.round(avgInvested).toLocaleString() : '—' },
+    { label: 'Total P&L', value: '$' + totalPnL.toFixed(2), cls: totalPnL >= 0 ? 'pos' : 'neg' },
+    { label: 'ROI on capital', value: trades.length ? (roi >= 0 ? '+' : '') + roi.toFixed(2) + '%' : '—', cls: roi >= 0 ? 'pos' : 'neg' },
+    { label: 'Avg return / trade', value: avgPct.toFixed(2) + '%', cls: avgPct >= 0 ? 'pos' : 'neg' }
+  ];
+  cards.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'card metric ' + (c.cls || '');
+    div.innerHTML = `<span class="label">${c.label}</span><span class="value">${c.value}</span>`;
+    els.btSummary.appendChild(div);
+  });
+  els.btTableMount.innerHTML = '';
+  if (!trades.length) {
+    els.btTableMount.innerHTML = '<div style="padding:24px;text-align:center;color:#9ca3af;font-size:12px;">No backtest trades yet.</div>';
+    return;
+  }
+  const rows = trades.map(t => [
+    t.id,
+    new Date(t.buyT).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit'}),
+    '$' + t.buy.toFixed(2), '$' + t.sell.toFixed(2),
+    t.holdSec + 's', t.reason,
+    (t.gross >= 0 ? '+' : '') + '$' + t.gross.toFixed(2),
+    (t.pct >= 0 ? '+' : '') + t.pct.toFixed(2) + '%'
+  ]);
+  new gridjs.Grid({
+    columns: ['#', 'Buy', 'Buy $', 'Sell $', 'Held', 'Exit', 'Gross', 'Return'],
+    data: rows, sort: true, pagination: { limit: 25 },
+    style: { table: { 'font-size': '11px' }, th: { 'padding': '6px 8px' }, td: { 'padding': '5px 8px' } }
+  }).render(els.btTableMount);
+}
+els.btRunDemo.addEventListener('click', runSyntheticBacktest);
+els.btClear.addEventListener('click', () => { btTrades = []; renderBacktest(); els.btProgress.textContent = ''; });
+
+/* ---------- Settings sliders ---------- */
+const sliderMap = [
+  ['s-down', 'downThreshPct', '%', 2],
+  ['s-flat', 'flatRangePct', '%', 2],
+  ['s-up', 'upThreshPct', '%', 2],
+  ['s-concur', 'concurrencySec', 's', 0],
+  ['s-timeout', 'patternTimeoutSec', 's', 0],
+  ['s-hold', 'maxHoldSec', 's', 0],
+  ['s-stop', 'stopLossPct', '%', 2],
+  ['s-look', 'preDownLookbackSec', 's', 0],
+  ['s-shares', 'positionShares', ' sh', 0]
+];
+function bindSliders() {
+  sliderMap.forEach(([id, key, suffix, dec]) => {
+    const el = document.getElementById(id);
+    const v = document.getElementById(id + '-v');
+    el.value = CFG[key];
+    v.textContent = parseFloat(CFG[key]).toFixed(dec) + suffix;
+    el.oninput = () => {
+      CFG[key] = parseFloat(el.value);
+      v.textContent = parseFloat(el.value).toFixed(dec) + suffix;
+      saveCfg();
+    };
+  });
+}
+bindSliders();
+document.getElementById('reset-thresholds').addEventListener('click', () => {
+  CFG = { ...DEFAULTS }; saveCfg(); bindSliders();
+});
+
+renderTransactions();
+renderAnalytics();
+
+// Auto-start the demo on page load so visitors see activity immediately.
+engineStart();
 </script>
+
 </body>
 </html>
