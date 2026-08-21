@@ -22,8 +22,8 @@
   <div class="cs-hero">
     <div class="cs-hero-inner">
       <a class="cs-hero-back" href="index.html">← Back</a>
-      <p class="cs-hero-meta">Soroco · Financial Services</p>
-      <h1 class="cs-hero-title">Fraud Detection Platform for Top Credit Card Issuer</h1>
+      <p class="cs-hero-meta">Financial Services</p>
+      <h1 class="cs-hero-title">Fraud Detection Platform for a Top-Three Global Payments Network</h1>
       <div class="cs-hero-outcome">$6M engagement · Billions of transactions monitored annually</div>
     </div>
   </div>
@@ -32,13 +32,14 @@
 
     <div class="cs-col">
       <span class="cs-col-label">Situation</span>
-      <p>Mastercard was experiencing intermittent failures in the clusters responsible for routing fraud scoring on payment transactions. When these clusters degraded, the result was point-of-sale delays and declined transactions — a problem affecting billions in transaction volume annually. I was brought in to lead a $250K paid proof of concept to determine whether failures could be predicted and traffic rerouted before they caused customer-facing disruption.</p>
+      <p>The client, one of the world's top-three payments networks, was experiencing intermittent failures in the clusters that route fraud scoring on payment transactions. When a cluster degraded, the result was point-of-sale delays and declined transactions — the kind of failure that had already caused a nationwide, customer-facing disruption and strained relationships with the issuing banks it serves.</p>
+      <p>Their existing response was a manual failover script that only kicked in reactively, after transactions had already started declining. I was brought in to lead a $250K paid proof of concept to determine whether failures could be predicted, and traffic rerouted, before they reached customers.</p>
     </div>
 
     <div class="cs-col">
       <span class="cs-col-label">Approach</span>
-      <p>We trained anomaly detection models on Splunk telemetry data, identifying cluster health signatures that preceded failures before they materialized. The models powered an automated routing layer that redirected transaction traffic proactively — eliminating the latency and declines caused by reactive failover.</p>
-      <p>After a successful proof, I identified the opportunity to replicate the architecture across six other Mastercard services. I built the stakeholder relationships needed to position that expansion, then structured the deal to protect it. The original contract included a termination-for-convenience clause that left us exposed across a multi-year buildout. I renegotiated: any early exit would require Mastercard to pay more than 60% of remaining contract value — converting meaningful commercial risk into downside protection.</p>
+      <p>The anomaly detection itself was straightforward. The value came from redesigning the failover workflow around the prediction. We trained models on Splunk telemetry to identify the cluster health signatures that preceded failures, then rebuilt the response around them. Instead of a script reacting after declines had begun, traffic now rerouted proactively on an early warning, before customers were affected.</p>
+      <p>The client ran the system in shadow mode first, validating its predictions against their own manual failovers, then moved to full automation once it had proven reliable. After the proof, I identified the opportunity to replicate the architecture across six other services, and built the stakeholder relationships needed to position that expansion.</p>
     </div>
 
     <div class="cs-col">
@@ -46,7 +47,8 @@
       <div class="cs-impact-stat">$6M ARR</div>
       <div class="cs-impact-stat-label">grown from a $250K pilot</div>
       <hr class="cs-impact-divider">
-      <p>Six systems built across Mastercard services over three years. Billions in annual transaction volume protected from cluster-failure-driven disruption. Contract restructured so more than 60% of remaining value was due on early termination.</p>
+      <p>The engagement moved the client from reacting to cluster failures to preventing them. Point-of-sale disruptions were caught before they reached customers, protecting billions in annual transaction volume and the SLA commitments and issuer relationships that a public outage puts at risk. Over three years, six systems were built across the client's services.</p>
+      <p>The engagement scaled on a built-in ramp from roughly $1M to $2M to $3M as each new service came online. I structured the commercial model from scratch, including a three-year license on the IP we retained. The original contract carried a termination-for-convenience clause, so rather than concede it, I priced it: any early exit required the client to pay more than 60% of remaining contract value. They never exercised it, and we delivered the full scope.</p>
     </div>
 
   </div>
