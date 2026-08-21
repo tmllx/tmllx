@@ -38,8 +38,9 @@
 
     <div class="cs-col">
       <span class="cs-col-label">Approach</span>
-      <p>The anomaly detection itself was straightforward. The value came from redesigning the failover workflow around the prediction. We trained models on Splunk telemetry to identify the cluster health signatures that preceded failures, then rebuilt the response around them. Instead of a script reacting after declines had begun, traffic now rerouted proactively on an early warning, before customers were affected.</p>
-      <p>The client ran the system in shadow mode first, validating its predictions against their own manual failovers, then moved to full automation once it had proven reliable. After the proof, I identified the opportunity to replicate the architecture across six other services, and built the stakeholder relationships needed to position that expansion.</p>
+      <p>The original brief was to automate the manual failover script — make the existing response faster and less dependent on human intervention. What we realized early was that the data to predict failures existed before they materialized, which reframed the problem entirely. The goal shifted from faster reaction to prevention, and that shift changed the scale of value we could deliver.</p>
+      <p>We trained anomaly detection models on Splunk telemetry to identify the cluster health signatures that preceded failures, then rebuilt the failover workflow around the prediction. Instead of a script reacting after declines had begun, traffic now rerouted proactively on an early warning, before customers were affected. The client ran the system in shadow mode first, validating predictions against their own manual failovers, then moved to full automation once it had proven reliable.</p>
+      <p>After the proof, I identified the opportunity to replicate the architecture across six other services, and built the stakeholder relationships needed to position that expansion.</p>
     </div>
 
     <div class="cs-col">
