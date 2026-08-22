@@ -33,7 +33,7 @@
     <div class="cs-col">
       <span class="cs-col-label">Situation</span>
       <p>The client, one of the world's top-three payments networks, was experiencing intermittent failures in the clusters that route fraud scoring on payment transactions. When a cluster degraded, the result was point-of-sale delays and declined transactions — the kind of failure that had already caused a nationwide, customer-facing disruption and strained relationships with the issuing banks it serves.</p>
-      <p>Their existing response was a manual failover script that only kicked in reactively, after transactions had already started declining. I was brought in to lead a $250K paid proof of concept to determine whether failures could be predicted, and traffic rerouted, before they reached customers.</p>
+      <p>Their existing response was a set of scripts engineers ran by hand to reroute traffic once a cluster started failing — reactive, slow, and dependent on someone catching it in time. I was brought in to lead a $250K paid proof of concept to automate execution of those scripts, so failover could happen faster and with less manual intervention.</p>
     </div>
 
     <div class="cs-col">
