@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AISLES } from "@/lib/planner/catalog";
-import { buildShopping, qtyLabel } from "@/lib/planner/engine";
+import { buildShopping, qtyStep } from "@/lib/planner/engine";
 import type { Aisle, PlannerState } from "@/lib/planner/types";
 import { Card, btnClass, inputClass } from "./ui";
 
@@ -82,12 +82,19 @@ export function ShopTab({ state, onChange, onHome }: { state: PlannerState; onCh
               const on = !state.off.includes(line.key);
               const name = state.subs[line.key] || line.name;
               return (
-                <div key={line.key} className={`flex flex-wrap items-start gap-3 border-t border-line py-3 ${on ? "" : "opacity-50"}`}>
-                  <input className="mt-1 h-6 w-6" type="checkbox" checked={on} aria-label={name} onChange={() => onChange({ ...state, off: on ? state.off.concat(line.key) : state.off.filter((key) => key !== line.key) })} />
+                <div key={line.key} className={`flex flex-wrap items-center gap-3 border-t border-line py-3 ${on ? "" : "opacity-50"}`}>
+                  <input className="h-6 w-6" type="checkbox" checked={on} aria-label={name} onChange={() => onChange({ ...state, off: on ? state.off.concat(line.key) : state.off.filter((key) => key !== line.key) })} />
                   <div className="min-w-40 flex-1">
-                    <p className={on ? "font-medium" : "font-medium line-through"}>{qtyLabel(line.q, line.u)} {name}</p>
+                    <p className={on ? "font-medium" : "font-medium line-through"}>{name}</p>
                     <p className="text-sm text-muted">{line.from.join(", ")}{line.chk ? " · check label" : ""}</p>
                   </div>
+                  <QtyControl
+                    name={name}
+                    value={line.q}
+                    unit={line.u === "ea" ? "" : line.u}
+                    step={qtyStep(line.u)}
+                    onChange={(next) => onChange({ ...state, qty: { ...state.qty, [line.key]: next } })}
+                  />
                   {subKey === line.key ? (
                     <div className="flex flex-wrap gap-2">
                       <input className={inputClass} value={subVal} aria-label="Substitute" onChange={(event) => setSubVal(event.target.value)} />
@@ -121,13 +128,24 @@ export function ShopTab({ state, onChange, onHome }: { state: PlannerState; onCh
             {extras.map((item) => {
               const key = "x:" + item.id;
               const on = !state.off.includes(key);
+              const parts = splitExtraQty(item.qty);
               return (
                 <div key={item.id} className="flex flex-wrap items-center gap-3 border-t border-line py-3">
                   <input className="h-6 w-6" type="checkbox" checked={on} aria-label={item.name} onChange={() => onChange({ ...state, off: on ? state.off.concat(key) : state.off.filter((value) => value !== key) })} />
                   <div className="min-w-40 flex-1">
-                    <p className="font-medium">{(item.qty ? item.qty + " " : "") + item.name}</p>
+                    <p className="font-medium">{item.name}</p>
                     <p className="text-sm text-muted">added by you</p>
                   </div>
+                  <QtyControl
+                    name={item.name}
+                    value={parts.amount}
+                    unit={parts.suffix.trim()}
+                    step={extraStep(parts.suffix)}
+                    onChange={(next) => {
+                      const qty = (String(next) + parts.suffix).trim();
+                      onChange({ ...state, extras: state.extras.map((extraItem) => (extraItem.id === item.id ? { ...extraItem, qty } : extraItem)) });
+                    }}
+                  />
                   <button type="button" className={btnClass()} onClick={() => onChange({ ...state, extras: state.extras.filter((extraItem) => extraItem.id !== item.id) })}>
                     Delete
                   </button>
@@ -149,7 +167,7 @@ export function ShopTab({ state, onChange, onHome }: { state: PlannerState; onCh
           }}
         >
           <input className={`${inputClass} min-w-40 flex-1`} placeholder="Item" value={extra.name} aria-label="Extra item" onChange={(event) => setExtra({ ...extra, name: event.target.value })} />
-          <input className={`${inputClass} w-24`} placeholder="Qty" value={extra.qty} aria-label="Extra quantity" onChange={(event) => setExtra({ ...extra, qty: event.target.value })} />
+          <input className={`${inputClass} w-24`} placeholder="Qty" value={extra.qty} aria-label="Qty" onChange={(event) => setExtra({ ...extra, qty: event.target.value })} />
           <select className={inputClass} value={extra.a} aria-label="Aisle" onChange={(event) => setExtra({ ...extra, a: event.target.value })}>
             {AISLES.map(([value, label]) => (
               <option key={value} value={value}>{label}</option>
@@ -162,8 +180,15 @@ export function ShopTab({ state, onChange, onHome }: { state: PlannerState; onCh
         <Card>
           <h3 className="font-serif text-2xl">Already have</h3>
           {shop.pantryLines.map((line) => (
-            <div key={line.key} className="flex items-center justify-between gap-2 border-t border-line py-2">
-              <p className="text-muted">{qtyLabel(line.q, line.u)} {line.name}</p>
+            <div key={line.key} className="flex flex-wrap items-center justify-between gap-2 border-t border-line py-2">
+              <p className="min-w-36 flex-1 text-muted">{line.name}</p>
+              <QtyControl
+                name={line.name}
+                value={line.q}
+                unit={line.u === "ea" ? "" : line.u}
+                step={qtyStep(line.u)}
+                onChange={(next) => onChange({ ...state, qty: { ...state.qty, [line.key]: next } })}
+              />
               <button type="button" className={btnClass()} onClick={() => onChange({ ...state, pantry: state.pantry.filter((item) => item !== line.name.toLowerCase()) })}>
                 Need it
               </button>
@@ -173,4 +198,79 @@ export function ShopTab({ state, onChange, onHome }: { state: PlannerState; onCh
       ) : null}
     </div>
   );
+}
+
+function QtyControl({
+  name,
+  value,
+  unit,
+  step,
+  onChange,
+}: {
+  name: string;
+  value: number;
+  unit: string;
+  step: number;
+  onChange: (next: number) => void;
+}) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const shown = draft === null ? String(value) : draft;
+  const stepClass = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-line bg-card text-lg leading-none disabled:opacity-40";
+
+  function write(next: number) {
+    const snapped = snapQty(next, step);
+    setDraft(null);
+    if (snapped !== value) onChange(snapped);
+  }
+
+  return (
+    <div className="flex flex-wrap items-center gap-1" role="group" aria-label={"Qty for " + name}>
+      <span className="text-xs font-medium text-muted">Qty</span>
+      <button type="button" className={stepClass} aria-label={"Decrease qty for " + name} onClick={() => write(value - step)} disabled={value <= 0}>
+        −
+      </button>
+      <input
+        className={`${inputClass} w-20 appearance-none px-2 text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+        type="number"
+        inputMode="decimal"
+        min={0}
+        step={step}
+        aria-label={"Qty for " + name}
+        value={shown}
+        onChange={(event) => setDraft(event.target.value)}
+        onBlur={(event) => {
+          const raw = event.currentTarget.value.trim();
+          const next = Number(raw);
+          if (raw === "" || !Number.isFinite(next) || next < 0) {
+            setDraft(null);
+            return;
+          }
+          write(next);
+        }}
+      />
+      <button type="button" className={stepClass} aria-label={"Increase qty for " + name} onClick={() => write(value + step)}>
+        +
+      </button>
+      {unit ? <span className="text-sm text-muted">{unit}</span> : null}
+    </div>
+  );
+}
+
+function snapQty(value: number, step: number): number {
+  if (!(value > 0)) return 0;
+  const snapped = Math.round(value / step) * step;
+  return Math.round(snapped * 1000) / 1000;
+}
+
+function splitExtraQty(qty: string): { amount: number; suffix: string } {
+  const trimmed = qty.trim();
+  const match = trimmed.match(/^(\d+(?:\.\d+)?)(.*)$/);
+  if (!match) return { amount: 0, suffix: trimmed ? " " + trimmed : "" };
+  return { amount: Number(match[1]), suffix: match[2] };
+}
+
+function extraStep(suffix: string): number {
+  const unit = suffix.trim().toLowerCase().replace(/s$/, "");
+  if (unit === "lb" || unit === "oz" || unit === "cup" || unit === "tbsp" || unit === "tsp") return 0.25;
+  return 1;
 }

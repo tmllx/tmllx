@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { PROTS } from "@/lib/planner/catalog";
-import { cap, isNewNow, parseIngLine, perish, voteOf, weeksAgo } from "@/lib/planner/engine";
+import { addVote, cap, isNewNow, parseIngLine, perish, voteTally, weeksAgo } from "@/lib/planner/engine";
 import type { PlannerState, Recipe } from "@/lib/planner/types";
 import { RecipeBody, capWord } from "./recipe-body";
-import { Card, Chip, btnClass, inputClass, proteinTone } from "./ui";
+import { Card, Chip, VoteTally, btnClass, inputClass, proteinTone } from "./ui";
 
 const EMPTY_FORM = { name: "", cuisine: "", prot: "plant", fridge: "4", prep: "30", pg: "20", veg: "2", ing: "", steps: "", kid: "" };
 
@@ -28,12 +28,11 @@ export function RecipesTab({
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formMsg, setFormMsg] = useState("");
-  const voters = state.hh.members.filter((member) => member.votes);
   const picked = new Set(state.picks.map((pick) => pick.id));
   const q = query.trim().toLowerCase();
   const shown = state.recipes.filter((recipe) => {
     if (filter === "new" && !isNewNow(recipe, weekId)) return false;
-    if (filter === "liked" && !voters.some((member) => voteOf(state.votes, recipe.id, member.id) === "up")) return false;
+    if (filter === "liked" && voteTally(state.votes, recipe.id).up < 1) return false;
     if (filter === "cabbage" && !recipe.ing.some((item) => item.n.toLowerCase().includes("cabbage"))) return false;
     if (protein !== "all" && recipe.prot !== protein) return false;
     if (q && !(recipe.name + " " + recipe.cuisine + " " + recipe.ing.map((item) => item.n).join(" ")).toLowerCase().includes(q)) return false;
@@ -164,6 +163,7 @@ export function RecipesTab({
         shown.map((recipe) => {
           const open = expanded === recipe.id || editing === recipe.id;
           const inWeek = picked.has(recipe.id);
+          const tally = voteTally(state.votes, recipe.id);
           return (
             <Card key={recipe.id} className={`border-t-8 ${proteinTone(recipe.prot)}`}>
               <h3 className="font-serif text-2xl">{recipe.name}</h3>
@@ -176,27 +176,12 @@ export function RecipesTab({
               <p className="mt-2 text-sm text-muted">~{recipe.pg} g protein · {recipe.veg} veg · ~{recipe.prep} min</p>
               <p className="text-sm text-muted">Shares: {perish(recipe, false).slice(0, 5).join(", ") || "pantry staples"}</p>
               <p className="text-sm text-muted">{weeksAgo(recipe.id, state.hist, weekId) === Infinity ? "Not made yet" : "Logged in rotation history"}</p>
-              {voters.map((member) => (
-                <div key={member.id} className="mt-2 flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm text-muted">{member.name}</span>
-                  <div className="flex gap-1">
-                    {[
-                      ["none", "No vote"],
-                      ["up", "Thumbs up"],
-                      ["down", "Thumbs down"],
-                    ].map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        className={btnClass(voteOf(state.votes, recipe.id, member.id) === value)}
-                        onClick={() => onChange({ ...state, votes: { ...state.votes, [recipe.id]: { ...(state.votes[recipe.id] || {}), [member.id]: value } } })}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <VoteTally
+                up={tally.up}
+                down={tally.down}
+                onUp={() => onChange({ ...state, votes: addVote(state.votes, recipe.id, "up") })}
+                onDown={() => onChange({ ...state, votes: addVote(state.votes, recipe.id, "down") })}
+              />
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"

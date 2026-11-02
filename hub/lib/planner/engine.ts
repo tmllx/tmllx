@@ -72,11 +72,26 @@ function pluralUnit(u: string, n: number): string {
 }
 
 export function qtyLabel(q: number, u: string): string {
+  if (!(q > 0)) return !u || u === "ea" ? "0" : "0 " + pluralUnit(u, 0);
   if (COUNTABLE.indexOf(u) >= 0) {
     const n = Math.max(1, Math.ceil(q - 0.01));
     return u === "ea" ? String(n) : n + " " + pluralUnit(u, n);
   }
   return fmtQ(q) + " " + u;
+}
+
+/** Step size for a shopping quantity. Countable items move by 1; measured items move by a quarter. */
+export function qtyStep(unit: string): number {
+  return COUNTABLE.indexOf(unit) >= 0 ? 1 : 0.25;
+}
+
+/** Shopper-facing amount. Matches qtyLabel so the stepper and the copied list agree. */
+export function shoppingQty(q: number, unit: string): number {
+  if (!(q > 0)) return 0;
+  if (COUNTABLE.indexOf(unit) >= 0) return Math.max(1, Math.ceil(q - 0.01));
+  if (q >= 10) return Math.round(q);
+  const quarter = Math.round(q * 4) / 4;
+  return quarter > 0 ? quarter : 0.25;
 }
 
 export function isNewNow(r: Recipe, weekId: string): boolean {
@@ -166,12 +181,51 @@ export function parseIngLine(line: string): Ing | null {
   return { n: cap(name), q, u, a, b: a === "P" ? "chop" : a === "M" ? "stove" : undefined };
 }
 
-export function voteOf(votes: Votes, id: string, mid: string): string {
-  return (votes[id] && votes[id][mid]) || "none";
+function cleanCount(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return 0;
+  return Math.round(value);
 }
 
-export function voterNames(hh: HH, votes: Votes, id: string, value: string): string[] {
-  return hh.members.filter((m) => m.votes && voteOf(votes, id, m.id) === value).map((m) => m.name);
+/** Accept a tally, or an older map of member id to "up" | "down" | "none". */
+export function tallyFrom(raw: unknown): { up: number; down: number } {
+  if (!raw || typeof raw !== "object") return { up: 0, down: 0 };
+  const obj = raw as Record<string, unknown>;
+  if (typeof obj.up === "number" || typeof obj.down === "number") {
+    return { up: cleanCount(obj.up), down: cleanCount(obj.down) };
+  }
+  let up = 0;
+  let down = 0;
+  Object.values(obj).forEach((value) => {
+    if (value === "up") up += 1;
+    else if (value === "down") down += 1;
+  });
+  return { up, down };
+}
+
+export function voteTally(votes: Votes | undefined, id: string): { up: number; down: number } {
+  return tallyFrom(votes ? votes[id] : undefined);
+}
+
+export function addVote(votes: Votes, id: string, side: "up" | "down"): Votes {
+  const tally = voteTally(votes, id);
+  return {
+    ...votes,
+    [id]: {
+      up: tally.up + (side === "up" ? 1 : 0),
+      down: tally.down + (side === "down" ? 1 : 0),
+    },
+  };
+}
+
+/** Fold per-person votes into one tally per recipe. Empty tallies are dropped. */
+export function normalizeVotes(votes: unknown): Votes {
+  if (!votes || typeof votes !== "object") return {};
+  const out: Votes = {};
+  Object.entries(votes as Record<string, unknown>).forEach(([id, raw]) => {
+    const tally = tallyFrom(raw);
+    if (tally.up > 0 || tally.down > 0) out[id] = tally;
+  });
+  return out;
 }
 
 export function weeksAgo(id: string, hist: Hist[], weekId: string): number {
@@ -224,9 +278,8 @@ export function dealWeek(input: DealInput): DealResult {
   if (need <= 0) {
     return { ...empty, message: "All " + input.count + " slots are locked. Unlock one or raise the count." };
   }
-  const upNames = (id: string) => voterNames(input.hh, input.votes, id, "up");
-  const downNames = (id: string) => voterNames(input.hh, input.votes, id, "down");
-  const vetoed = (id: string) => downNames(id).length > 0;
+  const tallyOf = (id: string) => voteTally(input.votes, id);
+  const vetoed = (id: string) => tallyOf(id).down > 0;
   const sel: string[] = locked.map((p) => p.id);
   const nm: Record<string, string[]> = {};
   const addN = (id: string, withOpt: boolean) =>
@@ -238,7 +291,9 @@ export function dealWeek(input: DealInput): DealResult {
   const dealtIds = input.picks.filter((p) => !p.lock).map((p) => p.id);
   const pool = input.recipes.filter((r) => sel.indexOf(r.id) < 0 && !(input.hh.vetoSkip && vetoed(r.id)));
   const baseOf = (r: Recipe): number => {
-    let b = (1 + 0.6 * upNames(r.id).length) * Math.pow(0.25, downNames(r.id).length);
+    const tally = tallyOf(r.id);
+    const net = tally.up - tally.down;
+    let b = net > 0 ? 1 + 0.6 * net : net < 0 ? Math.pow(0.25, -net) : 1;
     const wa = weeksAgo(r.id, input.hist, input.weekId);
     b *= wa === Infinity ? 1.25 : wa <= 1 ? 0.25 : wa === 2 ? 0.5 : wa === 3 ? 0.75 : 1;
     if (dealtIds.indexOf(r.id) >= 0) b *= 0.3;
@@ -260,8 +315,11 @@ export function dealWeek(input: DealInput): DealResult {
   const take = (r: Recipe) => {
     const rs: string[] = [];
     if (isNewNow(r, input.weekId)) rs.push("New this week");
-    const ups = upNames(r.id);
-    if (ups.length) rs.push("Thumbs up from " + ups.join(", "));
+    const tally = tallyOf(r.id);
+    if (tally.up || tally.down) {
+      const net = tally.up - tally.down;
+      rs.push("Net " + (net > 0 ? "+" : "") + net + " (" + tally.up + " up, " + tally.down + " down)");
+    }
     const wa = weeksAgo(r.id, input.hist, input.weekId);
     rs.push(wa === Infinity ? "Not made yet" : wa <= 0 ? "Made this week" : wa === 1 ? "Made last week, so ranked lower" : "Last made " + wa + " weeks ago");
     const gi = gainOf(r);
@@ -370,6 +428,12 @@ export interface ShoppingList {
   grade: string;
 }
 
+function leadingAmount(qty: string): number {
+  const match = qty.trim().match(/^(\d+(?:\.\d+)?)/);
+  if (!match) return 1;
+  return Number(match[1]);
+}
+
 export function buildShopping(state: PlannerState): ShoppingList {
   const byId: Record<string, Recipe> = {};
   state.recipes.forEach((r) => {
@@ -390,6 +454,12 @@ export function buildShopping(state: PlannerState): ShoppingList {
       if (i.chk) lineMap[key].chk = i.chk;
       if (lineMap[key].from.indexOf(r.s) < 0) lineMap[key].from.push(r.s);
     });
+  });
+  const overrides = state.qty || {};
+  lines.forEach((line) => {
+    const custom = overrides[line.key];
+    if (typeof custom === "number" && Number.isFinite(custom) && custom >= 0) line.q = Math.round(custom * 1000) / 1000;
+    else line.q = shoppingQty(line.q, line.u);
   });
   const inPantry = (l: Line) => state.pantry.indexOf(l.name.toLowerCase()) >= 0;
   const active = lines.filter((l) => !inPantry(l));
@@ -415,7 +485,7 @@ export function buildShopping(state: PlannerState): ShoppingList {
   const items: ShopItem[] = included
     .map((l) => ({
       name: dispName(l),
-      quantity: COUNTABLE.indexOf(l.u) >= 0 ? Math.max(1, Math.ceil(l.q - 0.01)) : Math.round(l.q * 100) / 100,
+      quantity: Math.round(l.q * 1000) / 1000,
       unit: l.u,
       aisle: AISLES.filter((a) => a[0] === l.a)[0][1],
       forRecipes: l.from,
@@ -425,7 +495,7 @@ export function buildShopping(state: PlannerState): ShoppingList {
     .concat(
       extrasIn.map((x) => ({
         name: x.name,
-        quantity: parseFloat(x.qty) || 1,
+        quantity: leadingAmount(x.qty),
         unit: "",
         aisle: AISLES.filter((a) => a[0] === x.a)[0][1],
         forRecipes: [],
