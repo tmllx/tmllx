@@ -428,10 +428,39 @@ export interface ShoppingList {
   grade: string;
 }
 
+/** Stepper amount plus the leftover unit text for a freeform extra qty.
+ *  A blank qty is 1, same as the JSON handoff. Fractions such as "1/2 cup"
+ *  stay one amount so the unit is not split off and rewritten.
+ */
+export function splitExtraQty(qty: string): { amount: number; suffix: string } {
+  const trimmed = qty.trim();
+  if (!trimmed) return { amount: 1, suffix: "" };
+
+  const mixed = trimmed.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)(.*)$/);
+  if (mixed) {
+    const den = Number(mixed[3]);
+    if (den) return { amount: round3(Number(mixed[1]) + Number(mixed[2]) / den), suffix: mixed[4] };
+    return { amount: 1, suffix: " " + trimmed };
+  }
+
+  const frac = trimmed.match(/^(\d+)\s*\/\s*(\d+)(.*)$/);
+  if (frac) {
+    const den = Number(frac[2]);
+    if (den) return { amount: round3(Number(frac[1]) / den), suffix: frac[3] };
+    return { amount: 1, suffix: " " + trimmed };
+  }
+
+  const whole = trimmed.match(/^(\d+(?:\.\d+)?)(.*)$/);
+  if (whole) return { amount: Number(whole[1]), suffix: whole[2] };
+  return { amount: 1, suffix: " " + trimmed };
+}
+
+function round3(n: number): number {
+  return Math.round(n * 1000) / 1000;
+}
+
 function leadingAmount(qty: string): number {
-  const match = qty.trim().match(/^(\d+(?:\.\d+)?)/);
-  if (!match) return 1;
-  return Number(match[1]);
+  return splitExtraQty(qty).amount;
 }
 
 export function buildShopping(state: PlannerState): ShoppingList {
@@ -479,7 +508,8 @@ export function buildShopping(state: PlannerState): ShoppingList {
       text += "- " + qtyLabel(l.q, l.u) + " " + dispName(l) + " (" + l.from.join(", ") + ")" + (l.chk ? " [check label: " + l.chk + "]" : "") + "\n";
     });
     xs.forEach((x) => {
-      text += "- " + (x.qty ? x.qty + " " : "") + x.name + " (added)\n";
+      const typed = x.qty.trim();
+      text += "- " + (typed ? typed + " " : "1 ") + x.name + " (added)\n";
     });
   });
   const items: ShopItem[] = included

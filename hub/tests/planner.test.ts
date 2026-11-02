@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_HH, DEFAULT_RECIPES, NEW_WEEK } from "@/lib/planner/catalog";
-import { addVote, buildShopping, dealWeek, handoffDeclaresNoOrder, isNewNow, normalizeVotes, parseIngLine } from "@/lib/planner/engine";
+import { addVote, buildShopping, dealWeek, handoffDeclaresNoOrder, isNewNow, normalizeVotes, parseIngLine, splitExtraQty } from "@/lib/planner/engine";
 import { defaultPlannerState, normalizePlanner } from "@/lib/planner/state";
 import type { HH, PlannerState } from "@/lib/planner/types";
 
@@ -146,5 +146,26 @@ describe("planner", () => {
     expect(tamari?.q).toBe(6);
     expect(shop.text).toContain("6 tbsp Tamari");
     expect(shop.json).toContain('"quantity": 6');
+  });
+
+  it("parses blank and fractional extra quantities without splitting the unit", () => {
+    const state: PlannerState = {
+      ...defaultPlannerState(),
+      picks: [],
+      extras: [
+        { id: "1", name: "Milk", qty: "", a: "D" },
+        { id: "2", name: "Butter", qty: "1/2 cup", a: "D" },
+      ],
+    };
+    const shop = buildShopping(state);
+    const items = JSON.parse(shop.json).items as { name: string; quantity: number }[];
+    expect(items.find((item) => item.name === "Milk")?.quantity).toBe(1);
+    expect(items.find((item) => item.name === "Butter")?.quantity).toBe(0.5);
+    expect(shop.text).toContain("- 1 Milk (added)");
+    expect(shop.text).toContain("- 1/2 cup Butter (added)");
+    expect(splitExtraQty("")).toEqual({ amount: 1, suffix: "" });
+    expect(splitExtraQty("1/2 cup")).toEqual({ amount: 0.5, suffix: " cup" });
+    expect(splitExtraQty("1 1/2 cup")).toEqual({ amount: 1.5, suffix: " cup" });
+    expect(splitExtraQty("2 lb")).toEqual({ amount: 2, suffix: " lb" });
   });
 });

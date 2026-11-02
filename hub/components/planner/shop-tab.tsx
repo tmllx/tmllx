@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AISLES } from "@/lib/planner/catalog";
-import { buildShopping, qtyStep } from "@/lib/planner/engine";
+import { buildShopping, qtyStep, splitExtraQty } from "@/lib/planner/engine";
 import type { Aisle, PlannerState } from "@/lib/planner/types";
 import { Card, btnClass, inputClass } from "./ui";
 
@@ -260,13 +260,6 @@ function snapQty(value: number, step: number): number {
   if (!(value > 0)) return 0;
   const snapped = Math.round(value / step) * step;
   return Math.round(snapped * 1000) / 1000;
-}
-
-function splitExtraQty(qty: string): { amount: number; suffix: string } {
-  const trimmed = qty.trim();
-  const match = trimmed.match(/^(\d+(?:\.\d+)?)(.*)$/);
-  if (!match) return { amount: 0, suffix: trimmed ? " " + trimmed : "" };
-  return { amount: Number(match[1]), suffix: match[2] };
 }
 
 function extraStep(suffix: string): number {
