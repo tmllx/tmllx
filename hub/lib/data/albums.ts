@@ -21,7 +21,9 @@ export async function replaceAlbums(input: { label: string; url: string }[]): Pr
     });
   }
   const db = getDb();
-  await db.delete(albumLinks);
-  if (cleaned.length) await db.insert(albumLinks).values(cleaned);
+  await db.transaction(async (tx) => {
+    await tx.delete(albumLinks);
+    if (cleaned.length) await tx.insert(albumLinks).values(cleaned);
+  });
   return listAlbums();
 }

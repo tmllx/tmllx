@@ -38,7 +38,43 @@ export function decideAccess(role: Role | null, pathname: string, method = "GET"
   return "forbidden";
 }
 
+const BLOCKED_NEXT = /[\u0000-\u001F\u007F\\]/;
+const NEXT_BASE = "https://hub.invalid";
+
+function decodeNext(value: string): string | null {
+  let current = value;
+  for (let i = 0; i < 3; i += 1) {
+    if (BLOCKED_NEXT.test(current) || !current.startsWith("/") || current.startsWith("//")) return null;
+    let decoded: string;
+    try {
+      decoded = decodeURIComponent(current);
+    } catch {
+      return null;
+    }
+    if (decoded === current) return current;
+    current = decoded;
+  }
+  if (BLOCKED_NEXT.test(current) || !current.startsWith("/") || current.startsWith("//")) return null;
+  return current;
+}
+
+/**
+ * Post-login `next` may only be a same-origin relative path.
+ * Browsers drop tab and other control characters before they parse a host,
+ * so "/\\t//attacker.example" would otherwise become a protocol-relative URL.
+ */
 export function safeNextPath(value: string | null | undefined): string {
-  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\") || value.includes("://")) return "/";
-  return value;
+  if (typeof value !== "string" || value.length === 0 || value.length > 2048) return "/";
+  const decoded = decodeNext(value);
+  if (!decoded) return "/";
+  let url: URL;
+  try {
+    url = new URL(decoded, NEXT_BASE);
+  } catch {
+    return "/";
+  }
+  if (url.origin !== NEXT_BASE || url.username || url.password) return "/";
+  const path = url.pathname + url.search + url.hash;
+  if (!path.startsWith("/") || path.startsWith("//") || BLOCKED_NEXT.test(path)) return "/";
+  return path;
 }

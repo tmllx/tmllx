@@ -77,7 +77,7 @@ Household settings in the meal planner start as Adult 1, Adult 2, Child 1, and C
 | `EMAIL_FROM` | Yes in production | From address, on a domain you control |
 | `SEED_ALLOWLIST` | For seeding | `email:household,email:photos` |
 | `AUTH_DEV_LOGIN` | No | `true` shows local dev sign-in. Ignored when `NODE_ENV=production` |
-| `DATABASE_DRIVER` | No | Set to `neon` to use the Neon HTTP driver. `.neon.tech` URLs do this automatically |
+| `DATABASE_DRIVER` | No | Set to `neon` to use the Neon WebSocket pool. `.neon.tech` URLs do this automatically. Album saves run in a transaction, which the Neon HTTP driver cannot do. |
 
 The app uses `@neondatabase/serverless` for Neon hosts and `pg` for a normal Postgres URL, including local development.
 

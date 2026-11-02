@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cap, dealWeek, isNewNow, qtyLabel, suggestionsFor, voteOf, weekLabel, weeksAgo, buildShopping } from "@/lib/planner/engine";
+import { mergeDealtWeek } from "@/lib/planner/save";
 import type { HH, Pick, PlannerState, Recipe } from "@/lib/planner/types";
 import { RecipeBody } from "./recipe-body";
 import { Card, Chip, btnClass, proteinTone, recipeById } from "./ui";
@@ -13,7 +14,7 @@ export function HomeTab({
 }: {
   state: PlannerState;
   weekId: string;
-  onChange: (next: PlannerState) => void;
+  onChange: (next: PlannerState | ((state: PlannerState) => PlannerState)) => void;
 }) {
   const [showOpts, setShowOpts] = useState(false);
   const [spinning, setSpinning] = useState(false);
@@ -62,8 +63,10 @@ export function HomeTab({
     setWheelIds(ring);
     setSpinning(true);
     setRotation(rotation + 360 * 4 + delta);
+    const picks = result.picks;
+    const why = result.why;
     window.setTimeout(() => {
-      patch({ picks: result.picks, why: { ...state.why, ...result.why } });
+      onChange((latest) => mergeDealtWeek(latest, picks, why));
       setSpinning(false);
     }, 900);
   }

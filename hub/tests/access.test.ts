@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decideAccess } from "@/lib/access";
+import { decideAccess, safeNextPath } from "@/lib/access";
 
 const pages = ["/meals", "/notes", "/photos", "/", "/signin"] as const;
 
@@ -36,5 +36,35 @@ describe("decideAccess", () => {
 
   it("does not treat a removed role as access", () => {
     expect(decideAccess(null, "/photos", "GET")).toBe("unauthenticated");
+  });
+});
+
+describe("safeNextPath", () => {
+  it("allows same-origin relative paths", () => {
+    expect(safeNextPath("/")).toBe("/");
+    expect(safeNextPath("/meals")).toBe("/meals");
+    expect(safeNextPath("/photos?album=1")).toBe("/photos?album=1");
+    expect(safeNextPath("/notes#top")).toBe("/notes#top");
+  });
+
+  it("rejects open redirects, including tab, slash, and backslash tricks", () => {
+    const rejected = [
+      null,
+      "",
+      "https://attacker.example",
+      "//attacker.example",
+      "/\\attacker.example",
+      "/\\\\attacker.example",
+      "/\t//attacker.example/phish",
+      "/%09//attacker.example/phish",
+      "/%2509//attacker.example/phish",
+      "/%5c%5cattacker.example",
+      "/%2f%2fattacker.example",
+      "/\n/attacker.example",
+      "/meals\r\nLocation: https://attacker.example",
+    ];
+    for (const value of rejected) {
+      expect(safeNextPath(value)).toBe("/");
+    }
   });
 });
