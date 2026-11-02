@@ -58,10 +58,10 @@ describe("planner save concurrency", () => {
   });
 
   it("applies a dealt week onto the menu as it is now", () => {
-    const latest = { ...defaultPlannerState(), count: 7, votes: { burger: { a: "up" } } };
+    const latest = { ...defaultPlannerState(), count: 7, votes: { burger: { up: 1, down: 0 } } };
     const merged = mergeDealtWeek(latest, [{ id: "taco", mult: 1, opt: false, lock: false, day: "auto" }], { taco: ["Anchor pick"] });
     expect(merged.count).toBe(7);
-    expect(merged.votes.burger.a).toBe("up");
+    expect(merged.votes.burger.up).toBe(1);
     expect(merged.picks.map((pick) => pick.id)).toEqual(["taco"]);
     expect(merged.why.taco).toEqual(["Anchor pick"]);
     expect(latest.picks).not.toEqual(merged.picks);

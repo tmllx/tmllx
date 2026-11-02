@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { cap, dealWeek, isNewNow, qtyLabel, suggestionsFor, voteOf, weekLabel, weeksAgo, buildShopping } from "@/lib/planner/engine";
+import { addVote, cap, dealWeek, isNewNow, qtyLabel, suggestionsFor, voteTally, weekLabel, weeksAgo, buildShopping } from "@/lib/planner/engine";
 import { mergeDealtWeek } from "@/lib/planner/save";
 import type { HH, Pick, PlannerState, Recipe } from "@/lib/planner/types";
 import { RecipeBody } from "./recipe-body";
-import { Card, Chip, btnClass, proteinTone, recipeById } from "./ui";
+import { Card, Chip, VoteTally, btnClass, proteinTone, recipeById } from "./ui";
 
 export function HomeTab({
   state,
@@ -25,7 +25,6 @@ export function HomeTab({
   const [showNutrition, setShowNutrition] = useState(false);
   const byId = recipeById(state.recipes);
   const live = state.picks.filter((pick) => byId[pick.id]);
-  const voters = state.hh.members.filter((member) => member.votes);
   const shop = buildShopping(state);
   const ideas = suggestionsFor(state);
   const meals = live.reduce((sum, pick) => sum + pick.mult, 0);
@@ -110,7 +109,7 @@ export function HomeTab({
             <Toggle label="Prefer bowls that share ingredients" checked={state.bias} onChange={(bias) => patch({ bias })} />
             <Toggle label="Always include a recipe that is new this week" checked={state.hh.forceNew} onChange={(forceNew) => patchHH({ forceNew })} />
             <Toggle label="Skip bowls with a thumbs down" checked={state.hh.vetoSkip} onChange={(vetoSkip) => patchHH({ vetoSkip })} />
-            <p className="text-muted">Rotation weighs thumbs, how long since you made a bowl, and shared ingredients. Locked picks stay.</p>
+            <p className="text-muted">Rotation weighs net votes, how long since you made a bowl, and shared ingredients. Net votes are thumbs up minus thumbs down. Locked picks stay.</p>
           </div>
         ) : null}
         {message ? <p className="mt-3 font-medium">{message}</p> : null}
@@ -127,6 +126,7 @@ export function HomeTab({
       {live.map((pick) => {
         const recipe = byId[pick.id];
         const open = openId === pick.id;
+        const tally = voteTally(state.votes, recipe.id);
         return (
           <Card key={pick.id} className={`border-l-8 ${proteinTone(recipe.prot)}`}>
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -166,36 +166,12 @@ export function HomeTab({
                 <Toggle label="Protein add" checked={pick.opt} onChange={(opt) => patchPick(pick.id, { opt })} />
               ) : null}
             </div>
-            {voters.length ? (
-              <div className="mt-3 flex flex-col gap-2">
-                {voters.map((member) => (
-                  <div key={member.id} className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm text-muted">{member.name}</span>
-                    <div className="flex gap-1" role="group" aria-label={member.name + " vote"}>
-                      {[
-                        ["none", "No vote"],
-                        ["up", "Thumbs up"],
-                        ["down", "Thumbs down"],
-                      ].map(([value, label]) => (
-                        <button
-                          key={value}
-                          type="button"
-                          aria-pressed={voteOf(state.votes, recipe.id, member.id) === value}
-                          className={btnClass(voteOf(state.votes, recipe.id, member.id) === value)}
-                          onClick={() =>
-                            patch({
-                              votes: { ...state.votes, [recipe.id]: { ...(state.votes[recipe.id] || {}), [member.id]: value } },
-                            })
-                          }
-                        >
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
+            <VoteTally
+              up={tally.up}
+              down={tally.down}
+              onUp={() => patch({ votes: addVote(state.votes, recipe.id, "up") })}
+              onDown={() => patch({ votes: addVote(state.votes, recipe.id, "down") })}
+            />
             <p className="mt-2 text-sm text-muted">{weeksAgo(recipe.id, state.hist, weekId) === Infinity ? "Not made yet" : "In the rotation history"}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <button type="button" className={btnClass()} onClick={() => setOpenId(open ? "" : pick.id)}>
@@ -218,7 +194,20 @@ export function HomeTab({
           <h3 className="font-serif text-2xl">The week at a glance</h3>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <Stat label="Prep time" value={prepTotal + " min"} />
-            <Stat label="Time saved" value={(savedMin >= 0 ? "" : "-") + Math.abs(savedMin) + " min"} />
+            <Stat
+              label="Saved this week"
+              value={(savedMin >= 0 ? "" : "−") + Math.abs(savedMin) + " min"}
+              detail="vs cooking each dinner from scratch"
+              title={
+                "Total for this week versus cooking each of the " +
+                meals +
+                " dinners from scratch (" +
+                state.hh.nightlyCook +
+                " min each). Subtract the two prep sessions and " +
+                state.hh.assemble +
+                " min to assemble each meal."
+              }
+            />
             <Stat label="Protein" value={Math.round(avg((recipe, pick) => recipe.pg + (pick.opt && recipe.optPg ? recipe.optPg : 0))) + " g"} />
             <Stat label="Pairing" value={shop.score + "/100 " + shop.grade} />
           </div>
@@ -341,11 +330,12 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, detail, title }: { label: string; value: string; detail?: string; title?: string }) {
   return (
-    <div className="rounded-2xl bg-paper p-3">
+    <div className="rounded-2xl bg-paper p-3" title={title}>
       <p className="text-xs text-muted">{label}</p>
       <p className="font-serif text-2xl">{value}</p>
+      {detail ? <p className="mt-1 text-xs leading-snug text-muted">{detail}</p> : null}
     </div>
   );
 }

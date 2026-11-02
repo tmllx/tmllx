@@ -33,6 +33,40 @@ export function proteinTone(prot: string): string {
   return "border-pine";
 }
 
+export function VoteTally({
+  up,
+  down,
+  onUp,
+  onDown,
+}: {
+  up: number;
+  down: number;
+  onUp: () => void;
+  onDown: () => void;
+}) {
+  const side = "inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm font-medium hover:bg-card";
+  return (
+    <div
+      className="mt-3 inline-flex max-w-full flex-wrap items-center gap-1 rounded-full border border-line bg-paper p-1"
+      role="group"
+      aria-label={"Household votes, " + up + " up, " + down + " down"}
+      title="Each click adds one household vote"
+    >
+      <button type="button" className={side} onClick={onUp} aria-label="Add a thumbs up">
+        <span aria-hidden="true">👍</span>
+        <span>{up}</span>
+      </button>
+      <span className="text-muted" aria-hidden="true">
+        ·
+      </span>
+      <button type="button" className={side} onClick={onDown} aria-label="Add a thumbs down">
+        <span aria-hidden="true">👎</span>
+        <span>{down}</span>
+      </button>
+    </div>
+  );
+}
+
 export function recipeById(recipes: Recipe[]): Record<string, Recipe> {
   const map: Record<string, Recipe> = {};
   recipes.forEach((recipe) => {

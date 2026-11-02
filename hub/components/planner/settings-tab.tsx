@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DEFAULT_IDS } from "@/lib/planner/catalog";
-import { kidTokens, weekLabel } from "@/lib/planner/engine";
+import { kidTokens, normalizeVotes, weekLabel } from "@/lib/planner/engine";
 import { defaultPlannerState } from "@/lib/planner/state";
 import type { AlbumLink } from "@/lib/albums";
 import type { HH, Member, PlannerState } from "@/lib/planner/types";
@@ -50,7 +50,7 @@ export function SettingsTab({
 
   function doImport() {
     try {
-      const parsed = JSON.parse(importText) as { type?: string; recipes?: PlannerState["recipes"]; household?: HH; votes?: Record<string, Record<string, string>> };
+      const parsed = JSON.parse(importText) as { type?: string; recipes?: PlannerState["recipes"]; household?: HH; votes?: unknown };
       if (parsed.type !== "mealprep-portfolio" || !Array.isArray(parsed.recipes) || parsed.recipes.length === 0) {
         setImportMsg("That does not look like an exported recipe book.");
         return;
@@ -64,7 +64,7 @@ export function SettingsTab({
         ...state,
         recipes,
         hh: parsed.household ? { ...state.hh, ...parsed.household } : state.hh,
-        votes: parsed.votes || state.votes,
+        votes: parsed.votes ? normalizeVotes(parsed.votes) : state.votes,
         picks: state.picks.filter((pick) => recipes.some((recipe) => recipe.id === pick.id)),
         seenDefaultIds: DEFAULT_IDS.slice(),
       });
@@ -117,8 +117,8 @@ export function SettingsTab({
       </Card>
 
       <Card>
-        <h2 className="font-serif text-3xl">Members and votes</h2>
-        <p className="mt-1 text-sm text-muted">Names here are for the meal plan. They are not sign-in accounts.</p>
+        <h2 className="font-serif text-3xl">Household members</h2>
+        <p className="mt-1 text-sm text-muted">Names here are for the meal plan. They are not sign-in accounts. Thumbs on a recipe are one shared tally, so anyone in the household can add a vote.</p>
         <div className="mt-3 flex flex-col gap-3">
           {state.hh.members.map((member) => (
             <div key={member.id} className="flex flex-col gap-2 border-t border-line pt-3">
@@ -130,10 +130,6 @@ export function SettingsTab({
               {member.role === "kid" ? (
                 <input className={inputClass} placeholder="Foods to leave out, comma separated" value={member.avoids} aria-label="Foods to leave out" onChange={(event) => patchMember(member.id, { avoids: event.target.value })} />
               ) : null}
-              <label className="flex min-h-11 items-center gap-2">
-                <input type="checkbox" checked={member.votes} onChange={(event) => patchMember(member.id, { votes: event.target.checked })} />
-                Gets thumbs up and down
-              </label>
               <button type="button" className={btnClass()} onClick={() => patchHH({ members: state.hh.members.filter((item) => item.id !== member.id) })}>
                 Remove
               </button>

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_HH, DEFAULT_RECIPES, NEW_WEEK } from "@/lib/planner/catalog";
-import { buildShopping, dealWeek, handoffDeclaresNoOrder, isNewNow, parseIngLine } from "@/lib/planner/engine";
-import { defaultPlannerState } from "@/lib/planner/state";
+import { addVote, buildShopping, dealWeek, handoffDeclaresNoOrder, isNewNow, normalizeVotes, parseIngLine } from "@/lib/planner/engine";
+import { defaultPlannerState, normalizePlanner } from "@/lib/planner/state";
 import type { HH, PlannerState } from "@/lib/planner/types";
 
 const quiet = () => 0;
@@ -37,7 +37,7 @@ describe("planner", () => {
     const liked = dealWeek({
       recipes,
       picks: [],
-      votes: { [recipes[0].id]: { a: "up" }, [recipes[1].id]: { a: "down" } },
+      votes: { [recipes[0].id]: { up: 1, down: 0 }, [recipes[1].id]: { up: 0, down: 1 } },
       hist: [],
       hh: hh({ forceNew: false }),
       count: 1,
@@ -50,7 +50,7 @@ describe("planner", () => {
     const skipped = dealWeek({
       recipes: DEFAULT_RECIPES,
       picks: [],
-      votes: { burger: { a: "down" } },
+      votes: { burger: { up: 0, down: 1 } },
       hist: [],
       hh: hh({ forceNew: false, vetoSkip: true }),
       count: 4,
@@ -59,6 +59,42 @@ describe("planner", () => {
       random: quiet,
     });
     expect(skipped.picks.some((pick) => pick.id === "burger")).toBe(false);
+  });
+
+  it("ranks a net thumbs-up above a bowl with no votes", () => {
+    const recipes = DEFAULT_RECIPES.slice(0, 2);
+    const dealt = dealWeek({
+      recipes,
+      picks: [],
+      votes: { [recipes[0].id]: { up: 2, down: 1 } },
+      hist: [],
+      hh: hh({ forceNew: false }),
+      count: 1,
+      bias: false,
+      weekId: "2020-01-05",
+      random: quiet,
+    });
+    expect(dealt.picks.map((pick) => pick.id)).toEqual([recipes[0].id]);
+    expect(dealt.why[recipes[0].id].some((line) => line.includes("Net +1"))).toBe(true);
+  });
+
+  it("folds per-person votes into one tally and keeps later clicks", () => {
+    expect(
+      normalizeVotes({
+        burger: { m1: "up", m2: "down", m3: "none", m4: "up" },
+        taco: { up: 3, down: 1 },
+        eggsalad: { a: "none" },
+      }),
+    ).toEqual({
+      burger: { up: 2, down: 1 },
+      taco: { up: 3, down: 1 },
+    });
+    const loaded = normalizePlanner({
+      ...defaultPlannerState(),
+      votes: { burger: { m1: "up", m2: "down" } } as unknown as PlannerState["votes"],
+    });
+    expect(loaded.votes.burger).toEqual({ up: 1, down: 1 });
+    expect(addVote(loaded.votes, "burger", "up").burger).toEqual({ up: 2, down: 1 });
   });
 
   it("includes a new recipe when the household asks for one", () => {
@@ -96,5 +132,19 @@ describe("planner", () => {
     expect(handoffDeclaresNoOrder(shop.text)).toBe(true);
     expect(shop.json).toContain("No order is placed");
     expect(parseIngLine("1.5 lb ground beef")?.a).toBe("M");
+  });
+
+  it("keeps an edited shopping qty on the list", () => {
+    const state: PlannerState = {
+      ...defaultPlannerState(),
+      picks: [{ id: "broccoli", mult: 1, opt: false, lock: false, day: "auto" }],
+      hh: { ...defaultPlannerState().hh, gf: true, servings: 4 },
+      qty: { "tamari|tbsp": 6 },
+    };
+    const shop = buildShopping(state);
+    const tamari = shop.included.find((line) => line.name === "Tamari");
+    expect(tamari?.q).toBe(6);
+    expect(shop.text).toContain("6 tbsp Tamari");
+    expect(shop.json).toContain('"quantity": 6');
   });
 });

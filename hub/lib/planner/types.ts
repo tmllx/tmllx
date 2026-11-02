@@ -1,6 +1,5 @@
 export type Aisle = "P" | "M" | "D" | "C" | "B" | "G" | "S" | "I" | "F" | "O";
 export type Phase = "oven" | "stove" | "chop" | "sauce";
-export type VoteValue = "none" | "up" | "down";
 
 export interface Ing {
   n: string;
@@ -86,7 +85,13 @@ export interface Hist {
   ids: string[];
 }
 
-export type Votes = Record<string, Record<string, VoteValue | string>>;
+export interface VoteTally {
+  up: number;
+  down: number;
+}
+
+/** Recipe id to the household thumbs tally. Older per-person maps are folded in on load. */
+export type Votes = Record<string, VoteTally>;
 
 export interface PlannerState {
   recipes: Recipe[];
@@ -99,6 +104,8 @@ export interface PlannerState {
   subs: Record<string, string>;
   pantry: string[];
   extras: Extra[];
+  /** Shopping quantity overrides, keyed by ingredient line. Missing keys use the recipe total. */
+  qty: Record<string, number>;
   count: number;
   bias: boolean;
   seenDefaultIds: string[];
