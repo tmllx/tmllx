@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thomas Mailloux | Builder, operator, maker</title>
+  <meta name="description" content="Thomas Mailloux builds apps that do work for him, makes furniture, and is designing a house in Vermont. Currently an AI Deployment Manager at SpaceX Super Intelligence.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#faf7f2">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #14181f;
+      --ink-soft: #3b4350;
+      --muted: #6b7280;
+      --paper: #faf7f2;
+      --card: #ffffff;
+      --line: #e8e2d6;
+      --accent: #e8590c;
+      --accent-soft: #fff1e6;
+      --pine: #1f4d3a;
+      --pine-soft: #e6f0ea;
+      --sky: #2563eb;
+      --sky-soft: #eaf1ff;
+      --radius: 18px;
+      --max: 1080px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font); background: var(--paper); color: var(--ink); line-height: 1.65; font-size: 17px; }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: #fff; padding: 10px 14px; z-index: 100; }
+    .skip:focus { left: 8px; top: 8px; }
+
+    /* Header */
+    header.site { position: sticky; top: 0; z-index: 50; background: rgba(250, 247, 242, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { font-weight: 800; letter-spacing: -0.03em; text-decoration: none; font-size: 1.15rem; display: flex; align-items: center; gap: 10px; }
+    .logo .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    nav.main ul { display: flex; gap: 6px; list-style: none; align-items: center; }
+    nav.main a { text-decoration: none; font-size: 0.93rem; color: var(--ink-soft); padding: 8px 12px; border-radius: 999px; transition: background 0.15s, color 0.15s; }
+    nav.main a:hover { background: var(--line); color: var(--ink); }
+    nav.main a.cta { background: var(--ink); color: #fff; margin-left: 6px; }
+    nav.main a.cta:hover { background: var(--accent); }
+    .menu-btn { display: none; background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 0.9rem; cursor: pointer; color: var(--ink); }
+
+    /* Hero */
+    .hero { padding: 72px 0 56px; }
+    .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 600; color: var(--pine); background: var(--pine-soft); padding: 6px 12px; border-radius: 999px; margin-bottom: 22px; }
+    .eyebrow .pulse { width: 8px; height: 8px; background: #22a06b; border-radius: 50%; box-shadow: 0 0 0 0 rgba(34, 160, 107, 0.6); animation: pulse 2s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 9px rgba(34, 160, 107, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 160, 107, 0); } }
+    h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(2.5rem, 6vw, 4.2rem); line-height: 1.04; letter-spacing: -0.025em; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .lede { font-size: 1.2rem; color: var(--ink-soft); margin-top: 22px; max-width: 34em; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 0.97rem; padding: 13px 22px; border-radius: 999px; border: 1.5px solid var(--ink); transition: transform 0.15s, background 0.15s, color 0.15s; cursor: pointer; font-family: inherit; background: transparent; color: var(--ink); }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: var(--ink); color: #fff; }
+    .btn.primary:hover { background: var(--accent); border-color: var(--accent); }
+    .btn.ghost:hover { background: var(--ink); color: #fff; }
+    .portrait { position: relative; justify-self: center; width: min(100%, 360px); }
+    .portrait img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center top; border-radius: 28px; box-shadow: 0 24px 60px rgba(20, 24, 31, 0.18); }
+    .portrait::before { content: ""; position: absolute; inset: 18px -18px -18px 18px; border: 2px solid var(--accent); border-radius: 28px; z-index: -1; }
+    .badge { position: absolute; left: -18px; bottom: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; font-size: 0.82rem; line-height: 1.35; box-shadow: 0 10px 30px rgba(20, 24, 31, 0.12); }
+    .badge strong { display: block; font-size: 0.9rem; }
+
+    /* Now strip */
+    .now { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--card); }
+    .now-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .now-item { padding: 22px 20px; border-left: 1px solid var(--line); }
+    .now-item:first-child { border-left: 0; padding-left: 0; }
+    .now-item span { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .now-item p { font-size: 0.97rem; margin-top: 4px; line-height: 1.45; }
+
+    /* Sections */
+    section.block { padding: 88px 0 0; }
+    .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; }
+    .kicker { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    h2 { font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.1; letter-spacing: -0.02em; }
+    .sec-head p.sub { color: var(--ink-soft); max-width: 32em; margin-top: 10px; }
+    .link-arrow { font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 2px; white-space: nowrap; }
+    .link-arrow:hover { color: var(--accent); }
+
+    .grid { display: grid; gap: 20px; }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; display: flex; flex-direction: column; text-decoration: none; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; position: relative; }
+    a.card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(20, 24, 31, 0.1); border-color: #d6cdbb; }
+    .card h3 { font-size: 1.2rem; letter-spacing: -0.01em; line-height: 1.25; margin: 14px 0 8px; }
+    .card p { color: var(--ink-soft); font-size: 0.97rem; flex: 1; }
+    .card .meta { margin-top: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--muted); }
+    .icon { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; font-size: 1.4rem; background: var(--accent-soft); }
+    .icon.pine { background: var(--pine-soft); }
+    .icon.sky { background: var(--sky-soft); }
+    .tag { font-size: 0.74rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--line); color: var(--ink-soft); }
+    .tag.live { background: var(--pine-soft); color: var(--pine); }
+    .tag.build { background: var(--accent-soft); color: #b8430a; }
+    .tag.soon { background: var(--sky-soft); color: var(--sky); }
+    .feature { grid-column: span 2; background: var(--ink); color: #fff; border-color: var(--ink); }
+    .feature p { color: #cfd5de; }
+    .feature .meta { color: #9aa3b2; }
+    .feature .icon { background: rgba(255, 255, 255, 0.12); }
+    .feature .tag { background: rgba(255, 255, 255, 0.14); color: #fff; }
+
+    /* House */
+    .house { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; background: var(--card); border: 1px solid var(--line); border-radius: 26px; overflow: hidden; }
+    .house-copy { padding: 44px; }
+    .house-copy p { color: var(--ink-soft); margin-top: 14px; }
+    .house-copy ul { list-style: none; margin: 22px 0 26px; display: grid; gap: 10px; }
+    .house-copy li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.97rem; }
+    .house-copy li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--pine); margin-top: 0.6em; flex: none; }
+    .plan { background: linear-gradient(135deg, #e6f0ea, #f3ead8); position: relative; min-height: 320px; display: grid; place-items: center; padding: 30px; }
+    .plan svg { width: 100%; max-width: 380px; height: auto; }
+    .plan .stamp { position: absolute; top: 20px; right: 20px; background: var(--card); border: 1px dashed var(--pine); color: var(--pine); font-size: 0.78rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
+
+    /* Work */
+    .work-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .stat { font-family: var(--serif); font-size: 2.3rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1; margin-top: 16px; }
+    .stat-l { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+    .cs-meta { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .roles { margin-top: 20px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 26px; }
+    .role { display: grid; grid-template-columns: 170px 1fr; gap: 18px; padding: 16px 0; border-top: 1px solid var(--line); font-size: 0.95rem; }
+    .role:first-child { border-top: 0; }
+    .role .when { color: var(--muted); font-size: 0.85rem; }
+    .role strong { display: block; }
+    .role span { color: var(--ink-soft); }
+
+    /* About */
+    .about { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .about p { color: var(--ink-soft); margin-top: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-size: 0.92rem; }
+
+    /* Connect */
+    .connect { text-align: center; padding: 96px 0 40px; }
+    .connect h2 { max-width: 14em; margin: 0 auto; }
+    .connect p { color: var(--ink-soft); max-width: 30em; margin: 14px auto 28px; }
+    .connect .hero-actions { justify-content: center; }
+    footer.site { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 0.88rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 56px; }
+    footer.site a { text-decoration: none; margin-left: 16px; }
+    footer.site a:hover { color: var(--accent); }
+
+    a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+
+    @media (max-width: 900px) {
+      .hero { padding-top: 40px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .portrait { width: min(80%, 320px); justify-self: start; margin-left: 18px; }
+      .now-grid { grid-template-columns: 1fr 1fr; }
+      .now-item:nth-child(3) { border-left: 0; padding-left: 0; }
+      .now-item:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .grid.cols-3 { grid-template-columns: 1fr 1fr; }
+      .feature { grid-column: span 2; }
+      .house { grid-template-columns: 1fr; }
+      .about { grid-template-columns: 1fr; gap: 32px; }
+    }
+    @media (max-width: 680px) {
+      body { font-size: 16px; }
+      .menu-btn { display: block; }
+      nav.main { position: absolute; top: 64px; left: 0; right: 0; background: var(--paper); border-bottom: 1px solid var(--line); display: none; padding: 12px 24px 20px; }
+      nav.main.open { display: block; }
+      nav.main ul { flex-direction: column; align-items: stretch; gap: 2px; }
+      nav.main a { display: block; padding: 12px 10px; }
+      nav.main a.cta { margin: 8px 0 0; text-align: center; }
+      .grid.cols-3, .grid.cols-2, .work-row { grid-template-columns: 1fr; }
+      .feature { grid-column: auto; }
+      .house-copy { padding: 28px 24px; }
+      .role { grid-template-columns: 1fr; gap: 2px; }
+      .badge { left: -6px; }
+      section.block { padding-top: 64px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site">
+    <div class="wrap bar">
+      <a class="logo" href="#top"><span class="dot"></span>Tom Mailloux</a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav">Menu</button>
+      <nav class="main" id="mainNav" aria-label="Main">
+        <ul>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#house">House</a></li>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a class="cta" href="#connect">Say hello</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div id="top"></div>
+
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow"><span class="pulse"></span>Now at SpaceX Super Intelligence</p>
+          <h1>I build apps that <em>do the work for me</em>.</h1>
+          <p class="lede">If a task keeps coming back, I build an app to handle it. I spent a decade helping enterprises turn AI into results. Today I help financial services companies put agents to work, and at home I build tools that give me time back.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#projects">See what I am building</a>
+            <a class="btn ghost" href="#connect">Say hello</a>
+          </div>
+        </div>
+        <div class="portrait">
+          <img src="../tom.jpg" alt="Portrait of Thomas Mailloux" width="360" height="450">
+          <div class="badge"><strong>North Shore, MA</strong>Roots in Vermont</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="now" aria-label="Right now">
+      <div class="wrap now-grid">
+        <div class="now-item"><span>Working</span><p>AI Deployment Manager, financial services, SpaceX Super Intelligence</p></div>
+        <div class="now-item"><span>Building</span><p>Smash Week, a meal planner that cuts the Sunday scramble</p></div>
+        <div class="now-item"><span>Designing</span><p>A workshop and home base in rural Vermont</p></div>
+        <div class="now-item"><span>Making</span><p>Furniture, dinner for four, and gravel miles</p></div>
+      </div>
+    </div>
+
+    <section class="block" id="projects">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <p class="kicker">Projects and apps</p>
+            <h2>Tools I build for myself, then share.</h2>
+            <p class="sub">Most of these started as a personal itch. Some are free to try right now. Others are in progress and open to feedback.</p>
+          </div>
+          <a class="link-arrow" href="../projects.html">All projects</a>
+        </div>
+        <div class="grid cols-3">
+          <a class="card feature" href="#">
+            <div class="icon">🥗</div>
+            <h3>Smash Week</h3>
+            <p>A meal planning app that builds a weekly menu from a rotating recipe library, pairs dishes that share ingredients, and turns the plan into a shopping list. A cart step is next.</p>
+            <div class="meta"><span class="tag build">In progress</span><span>App</span></div>
+          </a>
+          <a class="card" href="#">
+            <div class="icon sky">🔔</div>
+            <h3>Life Event Monitor</h3>
+            <p>Watches LinkedIn and Instagram for life events in my network, such as job changes, promotions and milestones, so I can reach out at the right time.</p>
+            <div class="meta"><span class="tag build">In progress</span><span>App</span></div>
+          </a>
+          <a class="card" href="../portfolio-risk-analyzer.html">
+            <div class="icon pine">📈</div>
+            <h3>SPY/DIA Pattern Trader</h3>
+            <p>A live simulation of a four stage reversal setup, with alerts, a trade ledger and backtesting.</p>
+            <div class="meta"><span class="tag live">Live</span><span>Tool</span></div>
+          </a>
+          <a class="card" href="../roi-calculator.html">
+            <div class="icon">🧭</div>
+            <h3>AccountIQ</h3>
+            <p>One workspace for renewal risk, usage trends and stakeholder history across every account.</p>
+            <div class="meta"><span class="tag live">Live</span><span>Tool</span></div>
+          </a>
+          <a class="card" href="../renewal-health-score.html">
+            <div class="icon sky">🩺</div>
+            <h3>Renewal Risk System</h3>
+            <p>A shared language for risk and early action across distributed renewal teams.</p>
+            <div class="meta"><span class="tag live">Live</span><span>Tool</span></div>
+          </a>
+        </div>
+        <p style="margin-top:22px; color:var(--ink-soft);"><span class="tag soon">Coming soon</span>&nbsp; A few more experiments are on the way. <a href="#connect" style="border-bottom:2px solid var(--accent); text-decoration:none;">Suggest one</a>.</p>
+      </div>
+    </section>
+
+    <section class="block" id="house">
+      <div class="wrap">
+        <div class="house">
+          <div class="house-copy">
+            <p class="kicker">House project</p>
+            <h2>A workshop and a home base, back where I grew up.</h2>
+            <p>I am designing a house in rural Vermont. Part workshop, part home, built around getting outdoors. I will share the plans, the choices and the mistakes here as the project moves.</p>
+            <ul>
+              <li>Floor plans and elevations</li>
+              <li>Site, light and materials notes</li>
+              <li>Workshop layout and the furniture that will live in it</li>
+            </ul>
+            <a class="btn ghost" href="#">Follow the build</a>
+          </div>
+          <div class="plan" aria-hidden="true">
+            <span class="stamp">Plans coming soon</span>
+            <svg viewBox="0 0 380 300" fill="none" stroke="#1f4d3a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+              <rect x="30" y="40" width="320" height="220" rx="4"/>
+              <path d="M30 150h130M160 40v110M160 200h190M250 150v110M250 100h100" />
+              <path d="M110 260v-24a24 24 0 0 1 24 24" stroke-dasharray="4 5"/>
+              <rect x="190" y="52" width="46" height="30" rx="3" stroke-dasharray="4 5"/>
+              <circle cx="300" cy="200" r="16" stroke-dasharray="4 5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="work">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <p class="kicker">Work</p>
+            <h2>The professional side, kept in one place.</h2>
+            <p class="sub">Sixteen years across hospitals, consulting and enterprise AI. A few results I am proud of.</p>
+          </div>
+          <a class="link-arrow" href="../about.html">Full work history</a>
+        </div>
+        <div class="grid cols-3">
+          <a class="card" href="../cs-fraud-detection.html">
+            <span class="cs-meta">Financial services</span>
+            <h3>Fraud detection platform</h3>
+            <p>Originated, closed and delivered an AI services engagement for a top payments processor.</p>
+            <div class="stat">$6M</div><div class="stat-l">TCV originated and delivered</div>
+          </a>
+          <a class="card" href="../cs-enterprise-impact.html">
+            <span class="cs-meta">DataRobot</span>
+            <h3>Enterprise AI transformation</h3>
+            <p>Connected platform capability to business outcomes across a $20M plus portfolio.</p>
+            <div class="stat">$100M+</div><div class="stat-l">validated annual impact</div>
+          </a>
+          <a class="card" href="../cs-media-mix.html">
+            <span class="cs-meta">Pecan AI</span>
+            <h3>Media reallocation</h3>
+            <p>Channel level ROAS across a $1B media portfolio for a top three U.S. auto insurer.</p>
+            <div class="stat">$85M</div><div class="stat-l">media spend reallocated</div>
+          </a>
+        </div>
+        <p style="margin-top:18px; color:var(--muted); font-size:0.93rem;">Also under Work: the BCG joint solution motion, retention operations redesign, and supply chain go to market.</p>
+        <div class="roles">
+          <div class="role"><div class="when">2026 to present</div><div><strong>AI Deployment Manager, SpaceX Super Intelligence</strong><span>Helping financial services customers put agents to work on real processes.</span></div></div>
+          <div class="role"><div class="when">2019 to 2026</div><div><strong>DataRobot, Strategic Accounts to Global Renewals Strategy</strong><span>Led retention and operating model change across a $130M portfolio.</span></div></div>
+          <div class="role"><div class="when">2018 to 2022</div><div><strong>Soroco and Pecan AI</strong><span>Business development, then customer success leadership for key accounts.</span></div></div>
+          <div class="role"><div class="when">2010 to 2018</div><div><strong>Boston Consulting Group, Beth Israel Deaconess, Meditech</strong><span>Analytics, transformation and hospital systems work.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="about">
+      <div class="wrap about">
+        <div>
+          <p class="kicker">About</p>
+          <h2>Cook, maker, builder, dad.</h2>
+          <p>I live on the North Shore of Massachusetts with my wife and two daughters. I grew up in Vermont, and I am working my way back there one drawing at a time.</p>
+          <p>At work I help the most regulated companies in the world use AI agents for real tasks. At home I cook, make furniture and ride gravel. The common thread is wanting to see something work in the real world.</p>
+        </div>
+        <div>
+          <p class="kicker">Currently into</p>
+          <div class="chips">
+            <span class="chip">AI agents</span><span class="chip">Meal prep</span><span class="chip">Woodworking</span><span class="chip">Gravel riding</span><span class="chip">House design</span><span class="chip">Financial services</span><span class="chip">Vermont</span>
+          </div>
+          <p style="margin-top:28px;">I am always glad to meet people who build, whether in AI, food or wood. If that sounds like you, write to me.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="connect" id="connect">
+      <div class="wrap">
+        <h2>Let us build something together.</h2>
+        <p>Working on agents in financial services, designing a house, or just curious about the meal planner? I would like to hear from you.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="mailto:tmailloux@gmail.com">Email me</a>
+          <a class="btn ghost" href="https://www.linkedin.com/in/thomasmailloux/" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="wrap">
+    <footer class="site">
+      <span>&copy; 2026 Thomas Mailloux</span>
+      <span><a href="#projects">Projects</a><a href="#house">House</a><a href="#work">Work</a><a href="#" rel="nofollow" style="font-size:0.8rem;">Sign in</a></span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('menuBtn');
+      var nav = document.getElementById('mainNav');
+      btn.addEventListener('click', function () {
+        var open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      nav.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+      });
+    })();
+  </script>
+</body>
+</html>
