@@ -1,7 +1,7 @@
 export const ROLES = ["household", "photos"] as const;
 export type Role = (typeof ROLES)[number];
 
-export type Decision = "allow" | "unauthenticated" | "forbidden" | "redirect-photos";
+export type Decision = "allow" | "unauthenticated" | "forbidden" | "redirect-photos" | "not-found";
 
 export function isRole(value: string | null | undefined): value is Role {
   return value === "household" || value === "photos";
@@ -20,20 +20,27 @@ function isPublic(path: string): boolean {
   return false;
 }
 
+function isTradingSurface(path: string): boolean {
+  return path === "/trading" || path.startsWith("/trading/") || path === "/api/trading" || path.startsWith("/api/trading/");
+}
+
 /**
  * Server access policy shared by the proxy, pages, and API routes.
  * "photos" may open the photos page and read album links. Everything else
- * in the hub is household only. Unknown routes stay household only.
+ * in the hub is household only. Trading is hidden from the photos role.
+ * POST /api/trading/ingest is not a session route: the handler checks a bearer token.
  */
 export function decideAccess(role: Role | null, pathname: string, method = "GET"): Decision {
   const path = normalizePath(pathname);
   const verb = method.toUpperCase();
   if (isPublic(path)) return "allow";
+  if (path === "/api/trading/ingest" && verb === "POST") return "allow";
   if (!role) return "unauthenticated";
   if (path === "/") return role === "photos" ? "redirect-photos" : "allow";
   if (path === "/photos" || path.startsWith("/photos/")) return "allow";
   if (path === "/api/albums" && verb === "GET") return "allow";
   if (path === "/api/albums") return role === "household" ? "allow" : "forbidden";
+  if (role === "photos" && isTradingSurface(path)) return "not-found";
   if (role === "household") return "allow";
   return "forbidden";
 }

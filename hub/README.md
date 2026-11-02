@@ -8,11 +8,12 @@ There is no analytics. Every response sends `X-Robots-Tag: noindex, nofollow`, a
 
 - Email magic-link sign-in through Auth.js. There is no public sign-up. An address can sign in only when it is on the invite allowlist.
 - Two roles, checked on the server for every page and API:
-  - `household`: meals, notes, photos, and settings
-  - `photos`: the photos page only
+  - `household`: meals, notes, photos, trading, and settings
+  - `photos`: the photos page only. `/trading` returns 404.
 - Smash Week meal planner. The household shares one menu, thumbs, and shopping list in Postgres.
 - Notes to the girls. Placeholder page, household only. Nothing is stored yet.
 - Photos. Links and embeds for iCloud Shared Album URLs saved in settings. No uploads and no photo storage.
+- Trading. Household-only view of the latest swing-trader snapshots: positions, trade log, equity curve, recommendations, status, backtest, and Kronos. The page is `noindex`. Nothing is seeded.
 
 ## Grocery ordering
 
@@ -78,6 +79,7 @@ Household settings in the meal planner start as Adult 1, Adult 2, Child 1, and C
 | `SEED_ALLOWLIST` | For seeding | `email:household,email:photos` |
 | `AUTH_DEV_LOGIN` | No | `true` shows local dev sign-in. Ignored when `NODE_ENV=production` |
 | `DATABASE_DRIVER` | No | Set to `neon` to use the Neon WebSocket pool. `.neon.tech` URLs do this automatically. Album saves run in a transaction, which the Neon HTTP driver cannot do. |
+| `TRADING_INGEST_TOKEN` | For ingest | Bearer token for `POST /api/trading/ingest`. Write-only. If it is unset, ingest is rejected. |
 
 The app uses `@neondatabase/serverless` for Neon hosts and `pg` for a normal Postgres URL, including local development.
 
@@ -97,7 +99,7 @@ npm run allow -- list
 npm run allow -- remove person@example.com
 ```
 
-`household` can open every page. `photos` can open `/photos` and read album links. Changing or removing a row takes effect on the next request, even if an old session cookie is still in the browser. There is no sign-up form that inserts into this table.
+`household` can open every page. `photos` can open `/photos` and read album links. `/trading` and `GET /api/trading` are household only; the photos role gets 404. Changing or removing a row takes effect on the next request, even if an old session cookie is still in the browser. There is no sign-up form that inserts into this table.
 
 Sign-in attempts are limited to 5 per email and 20 per IP address in a 15 minute window. Unknown addresses get the same "if you are on the list" message and do not receive a link.
 
@@ -123,6 +125,25 @@ Set `SEED_ALLOWLIST` to the real invited addresses before seeding production. Th
 6. Point a subdomain, or a path you choose, at this Vercel project. The app does not assume a particular host.
 
 SQL migrations can also be generated with `npm run db:generate` and applied with `npm run db:migrate`.
+
+## Trading ingest
+
+`/trading` reads the latest copy of seven JSON files from `trading_snapshots` (`name`, `json`, `updated_at`). The names are `positions`, `trades`, `equity_live`, `recommendations`, `status`, `backtest`, and `kronos_eval`. "Last updated" uses `updated_at` on the status document when that field is set, otherwise the `updated_at` of the status row.
+
+`POST /api/trading/ingest` upserts those rows. There is no GET on that route. The bearer token is compared in constant time and does not grant read access. The body is capped at 2 MB. Each value must be JSON. Unknown names are rejected and nothing is written.
+
+Send every file:
+
+```bash
+curl -sS -X POST https://hub.tmllx.com/api/trading/ingest \
+  -H "Authorization: Bearer $TRADING_INGEST_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"files":{"status":{"updated_at":"2026-11-02T15:04:00Z","mode":"sim","asof":"2026-11-01"}}}'
+```
+
+Or one file: `{"name":"status","data":{...}}`. The response is `{ "updated": ["status"] }`.
+
+Apply the table with `npm run db:push` or `npm run db:migrate`.
 
 ## Tests
 

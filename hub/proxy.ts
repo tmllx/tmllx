@@ -20,6 +20,21 @@ export async function proxy(request: NextRequest) {
     : await viewerFromCookies((name) => request.cookies.get(name)?.value);
   const decision = decideAccess(viewer?.role ?? null, pathname, request.method);
   if (decision === "allow") return withRobots(NextResponse.next());
+  if (decision === "not-found") {
+    if (pathname.startsWith("/api/")) {
+      return withRobots(NextResponse.json({ error: "not_found" }, { status: 404 }));
+    }
+    return new NextResponse(notFoundDocument(), {
+      status: 404,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "x-robots-tag": "noindex, nofollow",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "cache-control": "no-store",
+      },
+    });
+  }
   if (pathname.startsWith("/api/")) {
     const status = decision === "unauthenticated" ? 401 : 403;
     return withRobots(NextResponse.json({ error: status === 401 ? "unauthorized" : "forbidden" }, { status }));
@@ -42,6 +57,29 @@ export async function proxy(request: NextRequest) {
       "x-content-type-options": "nosniff",
     },
   });
+}
+
+function notFoundDocument(): string {
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Not found</title>
+    <style>
+      body { margin: 0; background: #f4efe4; color: #1c1915; font-family: Georgia, "Iowan Old Style", serif; }
+      main { max-width: 32rem; margin: 0 auto; padding: 3rem 1.25rem; }
+      p { font-family: "Avenir Next", "Segoe UI", sans-serif; line-height: 1.5; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Not found</h1>
+      <p>This page is not available.</p>
+    </main>
+  </body>
+</html>`;
 }
 
 function forbiddenDocument(): string {
