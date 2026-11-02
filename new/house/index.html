@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House project | Thomas Mailloux</title>
+  <meta name="description" content="A dog trot house in Vermont. Two wings, a closable breezeway, and materials meant to weather. About 2,000 square feet. Schematic design is next.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#faf7f2">
+  <link rel="preload" as="image" href="images/exterior-front.webp">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #14181f;
+      --ink-soft: #3b4350;
+      --muted: #6b7280;
+      --paper: #faf7f2;
+      --card: #ffffff;
+      --line: #e8e2d6;
+      --accent: #e8590c;
+      --accent-soft: #fff1e6;
+      --pine: #1f4d3a;
+      --pine-soft: #e6f0ea;
+      --radius: 18px;
+      --max: 1080px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font); background: var(--paper); color: var(--ink); line-height: 1.65; font-size: 17px; }
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: #fff; padding: 10px 14px; z-index: 100; }
+    .skip:focus { left: 8px; top: 8px; }
+
+    header.site { position: sticky; top: 0; z-index: 50; background: rgba(250, 247, 242, 0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .bar { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { font-weight: 800; letter-spacing: -0.03em; text-decoration: none; font-size: 1.15rem; display: flex; align-items: center; gap: 10px; }
+    .logo .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); display: inline-block; }
+    nav.main ul { display: flex; gap: 6px; list-style: none; align-items: center; }
+    nav.main a { text-decoration: none; font-size: 0.93rem; color: var(--ink-soft); padding: 8px 12px; border-radius: 999px; transition: background 0.15s, color 0.15s; }
+    nav.main a:hover, nav.main a[aria-current="page"] { background: var(--line); color: var(--ink); }
+    nav.main a.cta { background: var(--ink); color: #fff; margin-left: 6px; }
+    nav.main a.cta:hover { background: var(--accent); }
+    .menu-btn { display: none; background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 0.9rem; cursor: pointer; color: var(--ink); }
+
+    .kicker { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(2.6rem, 6.4vw, 4.6rem); line-height: 1.02; letter-spacing: -0.03em; }
+    h1 em { font-style: italic; color: var(--accent); }
+    h2 { font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.1; letter-spacing: -0.02em; }
+    .lede { font-size: 1.22rem; color: var(--ink-soft); margin-top: 22px; max-width: 36em; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 0.97rem; padding: 13px 22px; border-radius: 999px; border: 1.5px solid var(--ink); transition: transform 0.15s, background 0.15s, color 0.15s; background: transparent; color: var(--ink); }
+    .btn:hover { transform: translateY(-2px); background: var(--ink); color: #fff; }
+    .link-arrow { font-weight: 600; text-decoration: none; border-bottom: 2px solid var(--accent); padding-bottom: 2px; }
+    .link-arrow:hover { color: var(--accent); }
+
+    .intro { padding: 64px 0 28px; }
+    .hero-figure { margin: 8px 0 0; }
+    .hero-figure img { width: 100%; border-radius: 28px; aspect-ratio: 2 / 1; object-fit: cover; object-position: center 68%; box-shadow: 0 24px 60px rgba(20, 24, 31, 0.14); }
+    .hero-figure figcaption, .frame figcaption, .gallery figcaption { color: var(--muted); font-size: 0.88rem; margin-top: 10px; }
+
+    .facts { margin-top: 28px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--card); }
+    .facts-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .fact { padding: 20px 18px; border-left: 1px solid var(--line); }
+    .fact:first-child { border-left: 0; padding-left: 0; }
+    .fact span { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .fact p { font-size: 0.97rem; margin-top: 4px; line-height: 1.4; }
+
+    section.block { padding: 88px 0 0; }
+    .prose { max-width: 40em; }
+    .prose p, .split p, .stand p { color: var(--ink-soft); margin-top: 14px; }
+    .story { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 48px; align-items: start; }
+
+    .pull { margin-top: 56px; padding: 8px 0 8px 22px; border-left: 3px solid var(--accent); }
+    .pull p { font-family: var(--serif); font-style: italic; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.25; letter-spacing: -0.02em; color: var(--ink); }
+
+    .split { display: grid; grid-template-columns: 1fr 1.15fr; gap: 40px; align-items: center; }
+    .frame { background: var(--card); border: 1px solid var(--line); border-radius: 26px; overflow: hidden; }
+    .frame img { width: 100%; height: auto; }
+    .frame.pad { padding: 18px 18px 16px; }
+    .frame.pad img { border-radius: 16px; }
+    .split .frame figcaption { padding: 2px 18px 16px; }
+
+    .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+    .principle { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+    .principle .num { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--pine); }
+    .principle h3 { font-family: var(--serif); font-size: 1.55rem; letter-spacing: -0.02em; margin: 8px 0 10px; }
+    .principle p { color: var(--ink-soft); font-size: 0.98rem; }
+
+    .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; }
+    .gallery a { display: block; cursor: zoom-in; }
+    .gallery img { width: 100%; height: auto; border-radius: 18px; }
+    .gallery .wide { grid-column: 1 / -1; }
+    .gallery .wide img { border-radius: 26px; }
+
+    .stand { margin-top: 8px; background: var(--ink); color: #fff; border-radius: 26px; padding: 44px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 36px; align-items: start; }
+    .stand h2 { color: #fff; }
+    .stand p { color: #cfd5de; }
+    .stand .kicker { color: #f0b089; }
+    .stand .btn { color: #fff; border-color: rgba(255, 255, 255, 0.85); }
+    .stand .btn:hover { background: #fff; color: var(--ink); }
+    .steps { list-style: none; display: grid; gap: 16px; }
+    .steps li { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 16px 18px; font-size: 0.95rem; line-height: 1.45; }
+    .steps strong { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #f0b089; margin-bottom: 4px; }
+    .back { margin-top: 28px; }
+
+    footer.site { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 0.88rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 72px; }
+    footer.site a { text-decoration: none; margin-left: 16px; }
+    footer.site a:hover { color: var(--accent); }
+    a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+
+    @media (max-width: 900px) {
+      .facts-grid { grid-template-columns: 1fr 1fr; }
+      .fact:nth-child(3) { border-left: 0; padding-left: 0; }
+      .fact:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .story, .split, .stand, .principles, .gallery { grid-template-columns: 1fr; }
+      .gallery .wide { grid-column: auto; }
+      .hero-figure img { aspect-ratio: 4 / 3; }
+    }
+    @media (max-width: 680px) {
+      body { font-size: 16px; }
+      .intro { padding-top: 36px; }
+      .menu-btn { display: block; }
+      nav.main { position: absolute; top: 64px; left: 0; right: 0; background: var(--paper); border-bottom: 1px solid var(--line); display: none; padding: 12px 24px 20px; }
+      nav.main.open { display: block; }
+      nav.main ul { flex-direction: column; align-items: stretch; gap: 2px; }
+      nav.main a { display: block; padding: 12px 10px; }
+      nav.main a.cta { margin: 8px 0 0; text-align: center; }
+      section.block { padding-top: 64px; }
+      .stand { padding: 28px 22px; }
+      .hero-figure img { border-radius: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site">
+    <div class="wrap bar">
+      <a class="logo" href="../"><span class="dot"></span>Tom Mailloux</a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav">Menu</button>
+      <nav class="main" id="mainNav" aria-label="Main">
+        <ul>
+          <li><a href="../#projects">Projects</a></li>
+          <li><a href="#top" aria-current="page">House</a></li>
+          <li><a href="../#work">Work</a></li>
+          <li><a href="../#about">About</a></li>
+          <li><a class="cta" href="../#connect">Say hello</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div id="top"></div>
+
+    <section class="intro">
+      <div class="wrap">
+        <p class="kicker">House project</p>
+        <h1>A dog trot, <em>back in Vermont</em>.</h1>
+        <p class="lede">About 2,000 square feet at the edge of a meadow. A living wing and a sleeping wing, joined by a breezeway that can close to the weather.</p>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <figure class="hero-figure">
+        <img src="images/exterior-front.webp" alt="Concept rendering of the house from the meadow approach: two gabled wings in weathered vertical wood, a standing seam metal roof, and a glass breezeway between them" width="1774" height="887" fetchpriority="high">
+        <figcaption>Concept rendering of the approach. A direction, not a finished building.</figcaption>
+      </figure>
+    </div>
+
+    <div class="facts" aria-label="Project facts">
+      <div class="wrap facts-grid">
+        <div class="fact"><span>Place</span><p>Vermont</p></div>
+        <div class="fact"><span>Size</span><p>About 2,000 square feet</p></div>
+        <div class="fact"><span>Form</span><p>Two wings, one breezeway</p></div>
+        <div class="fact"><span>Next</span><p>Schematic design</p></div>
+      </div>
+    </div>
+
+    <section class="block">
+      <div class="wrap story">
+        <div>
+          <p class="kicker">The idea</p>
+          <h2>A house with the forms I grew up around.</h2>
+        </div>
+        <div class="prose">
+          <p>I grew up in Vermont, and I am drawing my way back. This is the drawing I keep returning to. It has to work as a getaway and as a home, and it has to look like the same house in both roles.</p>
+          <p>The shapes are old New England ones. A Cape roof. The plainness of a First Period house. Gables that face the person walking up. A simple building with more window than wall, set low in the grass.</p>
+          <div class="pull"><p>Two roofs. One front door. A short walk of weather between them.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="plan">
+      <div class="wrap split">
+        <div>
+          <p class="kicker">The dog trot</p>
+          <h2>An old plan, closed for a Vermont winter.</h2>
+          <p>A dog trot is two small houses with a passage between them. In a hot climate that passage stays open and pulls air through. Here the passage is the front door, and it has to be able to shut.</p>
+          <p>The living wing holds the kitchen, the great room, and a room for work. The sleeping wing holds the bedrooms. The walk from the table to bed crosses the breezeway, a few steps that still feel a little like outside.</p>
+          <p>The living wing can stand on its own. The sleeping wing is drawn so it can be added later, without taking the first part apart. The two gables stay similar, so the finished house reads as one idea.</p>
+        </div>
+        <figure class="frame">
+          <img src="images/dusk-rear.webp" alt="Dusk rendering of the rear of the house, with both wings, a glass breezeway, decks, and a stone fire pit in the meadow" width="1536" height="1024">
+          <figcaption>Dusk on the meadow side. The glass link is the breezeway, with a fire pit off the deck.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="block" id="drawing">
+      <div class="wrap">
+        <p class="kicker">Floor plan</p>
+        <h2>Living on one side. Sleeping on the other.</h2>
+        <p class="lede" style="margin-bottom:28px;">This board is a concept study. It shows the front, the rear, the closable breezeway, and how the rooms sit in each wing. It is a direction for schematic design, not a construction set. The target is still about 2,000 square feet. The drawing gets tested and tightened before anything is built.</p>
+        <figure class="frame pad">
+          <a href="images/concept-board.webp">
+            <img src="images/concept-board.webp" alt="Concept board with front and rear elevations and a floor plan of a living wing and a sleeping wing joined by a closable breezeway" width="1536" height="1024">
+          </a>
+          <figcaption>Front elevation, rear elevation, and a plan of the two wings. <a class="link-arrow" href="images/concept-board.webp">Open the full board</a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="block" id="principles">
+      <div class="wrap">
+        <p class="kicker">Design principles</p>
+        <h2>Four rules for the building.</h2>
+        <div class="principles" style="margin-top:28px;">
+          <article class="principle">
+            <span class="num">01</span>
+            <h3>Forever finishes</h3>
+            <p>Buy once. A standing seam metal roof. Vertical wood siding, unfinished. Polished concrete underfoot, and herringbone wood in a few rooms. Walls with a texture that does not ask to be repainted.</p>
+          </article>
+          <article class="principle">
+            <span class="num">02</span>
+            <h3>Light</h3>
+            <p>Big windows, and not much competing with them. The meadow and the tree line do the decorating. Rooms stay plain so the glass can work.</p>
+          </article>
+          <article class="principle">
+            <span class="num">03</span>
+            <h3>Materials that weather</h3>
+            <p>Nothing on the outside that depends on a coat of paint. The siding is meant to go gray. The roof is meant to darken. In ten years the house should sit closer to the hillside than it does on the day it is built.</p>
+          </article>
+          <article class="principle">
+            <span class="num">04</span>
+            <h3>A house that holds its heat</h3>
+            <p>A heat pump for heating and cooling. Radiant warmth in the floors. The concrete slab stores the day and lets it go slowly. Two simple roofs, so the shape stays as disciplined as the plan.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="gallery">
+      <div class="wrap">
+        <p class="kicker">Gallery</p>
+        <h2>Studies, not a finished set.</h2>
+        <p class="lede" style="margin-bottom:28px;">Exterior views, the rooms, and the living wing on its own. These pictures are a way to look at the idea. Schematic design is what turns them into a building.</p>
+        <div class="gallery">
+          <figure class="wide">
+            <a href="images/from-the-trees.webp">
+              <img src="images/from-the-trees.webp" alt="The house seen through trees, with weathered wood siding, a metal roof, and a low glass link between the wings" width="1536" height="1024">
+            </a>
+            <figcaption>From the trees. Weathered wood, a standing seam roof, and a low glass link.</figcaption>
+          </figure>
+          <figure>
+            <a href="images/living-wing.webp">
+              <img src="images/living-wing.webp" alt="The living wing alone, a single gable with a standing seam roof and a gravel path to the door" width="1400" height="700">
+            </a>
+            <figcaption>The living wing on its own. The sleeping wing can follow.</figcaption>
+          </figure>
+          <figure>
+            <a href="images/kitchen.webp">
+              <img src="images/kitchen.webp" alt="Kitchen and great room in one volume, with polished concrete floors, a white island, and large windows toward a meadow" width="1400" height="933">
+            </a>
+            <figcaption>Kitchen and great room in one volume. Polished concrete, and the meadow through the glass.</figcaption>
+          </figure>
+          <figure>
+            <a href="images/bedroom.webp">
+              <img src="images/bedroom.webp" alt="A bedroom with light herringbone wood floors, linen bedding, and a door opening to a small deck" width="1400" height="1049">
+            </a>
+            <figcaption>Primary bedroom. Herringbone wood, and a door to a small deck.</figcaption>
+          </figure>
+          <figure>
+            <a href="images/study.webp">
+              <img src="images/study.webp" alt="A study with a wood desk, bookshelves, a concrete floor, and three windows looking over a meadow" width="1400" height="1050">
+            </a>
+            <figcaption>A study, with a desk in the light and shelves for books.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="status">
+      <div class="wrap">
+        <div class="stand">
+          <div>
+            <p class="kicker">Where it stands</p>
+            <h2>Schematic design is next.</h2>
+            <p>The renderings and the plan study are enough to start a real conversation with an architect. They are not a permit set, and they are not the last word on the dimensions.</p>
+            <p class="back"><a class="btn" href="../">Back to the homepage</a></p>
+          </div>
+          <ol class="steps">
+            <li><strong>In hand</strong> Exterior studies, interior studies, and a first plan of the two wings.</li>
+            <li><strong>Next</strong> Schematic design. Plans and elevations that settle the dimensions, the breezeway, and how the second wing attaches.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="wrap">
+    <footer class="site">
+      <span>&copy; 2026 Thomas Mailloux</span>
+      <span><a href="../">Home</a><a href="../#projects">Projects</a><a href="../#work">Work</a><a href="#" rel="nofollow" style="font-size:0.8rem;">Sign in</a></span>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('menuBtn');
+      var nav = document.getElementById('mainNav');
+      btn.addEventListener('click', function () {
+        var open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      nav.addEventListener('click', function (e) {
+        if (e.target.tagName === 'A') { nav.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }
+      });
+    })();
+  </script>
+</body>
+</html>

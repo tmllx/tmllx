@@ -113,8 +113,8 @@
     .house-copy ul { list-style: none; margin: 22px 0 26px; display: grid; gap: 10px; }
     .house-copy li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.97rem; }
     .house-copy li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--pine); margin-top: 0.6em; flex: none; }
-    .plan { background: linear-gradient(135deg, #e6f0ea, #f3ead8); position: relative; min-height: 320px; display: grid; place-items: center; padding: 30px; }
-    .plan svg { width: 100%; max-width: 380px; height: auto; }
+    .plan { background: #cfd9d2; position: relative; min-height: 320px; display: block; padding: 0; overflow: hidden; text-decoration: none; }
+    .plan img { width: 100%; height: 100%; min-height: 320px; object-fit: cover; object-position: center 62%; }
     .plan .stamp { position: absolute; top: 20px; right: 20px; background: var(--card); border: 1px dashed var(--pine); color: var(--pine); font-size: 0.78rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; }
 
     /* Work */
@@ -283,18 +283,12 @@
               <li>Site, light and materials notes</li>
               <li>Workshop layout and the furniture that will live in it</li>
             </ul>
-            <a class="btn ghost" href="#">Follow the build</a>
+            <a class="btn ghost" href="house/">Follow the build</a>
           </div>
-          <div class="plan" aria-hidden="true">
-            <span class="stamp">Plans coming soon</span>
-            <svg viewBox="0 0 380 300" fill="none" stroke="#1f4d3a" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
-              <rect x="30" y="40" width="320" height="220" rx="4"/>
-              <path d="M30 150h130M160 40v110M160 200h190M250 150v110M250 100h100" />
-              <path d="M110 260v-24a24 24 0 0 1 24 24" stroke-dasharray="4 5"/>
-              <rect x="190" y="52" width="46" height="30" rx="3" stroke-dasharray="4 5"/>
-              <circle cx="300" cy="200" r="16" stroke-dasharray="4 5"/>
-            </svg>
-          </div>
+          <a class="plan" href="house/">
+            <img src="house/images/exterior-front.webp" alt="Concept rendering of the Vermont house, two gabled wings joined by a glass breezeway" width="1774" height="887">
+            <span class="stamp">Schematic design next</span>
+          </a>
         </div>
       </div>
     </section>
