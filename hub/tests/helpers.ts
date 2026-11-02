@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { accounts, albumLinks, allowedEmails, authenticators, plannerState, sessions, signInAttempts, users, verificationTokens } from "@/lib/db/schema";
+import { accounts, albumLinks, allowedEmails, authenticators, plannerState, sessions, signInAttempts, tradingSnapshots, users, verificationTokens } from "@/lib/db/schema";
 
 export async function resetDb() {
   const db = getDb();
@@ -12,4 +12,5 @@ export async function resetDb() {
   await db.delete(allowedEmails);
   await db.delete(albumLinks);
   await db.delete(plannerState);
+  await db.delete(tradingSnapshots);
 }

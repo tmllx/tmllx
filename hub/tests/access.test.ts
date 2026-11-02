@@ -5,9 +5,10 @@ const pages = ["/meals", "/notes", "/photos", "/", "/signin"] as const;
 
 describe("decideAccess", () => {
   it("lets a household member open every hub page", () => {
-    for (const path of ["/", "/meals", "/notes", "/photos", "/api/planner", "/api/notes", "/api/albums"]) {
+    for (const path of ["/", "/meals", "/notes", "/photos", "/trading", "/api/planner", "/api/notes", "/api/albums", "/api/trading"]) {
       expect(decideAccess("household", path, "GET")).toBe("allow");
     }
+    expect(decideAccess("household", "/api/trading/ingest", "POST")).toBe("allow");
     expect(decideAccess("household", "/api/albums", "PUT")).toBe("allow");
   });
 
@@ -21,6 +22,10 @@ describe("decideAccess", () => {
     expect(decideAccess("photos", "/api/planner", "PUT")).toBe("forbidden");
     expect(decideAccess("photos", "/api/albums", "PUT")).toBe("forbidden");
     expect(decideAccess("photos", "/api/albums", "DELETE")).toBe("forbidden");
+    expect(decideAccess("photos", "/trading", "GET")).toBe("not-found");
+    expect(decideAccess("photos", "/api/trading", "GET")).toBe("not-found");
+    expect(decideAccess("photos", "/api/trading/ingest", "GET")).toBe("not-found");
+    expect(decideAccess("photos", "/api/trading/ingest", "POST")).toBe("allow");
   });
 
   it("asks signed-out visitors to sign in, except on public routes", () => {
@@ -32,6 +37,10 @@ describe("decideAccess", () => {
     }
     expect(decideAccess(null, "/api/planner", "GET")).toBe("unauthenticated");
     expect(decideAccess(null, "/api/albums", "GET")).toBe("unauthenticated");
+    expect(decideAccess(null, "/trading", "GET")).toBe("unauthenticated");
+    expect(decideAccess(null, "/api/trading", "GET")).toBe("unauthenticated");
+    expect(decideAccess(null, "/api/trading/ingest", "GET")).toBe("unauthenticated");
+    expect(decideAccess(null, "/api/trading/ingest", "POST")).toBe("allow");
   });
 
   it("does not treat a removed role as access", () => {

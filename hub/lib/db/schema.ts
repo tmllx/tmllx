@@ -1,7 +1,9 @@
 import type { AdapterAccountType } from "next-auth/adapters";
-import { boolean, integer, pgTable, primaryKey, text, timestamp, jsonb, index } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { boolean, check, integer, pgTable, primaryKey, text, timestamp, jsonb, index } from "drizzle-orm/pg-core";
 import type { PlannerState } from "../planner/types";
 import type { Role } from "../access";
+import type { JsonValue } from "../trading/types";
 
 export const users = pgTable("user", {
   id: text("id")
@@ -100,3 +102,18 @@ export const albumLinks = pgTable("album_link", {
   url: text("url").notNull(),
   sortOrder: integer("sort_order").notNull().default(0),
 });
+
+export const tradingSnapshots = pgTable(
+  "trading_snapshots",
+  {
+    name: text("name").primaryKey(),
+    json: jsonb("json").$type<JsonValue>().notNull(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).notNull().defaultNow(),
+  },
+  (table) => [
+    check(
+      "trading_snapshots_name_chk",
+      sql`${table.name} in ('positions', 'trades', 'equity_live', 'recommendations', 'status', 'backtest', 'kronos_eval')`,
+    ),
+  ],
+);

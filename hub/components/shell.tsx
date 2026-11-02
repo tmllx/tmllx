@@ -1,22 +1,15 @@
 import Link from "next/link";
 import { signOut } from "@/auth";
 import type { Role } from "@/lib/access";
+import { HOUSEHOLD_LINKS, PHOTO_LINKS } from "@/lib/nav";
 
-const HOUSEHOLD_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/meals", label: "Meals" },
-  { href: "/notes", label: "Notes" },
-  { href: "/photos", label: "Photos" },
-];
-
-const PHOTO_LINKS = [{ href: "/photos", label: "Photos" }];
-
-export function Shell({ role, children }: { role: Role; children: React.ReactNode }) {
+export function Shell({ role, wide = false, children }: { role: Role; wide?: boolean; children: React.ReactNode }) {
   const links = role === "household" ? HOUSEHOLD_LINKS : PHOTO_LINKS;
+  const width = wide ? "max-w-6xl" : "max-w-3xl";
   return (
     <div className="min-h-full">
       <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur">
-        <div className="mx-auto max-w-3xl px-4 pt-3 pb-2">
+        <div className={`mx-auto px-4 pt-3 pb-2 ${width}`}>
           <div className="flex items-center justify-between gap-3">
             <Link href={role === "photos" ? "/photos" : "/"} className="font-serif text-2xl tracking-tight text-ink">
               Hub
@@ -41,7 +34,7 @@ export function Shell({ role, children }: { role: Role; children: React.ReactNod
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-3xl px-4 py-5 pb-16">{children}</main>
+      <main className={`mx-auto w-full px-4 py-5 pb-16 ${width}`}>{children}</main>
     </div>
   );
 }
