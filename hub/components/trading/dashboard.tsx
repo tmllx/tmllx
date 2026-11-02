@@ -308,8 +308,18 @@ function Equity({ value }: { value: unknown }) {
   );
 }
 
+function tradeWhen(trade: Record<string, unknown>): string {
+  return text(trade.date) || text(trade.submitted_at);
+}
+
 function Trades({ value }: { value: unknown }) {
-  const trades = isRecord(value) && Array.isArray(value.trades) ? value.trades.filter(isRecord).slice(0, 50) : [];
+  const trades =
+    isRecord(value) && Array.isArray(value.trades)
+      ? value.trades
+          .filter(isRecord)
+          .sort((a, b) => (tradeWhen(a) < tradeWhen(b) ? 1 : tradeWhen(a) > tradeWhen(b) ? -1 : 0))
+          .slice(0, 50)
+      : [];
   if (!trades.length) return <p className="text-sm text-muted">No trades yet.</p>;
   return (
     <DataTable
