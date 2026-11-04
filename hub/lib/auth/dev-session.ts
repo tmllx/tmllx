@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { sessions, users } from "@/lib/db/schema";
 import { normalizeEmail, roleForEmail } from "./allowlist";
-import { devLoginEnabled } from "./session-cookie";
+import { devLoginEnabled, SESSION_MAX_AGE_SECONDS } from "./session-cookie";
 
 export async function createDevSession(emailRaw: string): Promise<{ token: string; expires: Date } | null> {
   if (!devLoginEnabled()) return null;
@@ -18,7 +18,7 @@ export async function createDevSession(emailRaw: string): Promise<{ token: strin
     await db.insert(users).values({ id: userId, email, emailVerified: new Date(), name: email });
   }
   const token = randomBytes(32).toString("hex");
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const expires = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000);
   await db.insert(sessions).values({ sessionToken: token, userId, expires });
   return { token, expires };
 }

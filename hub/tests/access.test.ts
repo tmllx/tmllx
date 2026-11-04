@@ -30,8 +30,10 @@ describe("decideAccess", () => {
 
   it("asks signed-out visitors to sign in, except on public routes", () => {
     expect(decideAccess(null, "/signin", "GET")).toBe("allow");
+    expect(decideAccess(null, "/signin/confirm", "GET")).toBe("allow");
     expect(decideAccess(null, "/api/signin", "POST")).toBe("allow");
     expect(decideAccess(null, "/api/auth/callback/nodemailer", "GET")).toBe("allow");
+    expect(decideAccess(null, "/api/auth/callback/nodemailer", "POST")).toBe("allow");
     for (const path of pages.filter((path) => path !== "/signin")) {
       expect(decideAccess(null, path, "GET")).toBe("unauthenticated");
     }
