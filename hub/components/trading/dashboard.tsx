@@ -1,4 +1,6 @@
+import { AlphaScorecard } from "@/components/trading/alpha-scorecard";
 import { LineChart, type ChartSeries } from "@/components/trading/chart";
+import { HowItWorks } from "@/components/trading/how-it-works";
 import type { JsonValue, TradingSnapshotName } from "@/lib/trading/types";
 import { formatStamp } from "@/lib/trading/status";
 
@@ -547,6 +549,7 @@ export function TradingDashboard({ files, lastUpdated }: { files: Files; lastUpd
           {universe !== null ? <Pill>Universe {universe}</Pill> : null}
         </div>
       </div>
+      <AlphaScorecard value={files.alpha} />
       <Card title="Today's recommendations" aside={recAside}>
         <Recommendations value={files.recommendations} />
       </Card>
@@ -567,6 +570,7 @@ export function TradingDashboard({ files, lastUpdated }: { files: Files; lastUpd
       <Card title="Kronos check">
         <Kronos value={files.kronos_eval} />
       </Card>
+      <HowItWorks value={files.how_it_works} />
       <p className="text-xs text-muted">
         Not investment advice. Backtests are not guarantees. The universe has survivorship bias, fills assume the next open with
         5 bps of slippage, and stops are checked at the close and filled at the next open, so gaps can pass the stop. Until a

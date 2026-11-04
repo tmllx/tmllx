@@ -113,7 +113,7 @@ export const tradingSnapshots = pgTable(
   (table) => [
     check(
       "trading_snapshots_name_chk",
-      sql`${table.name} in ('positions', 'trades', 'equity_live', 'recommendations', 'status', 'backtest', 'kronos_eval')`,
+      sql`${table.name} in ('positions', 'trades', 'equity_live', 'recommendations', 'status', 'backtest', 'kronos_eval', 'how_it_works', 'alpha')`,
     ),
   ],
 );

@@ -128,9 +128,13 @@ SQL migrations can also be generated with `npm run db:generate` and applied with
 
 ## Trading ingest
 
-`/trading` reads the latest copy of seven JSON files from `trading_snapshots` (`name`, `json`, `updated_at`). The names are `positions`, `trades`, `equity_live`, `recommendations`, `status`, `backtest`, and `kronos_eval`. "Last updated" uses `updated_at` on the status document when that field is set, otherwise the `updated_at` of the status row.
+`/trading` reads the latest copy of nine JSON files from `trading_snapshots` (`name`, `json`, `updated_at`). The names are `positions`, `trades`, `equity_live`, `recommendations`, `status`, `backtest`, `kronos_eval`, `how_it_works`, and `alpha`. "Last updated" uses `updated_at` on the status document when that field is set, otherwise the `updated_at` of the status row.
 
 `POST /api/trading/ingest` upserts those rows. There is no GET on that route. The bearer token is compared in constant time and does not grant read access. The body is capped at 2 MB. Each value must be JSON. Unknown names are rejected and nothing is written.
+
+`how_it_works` is `{ "sections": [{ "title": string, "body_md": string }] }`, at most 40 sections and 20KB. `body_md` is markdown. `/trading` shows it as a collapsed "How it works" block, with one disclosure per section, and skips raw HTML. The block is omitted until that snapshot exists.
+
+`alpha` is the paper-account scorecard against buy-and-hold SPY. The document is still settling, so any JSON object up to 512KB is accepted and every field is optional. The page reads `start_date`, `start_equity`, `strategy_equity`, `strategy_return`, `spy_value`, `spy_return`, `excess_return`, `strategy_max_drawdown`, `spy_max_drawdown`, `beta`, `alpha`, `series` (`date`, `strategy_ret`, `spy_ret`), and `backtest` (`note`, or `cagr` with `start` and `end`). Returns are decimals (`0.02` is 2%). A null `beta` or `alpha` is shown as "needs 20 days of data". The scorecard is omitted until that snapshot exists. Nested `strategy` and `spy` objects are also read.
 
 Send every file:
 

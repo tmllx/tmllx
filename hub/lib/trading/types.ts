@@ -8,6 +8,8 @@ export const TRADING_SNAPSHOT_NAMES = [
   "status",
   "backtest",
   "kronos_eval",
+  "how_it_works",
+  "alpha",
 ] as const;
 
 export type TradingSnapshotName = (typeof TRADING_SNAPSHOT_NAMES)[number];
