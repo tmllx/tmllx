@@ -1,3 +1,5 @@
+import { validateAlpha } from "./alpha";
+import { validateHowItWorks, type SnapshotIssue } from "./how-it-works";
 import { isTradingSnapshotName, type JsonValue, type TradingSnapshotName } from "./types";
 
 export const MAX_BODY_BYTES = 2 * 1024 * 1024;
@@ -22,11 +24,25 @@ export function isJsonValue(value: unknown): value is JsonValue {
   return false;
 }
 
+function snapshotIssue(name: TradingSnapshotName, data: JsonValue): SnapshotIssue | null {
+  if (name === "how_it_works") return validateHowItWorks(data);
+  if (name === "alpha") return validateAlpha(data);
+  return null;
+}
+
+function rejectSnapshot(name: TradingSnapshotName, data: JsonValue): IngestBody | null {
+  const issue = snapshotIssue(name, data);
+  if (!issue || issue.ok) return null;
+  return { ok: false, status: issue.status, error: issue.error };
+}
+
 function recordEntries(files: Record<string, unknown>): IngestBody {
   const entries: IngestEntry[] = [];
   for (const [name, data] of Object.entries(files)) {
     if (!isTradingSnapshotName(name)) return { ok: false, status: 400, error: "invalid_name" };
     if (!isJsonValue(data)) return { ok: false, status: 400, error: "invalid_json" };
+    const rejected = rejectSnapshot(name, data);
+    if (rejected) return rejected;
     entries.push({ name, data });
   }
   return { ok: true, entries };
@@ -57,6 +73,8 @@ export function parseIngestBody(text: string): IngestBody {
     if (!("data" in body) || !isJsonValue(body.data)) {
       return { ok: false, status: 400, error: "invalid_json" };
     }
+    const rejected = rejectSnapshot(body.name, body.data);
+    if (rejected) return rejected;
     return { ok: true, entries: [{ name: body.name, data: body.data }] };
   }
   return { ok: false, status: 400, error: "invalid_json" };

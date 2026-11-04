@@ -1,0 +1,2 @@
+ALTER TABLE "trading_snapshots" DROP CONSTRAINT "trading_snapshots_name_chk";--> statement-breakpoint
+ALTER TABLE "trading_snapshots" ADD CONSTRAINT "trading_snapshots_name_chk" CHECK ("trading_snapshots"."name" in ('positions', 'trades', 'equity_live', 'recommendations', 'status', 'backtest', 'kronos_eval', 'how_it_works', 'alpha'));
