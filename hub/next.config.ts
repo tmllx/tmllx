@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   devIndicators: false,
+  outputFileTracingIncludes: {
+    "/game": ["./content/long-ascent/index.html"],
+  },
   experimental: {
     authInterrupts: true,
   },

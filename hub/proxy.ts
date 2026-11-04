@@ -43,7 +43,7 @@ export async function proxy(request: NextRequest) {
     return withRobots(NextResponse.redirect(new URL("/photos", request.url)));
   }
   if (decision === "unauthenticated") {
-    const next = safeNextPath(pathname);
+    const next = safeNextPath(pathname + request.nextUrl.search);
     const url = new URL("/signin", request.url);
     if (next !== "/") url.searchParams.set("next", next);
     return withRobots(NextResponse.redirect(url));
