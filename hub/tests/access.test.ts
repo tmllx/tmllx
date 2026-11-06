@@ -5,7 +5,7 @@ const pages = ["/meals", "/notes", "/photos", "/", "/signin"] as const;
 
 describe("decideAccess", () => {
   it("lets a household member open every hub page", () => {
-    for (const path of ["/", "/meals", "/notes", "/photos", "/trading", "/api/planner", "/api/notes", "/api/albums", "/api/trading"]) {
+    for (const path of ["/", "/meals", "/notes", "/photos", "/trading", "/game", "/api/planner", "/api/notes", "/api/albums", "/api/trading"]) {
       expect(decideAccess("household", path, "GET")).toBe("allow");
     }
     expect(decideAccess("household", "/api/trading/ingest", "POST")).toBe("allow");
@@ -16,7 +16,7 @@ describe("decideAccess", () => {
     expect(decideAccess("photos", "/photos", "GET")).toBe("allow");
     expect(decideAccess("photos", "/api/albums", "GET")).toBe("allow");
     expect(decideAccess("photos", "/", "GET")).toBe("redirect-photos");
-    for (const path of ["/meals", "/notes", "/api/planner", "/api/notes"]) {
+    for (const path of ["/meals", "/notes", "/game", "/api/planner", "/api/notes"]) {
       expect(decideAccess("photos", path, "GET")).toBe("forbidden");
     }
     expect(decideAccess("photos", "/api/planner", "PUT")).toBe("forbidden");
@@ -43,6 +43,15 @@ describe("decideAccess", () => {
     expect(decideAccess(null, "/api/trading", "GET")).toBe("unauthenticated");
     expect(decideAccess(null, "/api/trading/ingest", "GET")).toBe("unauthenticated");
     expect(decideAccess(null, "/api/trading/ingest", "POST")).toBe("allow");
+    expect(decideAccess(null, "/game", "GET")).toBe("unauthenticated");
+    expect(decideAccess(null, "/game?debug=1", "GET")).toBe("unauthenticated");
+  });
+
+  it("keeps the game on the household role", () => {
+    expect(decideAccess("household", "/game", "GET")).toBe("allow");
+    expect(decideAccess("household", "/game?debug=1", "GET")).toBe("allow");
+    expect(decideAccess("photos", "/game", "GET")).toBe("forbidden");
+    expect(decideAccess("photos", "/game?debug=1", "GET")).toBe("forbidden");
   });
 
   it("does not treat a removed role as access", () => {

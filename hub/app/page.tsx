@@ -9,6 +9,7 @@ const CARDS = [
   { href: "/notes", title: "Notes", text: "Notes to the girls." },
   { href: "/photos", title: "Photos", text: "Shared albums." },
   { href: "/trading", title: "Trading", text: "Positions, the trade log, and the paper account." },
+  { href: "/game", title: "The Long Ascent", text: "A game for the household." },
 ];
 
 export default async function HomePage() {
