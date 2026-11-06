@@ -140,6 +140,7 @@ describe("magic link confirm", () => {
     expect(againLocation).toContain("/signin");
     expect(againLocation).toContain("error=Verification");
     expect(againLocation).toContain("email=" + encodeURIComponent(EMAIL));
+    expect(againLocation).toContain("next=" + encodeURIComponent("/meals"));
   });
 
   it("still refuses a magic link for an address that is not invited", async () => {

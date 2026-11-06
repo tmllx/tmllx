@@ -38,8 +38,11 @@ export async function POST(req: NextRequest) {
   }
   if (isEmailCallback(url)) {
     const res = await handlers.POST(req);
-    const email = parseMagicCallback(url.pathname + url.search, url.origin)?.email ?? null;
-    return commitSessionCookies(attachVerificationEmail(res, email, url.origin), url.origin);
+    const target = parseMagicCallback(url.pathname + url.search, url.origin);
+    return commitSessionCookies(
+      attachVerificationEmail(res, target?.email ?? null, url.origin, target?.nextPath),
+      url.origin,
+    );
   }
   return handlers.POST(req);
 }

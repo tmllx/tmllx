@@ -22,8 +22,13 @@ export function commitSessionCookies(response: Response, origin: string): Respon
   return new Response(signedInDocument(destination), { status: 200, headers });
 }
 
-/** Keep the address that failed, so the sign-in form can offer a new link without retyping. */
-export function attachVerificationEmail(response: Response, email: string | null, origin: string): Response {
+/** Keep the address and destination that failed, so a new link opens the same page. */
+export function attachVerificationEmail(
+  response: Response,
+  email: string | null,
+  origin: string,
+  nextPath?: string | null,
+): Response {
   if (!email || response.status < 300 || response.status >= 400) return response;
   const location = response.headers.get("location");
   if (!location) return response;
@@ -36,6 +41,8 @@ export function attachVerificationEmail(response: Response, email: string | null
   if (!trustedOrigin(url.origin, origin) || url.pathname !== "/signin") return response;
   if (url.searchParams.get("error") !== "Verification" || url.searchParams.has("email")) return response;
   url.searchParams.set("email", email);
+  const next = safeNextPath(nextPath);
+  if (next !== "/" && !url.searchParams.has("next")) url.searchParams.set("next", next);
   const headers = new Headers(response.headers);
   headers.set("location", `${url.pathname}${url.search}`);
   return new Response(null, { status: response.status, headers });
