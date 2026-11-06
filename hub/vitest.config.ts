@@ -15,8 +15,20 @@ export default defineConfig({
       AUTH_DEV_LOGIN: "true",
       EMAIL_FROM: "hub@localhost",
     },
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, ".") },
+    alias: {
+      "@": path.resolve(__dirname, "."),
+      // next-auth imports these extensionless paths. Node's loader, which Vitest uses
+      // for this package, does not add the .js suffix Next's bundler would.
+      "next/server": path.resolve(__dirname, "node_modules/next/server.js"),
+      "next/headers": path.resolve(__dirname, "node_modules/next/headers.js"),
+      "next/navigation": path.resolve(__dirname, "node_modules/next/navigation.js"),
+    },
   },
 });
