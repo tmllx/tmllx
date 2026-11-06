@@ -14,7 +14,7 @@ export function normalizePath(pathname: string): string {
 }
 
 function isPublic(path: string): boolean {
-  if (path === "/signin" || path === "/forbidden" || path === "/robots.txt" || path === "/favicon.ico") return true;
+  if (path === "/signin" || path === "/signin/confirm" || path === "/forbidden" || path === "/robots.txt" || path === "/favicon.ico") return true;
   if (path.startsWith("/api/auth")) return true;
   if (path === "/api/signin" || path === "/api/dev/login") return true;
   return false;
